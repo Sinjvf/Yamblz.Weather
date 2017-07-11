@@ -1,5 +1,6 @@
-package ru.mobilization.sinjvf.yamblzweather.base_util;
+package ru.mobilization.sinjvf.yamblzweather.activity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
@@ -18,6 +19,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.mobilization.sinjvf.yamblzweather.R;
+import ru.mobilization.sinjvf.yamblzweather.base_util.BaseActivity;
+import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragment;
 import ru.mobilization.sinjvf.yamblzweather.events.OpenNewFragment;
 import ru.mobilization.sinjvf.yamblzweather.fragments.about.AboutFragment;
 import ru.mobilization.sinjvf.yamblzweather.fragments.main.MainFragment;
@@ -28,35 +31,29 @@ import ru.mobilization.sinjvf.yamblzweather.fragments.settings.SettingsFragment;
  */
 
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity
+        implements NavigationView.OnNavigationItemSelectedListener, MainActivityInterface {
     @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.nav_view)
     NavigationView navigationView;
-
-
+    MainActivityViewModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
-
+        model = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+        model.getCurrentFragment().observe(this, this::changeFragment);
         setSupportActionBar(toolbar);
         initDrawer();
     }
 
-    public void initToolbar(String title){
-        ActionBar actionbar = getSupportActionBar();
-        if (actionbar == null) return;
-        actionbar.setTitle(title);
-    }
 
-    private void initDrawer(){
+    private void initDrawer() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -79,8 +76,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-        BaseFragment fgm ;
-        switch (id){
+        BaseFragment fgm;
+        switch (id) {
             case R.id.nav_tools:
                 fgm = SettingsFragment.getInstance();
                 break;
@@ -99,27 +96,19 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-        EventBus.getDefault().post(new OpenNewFragment(MainFragment.getInstance(), false));
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
-    }
-
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(OpenNewFragment event) {
+    public void changeFragment(OpenNewFragment event) {
         FragmentManager fm = getSupportFragmentManager();
-        if (event.isAddToBackStack()){
-            fm.beginTransaction().addToBackStack("name").replace(R.id.fragment_container, event.getFgm()).commit();
-        }else {
-            fm.beginTransaction().replace(R.id.fragment_container, event.getFgm()).commit();
+        fm.beginTransaction().replace(R.id.fragment_container, event.getFgm()).commit();
+
+    }
+
+    @Override
+    public void setTitleText(int titleResId) {
+        if (titleResId != -1) {
+            String title = getString(titleResId);
+            ActionBar actionbar = getSupportActionBar();
+            if (actionbar == null) return;
+            actionbar.setTitle(title);
         }
     }
 }

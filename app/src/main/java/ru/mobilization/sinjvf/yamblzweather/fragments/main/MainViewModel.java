@@ -15,7 +15,7 @@ public class MainViewModel extends BaseFragmentViewModel {
     }
 
     @Override
-    protected String getTitleText() {
-        return getApplication().getResources().getString(R.string.menu_main);
+    protected int getTitleStringId() {
+        return R.string.menu_main;
     }
 }

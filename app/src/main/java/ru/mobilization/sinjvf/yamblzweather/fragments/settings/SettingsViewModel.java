@@ -15,7 +15,7 @@ public class SettingsViewModel extends BaseFragmentViewModel {
     }
 
     @Override
-    protected String getTitleText() {
-        return getApplication().getResources().getString(R.string.menu_tools);
+    protected int getTitleStringId() {
+        return R.string.menu_tools;
     }
 }

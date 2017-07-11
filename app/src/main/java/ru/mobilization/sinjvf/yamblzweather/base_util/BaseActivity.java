@@ -1,0 +1,17 @@
+package ru.mobilization.sinjvf.yamblzweather.base_util;
+
+import android.arch.lifecycle.LifecycleRegistry;
+import android.arch.lifecycle.LifecycleRegistryOwner;
+import android.support.v7.app.AppCompatActivity;
+
+/**
+ * Created by Sinjvf on 11.07.2017.
+ */
+
+public class BaseActivity extends AppCompatActivity implements LifecycleRegistryOwner {
+    LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
+    @Override
+    public LifecycleRegistry getLifecycle() {
+        return lifecycleRegistry;
+    }
+}

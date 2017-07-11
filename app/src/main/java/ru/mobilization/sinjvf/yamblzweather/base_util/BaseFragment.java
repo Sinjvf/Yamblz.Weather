@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import butterknife.Unbinder;
+import ru.mobilization.sinjvf.yamblzweather.activity.MainActivity;
+import ru.mobilization.sinjvf.yamblzweather.activity.MainActivityInterface;
 
 /**
  * Created by Sinjvf on 09.07.2017.
@@ -22,10 +24,9 @@ public class BaseFragment extends LifecycleFragment {
         baseModel.getTitle().observe(this, this::setTitleText);
     }
 
-    protected void setTitleText(String text) {
-        Log.d(TAG, "setTitleText: " + text);
+    protected void setTitleText(int titleResId) {
         try {
-            ((MainActivity) getActivity()).initToolbar(text);
+            ((MainActivityInterface) getActivity()).setTitleText(titleResId);
         } catch (ClassCastException e) {
             e.printStackTrace();
         }

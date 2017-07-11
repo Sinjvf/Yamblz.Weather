@@ -4,7 +4,6 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
 
 /**
  * Created by Sinjvf on 09.07.2017.
@@ -12,25 +11,24 @@ import android.arch.lifecycle.ViewModel;
 
 abstract public class BaseFragmentViewModel extends AndroidViewModel {
 
-    protected MutableLiveData<String> titleName;
+    protected MutableLiveData<Integer> titleId;
 
     public BaseFragmentViewModel(Application application) {
         super(application);
     }
 
-    public LiveData<String> getTitle() {
-        if (titleName == null) {
-            titleName = new MutableLiveData<>();
+    public LiveData<Integer> getTitle() {
+        if (titleId == null) {
+            titleId = new MutableLiveData<>();
             setToolbarText();
         }
-        return titleName;
+        return titleId;
     }
 
     protected void setToolbarText(){
-        String text = getTitleText();
-        titleName.setValue(text);
+        titleId.setValue(getTitleStringId());
     }
 
 
-    protected abstract String getTitleText();
+    protected abstract int getTitleStringId();
 }
