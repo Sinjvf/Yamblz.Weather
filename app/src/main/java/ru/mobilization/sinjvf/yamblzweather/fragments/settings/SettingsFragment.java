@@ -14,6 +14,7 @@ import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragment;
 
 /**
  * Created by Sinjvf on 09.07.2017.
+ * Fragment for settings screen
  */
 
 public class SettingsFragment extends BaseFragment{
@@ -33,9 +34,7 @@ public class SettingsFragment extends BaseFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View rootView = inflater.inflate(R.layout.fr_settings, container, false);
-        unbinder = ButterKnife.bind(this, rootView);
-        return rootView;
+        return inflater.inflate(R.layout.fr_settings, container, false);
     }
 
 }

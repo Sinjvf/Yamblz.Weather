@@ -15,6 +15,7 @@ import ru.mobilization.sinjvf.yamblzweather.fragments.settings.SettingsViewModel
 
 /**
  * Created by Sinjvf on 09.07.2017.
+ * Fragment for weather screen - main application screen
  */
 
 public class MainFragment extends BaseFragment{
@@ -34,9 +35,7 @@ public class MainFragment extends BaseFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View rootView = inflater.inflate(R.layout.fr_main, container, false);
-        unbinder = ButterKnife.bind(this, rootView);
-        return rootView;
+        return inflater.inflate(R.layout.fr_main, container, false);
     }
 
 

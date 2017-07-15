@@ -7,9 +7,10 @@ import android.arch.lifecycle.MutableLiveData;
 
 /**
  * Created by Sinjvf on 09.07.2017.
+ * Parent class for fragment's ViewModels
  */
 
-abstract public class BaseFragmentViewModel extends AndroidViewModel {
+public abstract class BaseFragmentViewModel extends AndroidViewModel {
 
     protected MutableLiveData<Integer> titleId;
 

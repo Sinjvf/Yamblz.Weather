@@ -17,6 +17,7 @@ import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragment;
 
 /**
  * Created by Sinjvf on 09.07.2017.
+ * Fragment for "about" screen
  */
 
 public class AboutFragment extends BaseFragment {
@@ -39,14 +40,17 @@ public class AboutFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View rootView = inflater.inflate(R.layout.fr_about, container, false);
-        unbinder = ButterKnife.bind(this, rootView);
+        return inflater.inflate(R.layout.fr_about, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         setVers();
-        return rootView;
     }
 
     private void setVers() {
-        String name = getString(R.string.about_version) + " " + BuildConfig.VERSION_NAME;
+        String name = String.format(getString(R.string.about_version), BuildConfig.VERSION_NAME);
         versionName.setText(name);
     }
 

@@ -11,5 +11,5 @@
     <string name="about_title">Приложение \"погода\"</string>
     <string name="about_descr">Приложение написано в рамках проекта \"Мобилизация\" компании Яндекс</string>
     <string name="about_author">Со всеми вопросами и пожеланиями обращайтесь по адресу: Sinjvf@yandex.ru</string>
-    <string name="about_version">Номер версии: : </string>
+    <string name="about_version">Номер версии: %s </string>
 </resources>

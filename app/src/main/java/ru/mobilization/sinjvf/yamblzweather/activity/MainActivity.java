@@ -3,37 +3,39 @@ package ru.mobilization.sinjvf.yamblzweather.activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Keep;
+import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.mobilization.sinjvf.yamblzweather.R;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseActivity;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragment;
-import ru.mobilization.sinjvf.yamblzweather.events.OpenNewFragment;
+import ru.mobilization.sinjvf.yamblzweather.events.OpenNewFragmentEvent;
 import ru.mobilization.sinjvf.yamblzweather.fragments.about.AboutFragment;
 import ru.mobilization.sinjvf.yamblzweather.fragments.main.MainFragment;
 import ru.mobilization.sinjvf.yamblzweather.fragments.settings.SettingsFragment;
 
 /**
  * Created by Sinjvf on 09.07.2017.
+ * Main activity class.
+ * Contains and handles  the navigation drawer, the toolbar and the fragment content
  */
 
 @Keep
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, MainActivityInterface {
+
+    protected final String TAG = "tag:" + getClass().getSimpleName();
     @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
     @BindView(R.id.toolbar)
@@ -57,7 +59,7 @@ public class MainActivity extends BaseActivity
     private void initDrawer() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
     }
@@ -74,7 +76,7 @@ public class MainActivity extends BaseActivity
 
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         BaseFragment fgm;
         switch (id) {
@@ -90,20 +92,22 @@ public class MainActivity extends BaseActivity
             default:
                 fgm = MainFragment.getInstance();
         }
-        EventBus.getDefault().post(new OpenNewFragment(fgm, false));
+        model.changeFragmentEvent(new OpenNewFragmentEvent(fgm, true));
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
 
-    public void changeFragment(OpenNewFragment event) {
+    public void changeFragment(@NonNull OpenNewFragmentEvent event) {
         FragmentManager fm = getSupportFragmentManager();
-        fm.beginTransaction().replace(R.id.fragment_container, event.getFgm()).commit();
-
+        if (event.isAddToBackStack())
+            fm.beginTransaction().addToBackStack(null).replace(R.id.fragment_container, event.getFgm()).commit();
+        else
+            fm.beginTransaction().replace(R.id.fragment_container, event.getFgm()).commit();
     }
 
     @Override
-    public void setTitleText(int titleResId) {
+    public void setTitleText(@StringRes int titleResId) {
         if (titleResId != -1) {
             String title = getString(titleResId);
             ActionBar actionbar = getSupportActionBar();

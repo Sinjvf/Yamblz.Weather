@@ -6,6 +6,8 @@
     <string name="navigation_drawer_close"
         translatable="false">Close navigation drawer</string>
 
+    <string name="api_key" translatable="false">4910f098be51f2bea56f920eff28f314</string>
+
     <string name="menu_tools">Settings</string>
     <string name="menu_about">About</string>
     <string name="menu_main">Weather</string>
@@ -15,5 +17,5 @@
     <string name="about_descr">This application will show you the weather.\n
     It was written within the framework of the project \"Mobilization\" by Yandex</string>
     <string name="about_author">With all questions and requests please contact Sinjvf@yandex.ru</string>
-    <string name="about_version">Version number: </string>
+    <string name="about_version">Version number: %s</string>
 </resources>
