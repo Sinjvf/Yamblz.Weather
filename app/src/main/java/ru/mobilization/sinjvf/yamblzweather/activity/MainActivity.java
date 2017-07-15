@@ -2,6 +2,7 @@ package ru.mobilization.sinjvf.yamblzweather.activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.Keep;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.design.widget.NavigationView;
@@ -30,7 +31,7 @@ import ru.mobilization.sinjvf.yamblzweather.fragments.settings.SettingsFragment;
  * Created by Sinjvf on 09.07.2017.
  */
 
-
+@Keep
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, MainActivityInterface {
     @BindView(R.id.drawer_layout)
@@ -72,7 +73,6 @@ public class MainActivity extends BaseActivity
     }
 
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();

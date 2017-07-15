@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
 android {
+    signingConfigs {
+        release {
+            keyAlias 'key_weather'
+            keyPassword '0okm9ijn'
+            storeFile file('/keystore.jks')
+            storePassword '1qaz2wsx'
+        }
+    }
     compileSdkVersion 26
     buildToolsVersion "26.0.0"
     defaultConfig {
@@ -14,12 +22,16 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "Boolean", "isDebug", 'false'
+            signingConfig signingConfigs.release
+            manifestPlaceholders = [appIcon: "@mipmap/ic_sun"]
         }
         debug{
+            applicationIdSuffix ".debug"
             buildConfigField "Boolean", "isDebug", 'true'
+            manifestPlaceholders = [appIcon: "@mipmap/ic_sun_debug"]
         }
     }
 
@@ -30,7 +42,7 @@ android {
 }
 
 ext {
-    supportVersion = '26+'
+    supportVers = '26+'
     butterknifeVers = '8.7.0'
     retrofitVers = '2.1.0'
     okhttpVers = '3.4.1'
@@ -43,11 +55,11 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile "com.android.support:appcompat-v7:$supportVersion"
-    compile "com.android.support:design:$supportVersion"
-    compile "com.android.support:recyclerview-v7:$supportVersion"
-    compile "com.android.support:cardview-v7:$supportVersion"
-    compile "com.android.support:support-v13:$supportVersion"
+    compile "com.android.support:appcompat-v7:$supportVers"
+    compile "com.android.support:design:$supportVers"
+    compile "com.android.support:recyclerview-v7:$supportVers"
+    compile "com.android.support:cardview-v7:$supportVers"
+    compile "com.android.support:support-v13:$supportVers"
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
     compile "com.squareup.okhttp3:logging-interceptor:$okhttpVers"

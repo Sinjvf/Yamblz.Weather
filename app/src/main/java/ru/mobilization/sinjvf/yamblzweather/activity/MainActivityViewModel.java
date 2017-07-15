@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.support.annotation.Keep;
 import android.support.v4.app.FragmentManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -19,7 +20,7 @@ import ru.mobilization.sinjvf.yamblzweather.fragments.main.MainFragment;
 /**
  * Created by Sinjvf on 11.07.2017.
  */
-
+@Keep
 public class MainActivityViewModel extends AndroidViewModel {
     public MainActivityViewModel(Application application) {
         super(application);
