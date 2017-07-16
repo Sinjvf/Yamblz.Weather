@@ -12,6 +12,8 @@
     <string name="about_descr">Приложение написано в рамках проекта \"Мобилизация\" компании Яндекс</string>
     <string name="about_author">Со всеми вопросами и пожеланиями обращайтесь по адресу: Sinjvf@yandex.ru</string>
     <string name="about_version">Номер версии: %s </string>
+    <string name="updating_interval">Интервал обновления</string>
+    <string name="n_min">%d мин</string>
 
 
     <string name="ok">ок</string>
@@ -19,4 +21,8 @@
     <string name="error">Ошибка</string>
     <string name="network_error">Ошибка сети!\nПожалуйста, попробуйте позже</string>
     <string name="oops_error">Упс, что-то пошло не так\nПожалуйста, попробуйте позже</string>
+    <string name="last_update">Последнее обновление: %s</string>
+
+
+
 </resources>

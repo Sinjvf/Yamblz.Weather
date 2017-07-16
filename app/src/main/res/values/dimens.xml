@@ -8,8 +8,11 @@
 
     <dimen name="title_size">18sp</dimen>
     <dimen name="text_size">16sp</dimen>
-
+    <dimen name="small_text">11sp</dimen>
     <dimen name="main_tempr_text">25sp</dimen>
+
+
+    <dimen name="min_dialog_width">200dp</dimen>
 
 
     <dimen name="margin_big">30dp</dimen>

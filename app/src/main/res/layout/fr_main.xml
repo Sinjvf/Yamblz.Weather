@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:layout_margin="@dimen/margin_big"
+        android:layout_margin="@dimen/margin_medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="@dimen/main_tempr_text"
@@ -32,5 +32,14 @@
         android:layout_toRightOf="@id/middle_view"
         android:layout_alignTop="@id/middle_view"
         android:id="@+id/max_tempr" />
+    <TextView
+        android:layout_margin="@dimen/margin_small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/max_tempr"
+        android:layout_alignParentRight="true"
+        android:textColor="@color/greyText"
+        android:textSize="@dimen/small_text"
+        android:id="@+id/last_updated" />
 
 </RelativeLayout>

@@ -41,26 +41,10 @@ class ServiceContract {
         static Gson gson = new Gson();
         private static Retrofit.Builder builder =
                 new Retrofit.Builder()
-                        //       .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                        //    .addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())
                         .addConverterFactory(GsonConverterFactory.create(gson))
                         .baseUrl(ServiceContract.BASE_URL);
 
         private static <S> S createService(Class<S> serviceClass) {
-
-/*            httpClient.addInterceptor(new Interceptor() {
-                @Override
-                public Response intercept(Interceptor.Chain chain) throws IOException {
-                    Request original = chain.request();
-
-                    Request.Builder requestBuilder = original.newBuilder()
-                            .header("Accept", "application/json")
-                            .method(original.method(), original.body());
-
-                    Request request = requestBuilder.build();
-                    return chain.proceed(request);
-                }
-            });*/
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
             httpClient.addInterceptor(logging);

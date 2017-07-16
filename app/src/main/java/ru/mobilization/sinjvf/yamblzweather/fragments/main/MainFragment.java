@@ -10,7 +10,8 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import ru.mobilization.sinjvf.yamblzweather.R;
-import ru.mobilization.sinjvf.yamblzweather.Utils;
+import ru.mobilization.sinjvf.yamblzweather.utils.Preferenses;
+import ru.mobilization.sinjvf.yamblzweather.utils.Utils;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragment;
 import ru.mobilization.sinjvf.yamblzweather.retrofit.data.WeatherResponse;
 
@@ -27,6 +28,8 @@ public class MainFragment extends BaseFragment{
     TextView minTempr;
     @BindView(R.id.max_tempr)
     TextView maxTempr;
+    @BindView(R.id.last_updated)
+    TextView lastUpdated;
 
     public static MainFragment getInstance(){
         return new MainFragment();
@@ -54,6 +57,9 @@ public class MainFragment extends BaseFragment{
         mainTempr.setText(String.format(getString(R.string.main_tempr), mainInt));
         minTempr.setText(String.format(getString(R.string.min_tempr), minInt));
         maxTempr.setText(String.format(getString(R.string.max_tempr), maxInt));
+
+        Preferenses.setPrefLastTimeUpdate(getContext());
+        lastUpdated.setText(String.format(getString(R.string.last_update), Utils.lastUpdateString(getContext())));
 
     }
 

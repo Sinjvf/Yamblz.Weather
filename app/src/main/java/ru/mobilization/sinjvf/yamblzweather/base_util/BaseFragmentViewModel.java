@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -25,8 +26,9 @@ public abstract class BaseFragmentViewModel extends AndroidViewModel {
 
     protected final String TAG = "tag:" + getClass().getSimpleName();
     protected MutableLiveData<Integer> titleId;
-    protected Context context;
+    protected final Context context;
     protected FragmentManager fragmentManager;
+    protected final Handler handler = new Handler();
 
     public BaseFragmentViewModel(Application application) {
         super(application);
@@ -56,5 +58,9 @@ public abstract class BaseFragmentViewModel extends AndroidViewModel {
         return new BaseResponseCallback<>(context, fragmentManager, nonNullResp);
     }
 
-
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        handler.removeCallbacksAndMessages(null);
+    }
 }
