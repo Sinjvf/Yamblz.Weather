@@ -22,6 +22,12 @@ public class Utils {
         return sf.format(date);
     }
 
+    public static String lastUpdateString(long data) {
+        Date date = new Date(data);
+        SimpleDateFormat sf = new SimpleDateFormat(" HH:mm, dd.MM.yy ", Locale.getDefault());
+        return sf.format(date);
+    }
+
     //if we have many inner classes and can catch the NullPointer Exception while do many get calls
     public static <T> T getDataWithoutException(GetData<T> getData) {
         try {

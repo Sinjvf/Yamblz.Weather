@@ -84,3 +84,8 @@
 # keep methods annotated with @OnLifecycleEvent even if they seem to be unused
 # (Mostly for LiveData.LifecycleBoundObserver.onStateChange(), but who knows)
 -keepclassmembers class * {@android.arch.lifecycle.OnLifecycleEvent *;}
+
+#PICASSO
+# Platform calls Class.forName on types which do not exist on Android to determine platform.
+-dontnote okhttp3.internal.Platform
+-dontwarn com.squareup.okhttp.**

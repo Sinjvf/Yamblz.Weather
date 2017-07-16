@@ -3,14 +3,19 @@ package ru.mobilization.sinjvf.yamblzweather.fragments.main;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import butterknife.BindView;
+import ru.mobilization.sinjvf.yamblzweather.BuildConfig;
 import ru.mobilization.sinjvf.yamblzweather.R;
-import ru.mobilization.sinjvf.yamblzweather.utils.Preferenses;
 import ru.mobilization.sinjvf.yamblzweather.utils.Utils;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragment;
 import ru.mobilization.sinjvf.yamblzweather.retrofit.data.WeatherResponse;
@@ -20,7 +25,7 @@ import ru.mobilization.sinjvf.yamblzweather.retrofit.data.WeatherResponse;
  * Fragment for weather screen - main application screen
  */
 
-public class MainFragment extends BaseFragment{
+public class MainFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener{
     MainViewModel localModel;
     @BindView(R.id.main_tempr)
     TextView mainTempr;
@@ -29,7 +34,15 @@ public class MainFragment extends BaseFragment{
     @BindView(R.id.max_tempr)
     TextView maxTempr;
     @BindView(R.id.last_updated)
-    TextView lastUpdated;
+    TextView lastUpdatedView;
+    @BindView(R.id.image_weather)
+    ImageView imageWeather;
+    @BindView(R.id.wind_text)
+    TextView windView;
+    @BindView(R.id.humidity_text)
+    TextView humidityView;
+    @BindView(R.id.swipe_refresh)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     public static MainFragment getInstance(){
         return new MainFragment();
@@ -42,7 +55,9 @@ public class MainFragment extends BaseFragment{
         super.onActivityCreated(savedInstanceState);
         //before supermethod calling we have null fragment manager
         localModel.getWeatherData().observe(this, this::setWeather);
+        localModel.getLastUpdate().observe(this, this::setLastUpdate);
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -50,19 +65,47 @@ public class MainFragment extends BaseFragment{
         return inflater.inflate(R.layout.fr_main, container, false);
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        swipeRefreshLayout.setOnRefreshListener(this);
+    }
+
     public void setWeather(WeatherResponse resp){
+        swipeRefreshLayout.setRefreshing(false);
         Integer mainInt = Utils.getDataWithoutException(() -> resp.getMain().getTemp().intValue());
         Integer minInt = Utils.getDataWithoutException(() -> resp.getMain().getTempMin().intValue());
         Integer maxInt = Utils.getDataWithoutException(() -> resp.getMain().getTempMax().intValue());
+        Integer humidity = Utils.getDataWithoutException(() -> resp.getMain().getHumidity());
+        Integer wind = Utils.getDataWithoutException(() -> resp.getWind().getSpeed().intValue());
         mainTempr.setText(String.format(getString(R.string.main_tempr), mainInt));
         minTempr.setText(String.format(getString(R.string.min_tempr), minInt));
         maxTempr.setText(String.format(getString(R.string.max_tempr), maxInt));
+        windView.setText(String.format(getString(R.string.wind), wind));
+        humidityView.setText(String.format(getString(R.string.percent), humidity));
 
-        Preferenses.setPrefLastTimeUpdate(getContext());
-        lastUpdated.setText(String.format(getString(R.string.last_update), Utils.lastUpdateString(getContext())));
 
+
+        String imageName = Utils.getDataWithoutException(() -> resp.getWeather().get(0).getIcon());
+        if (imageName!=null) {
+            String imageFullPath = String.format(getString(R.string.image_path), imageName);
+            Picasso.with(getContext())
+                    .load(imageFullPath)
+                    .fit()
+                    .into(imageWeather);
+        }
+        if (BuildConfig.isDebug)
+            Log.d(TAG, "setWeather: ");
+
+    }
+    private void setLastUpdate(String lastUpdate){
+        lastUpdatedView.setText(String.format(getString(R.string.last_update), lastUpdate));
     }
 
 
+    @Override
+    public void onRefresh() {
+        localModel.sendWeatherRequest();
+    }
 }
 

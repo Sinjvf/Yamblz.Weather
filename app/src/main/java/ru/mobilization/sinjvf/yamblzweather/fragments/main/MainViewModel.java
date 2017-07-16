@@ -12,6 +12,7 @@ import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragmentViewModel;
 import ru.mobilization.sinjvf.yamblzweather.retrofit.ServiceHandler;
 import ru.mobilization.sinjvf.yamblzweather.retrofit.data.WeatherResponse;
 import ru.mobilization.sinjvf.yamblzweather.utils.Preferenses;
+import ru.mobilization.sinjvf.yamblzweather.utils.Utils;
 
 /**
  * Created by Sinjvf on 09.07.2017.
@@ -23,11 +24,10 @@ public class MainViewModel extends BaseFragmentViewModel {
 
     public MainViewModel(Application application) {
         super(application);
-
-
     }
 
     protected MutableLiveData<WeatherResponse> weather;
+    protected MutableLiveData<String> lastUpdateTime;
 
     public MutableLiveData<WeatherResponse> getWeatherData() {
         if (weather == null){
@@ -35,6 +35,14 @@ public class MainViewModel extends BaseFragmentViewModel {
             sendWeatherRequest();
         }
         return weather;
+    }
+
+    public MutableLiveData<String> getLastUpdate() {
+        if (lastUpdateTime == null){
+            lastUpdateTime = new MutableLiveData<>();
+            lastUpdateTime.setValue(Utils.lastUpdateString(context));
+        }
+        return lastUpdateTime;
     }
 
     @Override
@@ -47,6 +55,8 @@ public class MainViewModel extends BaseFragmentViewModel {
             Log.d(TAG, "sendWeatherRequest: ");
         serviceHandler.getWeather(getResponseCallback(response -> {
             weather.setValue(response);
+            Preferenses.setPrefLastTimeUpdate(context);
+            lastUpdateTime.setValue(Utils.lastUpdateString(context));
             handler.postDelayed(this::sendWeatherRequest, Preferenses.getIntervalTime(context));
         }));
     }

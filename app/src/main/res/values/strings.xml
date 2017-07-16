@@ -30,9 +30,13 @@
     <string name="updating_interval">Updating interval</string>
     <string name="n_min">%d min</string>
 
+    <string name="wind">%d m/s</string>
+    <string name="percent" translatable="false">%d %%</string>
+
 
 
     <string name="main_tempr" translatable="false">%d °C</string>
     <string name="min_tempr" translatable="false">Min: %d °C</string>
     <string name="max_tempr" translatable="false">Max: %d °C</string>
+    <string name="image_path" translatable="false">http://openweathermap.org/img/w/%s.png</string>
 </resources>
