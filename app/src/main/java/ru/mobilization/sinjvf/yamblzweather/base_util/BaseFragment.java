@@ -28,12 +28,14 @@ public class BaseFragment extends LifecycleFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         baseModel.getTitle().observe(this, this::setTitleText);
+        baseModel.setFragmentManager(getActivity().getSupportFragmentManager());
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         unbinder = ButterKnife.bind(this, view);
+
     }
 
     protected void setTitleText(int titleResId) {

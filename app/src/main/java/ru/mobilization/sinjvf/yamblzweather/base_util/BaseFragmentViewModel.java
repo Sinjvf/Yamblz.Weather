@@ -4,6 +4,17 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
+import android.util.Log;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.mobilization.sinjvf.yamblzweather.BuildConfig;
+import ru.mobilization.sinjvf.yamblzweather.retrofit.BaseResponseCallback;
+import ru.mobilization.sinjvf.yamblzweather.retrofit.NonNullResp;
+import ru.mobilization.sinjvf.yamblzweather.retrofit.data.WeatherResponse;
 
 /**
  * Created by Sinjvf on 09.07.2017.
@@ -12,10 +23,14 @@ import android.arch.lifecycle.MutableLiveData;
 
 public abstract class BaseFragmentViewModel extends AndroidViewModel {
 
+    protected final String TAG = "tag:" + getClass().getSimpleName();
     protected MutableLiveData<Integer> titleId;
+    protected Context context;
+    protected FragmentManager fragmentManager;
 
     public BaseFragmentViewModel(Application application) {
         super(application);
+        context = application.getApplicationContext();
     }
 
     public LiveData<Integer> getTitle() {
@@ -26,10 +41,20 @@ public abstract class BaseFragmentViewModel extends AndroidViewModel {
         return titleId;
     }
 
-    protected void setToolbarText(){
+    protected void setToolbarText() {
         titleId.setValue(getTitleStringId());
     }
 
 
     protected abstract int getTitleStringId();
+
+    public void setFragmentManager(FragmentManager fragmentManager) {
+        this.fragmentManager = fragmentManager;
+    }
+
+    protected <T> BaseResponseCallback<T> getResponseCallback(NonNullResp<T> nonNullResp) {
+        return new BaseResponseCallback<>(context, fragmentManager, nonNullResp);
+    }
+
+
 }

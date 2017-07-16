@@ -7,6 +7,7 @@
         translatable="false">Close navigation drawer</string>
 
     <string name="api_key" translatable="false">4910f098be51f2bea56f920eff28f314</string>
+    <string name="moscow_id" translatable="false">524901</string>
 
     <string name="menu_tools">Settings</string>
     <string name="menu_about">About</string>
@@ -18,4 +19,15 @@
     It was written within the framework of the project \"Mobilization\" by Yandex</string>
     <string name="about_author">With all questions and requests please contact Sinjvf@yandex.ru</string>
     <string name="about_version">Version number: %s</string>
+
+
+    <string name="ok">ok</string>
+    <string name="cancel">cancel</string>
+    <string name="error">Error</string>
+    <string name="network_error">Network error!\nPlease, try later</string>
+    <string name="oops_error">Ops, something wrong.\nPlease, try later</string>
+
+    <string name="main_tempr" translatable="false">%d °C</string>
+    <string name="min_tempr" translatable="false">Min: %d °C</string>
+    <string name="max_tempr" translatable="false">Max: %d °C</string>
 </resources>

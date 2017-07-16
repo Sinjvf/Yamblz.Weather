@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/title_size"
+        android:textColor="@android:color/black"
+        android:gravity="center_horizontal"
+        android:id="@+id/title"
+        tools:text="title"/>
+    <TextView
+        android:layout_margin="@dimen/margin_medium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size"
+        android:id="@+id/text"
+        android:layout_below="@id/title"
+        tools:text="text"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size"
+        android:textColor="@color/colorAccent"
+        android:layout_alignParentRight="true"
+        android:id="@+id/ok"
+        android:layout_below="@id/text"
+        android:layout_margin="@dimen/margin_small"
+
+        android:text="@string/ok"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size"
+        android:textColor="@color/colorAccent"
+        android:layout_toLeftOf="@id/ok"
+        android:id="@+id/cancel"
+        android:layout_below="@id/text"
+        android:layout_margin="@dimen/margin_small"
+        android:text="@string/cancel"/>
+</RelativeLayout>

@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-<TextView
-    android:layout_margin="@dimen/margin_medium"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:text="Чуть позже здесь появится прогноз погоды. \nНужно только подождать!\n=)"/>
-</LinearLayout>
+
+    <TextView
+        android:layout_margin="@dimen/margin_big"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/main_tempr_text"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/main_tempr"/>
+    <View
+        android:layout_width="@dimen/margin_medium"
+        android:layout_height="@dimen/margin_medium"
+        android:layout_below="@id/main_tempr"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/middle_view"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/middle_view"
+        android:id="@+id/min_tempr"
+        android:layout_alignTop="@id/middle_view"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/middle_view"
+        android:layout_alignTop="@id/middle_view"
+        android:id="@+id/max_tempr" />
+
+</RelativeLayout>

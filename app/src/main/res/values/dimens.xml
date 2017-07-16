@@ -6,10 +6,14 @@
     <dimen name="nav_header_height">160dp</dimen>
 
 
-    <dimen name="about_title_size">18sp</dimen>
-    <dimen name="about_text_size">16sp</dimen>
+    <dimen name="title_size">18sp</dimen>
+    <dimen name="text_size">16sp</dimen>
+
+    <dimen name="main_tempr_text">25sp</dimen>
 
 
+    <dimen name="margin_big">30dp</dimen>
     <dimen name="margin_medium">20dp</dimen>
     <dimen name="margin_small">10dp</dimen>
+    <dimen name="margin_little">5dp</dimen>
 </resources>

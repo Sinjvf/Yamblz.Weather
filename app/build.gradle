@@ -58,7 +58,6 @@ dependencies {
     compile "com.android.support:recyclerview-v7:$supportVers"
     compile "com.android.support:cardview-v7:$supportVers"
     compile "com.android.support:support-v13:$supportVers"
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
     compile "com.squareup.okhttp3:logging-interceptor:$okhttpVers"
     compile "com.squareup.okhttp3:okhttp:$okhttpVers"
