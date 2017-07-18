@@ -43,6 +43,9 @@ public class MainFragment extends BaseFragment implements SwipeRefreshLayout.OnR
     TextView humidityView;
     @BindView(R.id.swipe_refresh)
     SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.main_layout)
+    View mainLayout;
+
 
     public static MainFragment getInstance(){
         return new MainFragment();
@@ -72,7 +75,6 @@ public class MainFragment extends BaseFragment implements SwipeRefreshLayout.OnR
     }
 
     public void setWeather(WeatherResponse resp){
-        swipeRefreshLayout.setRefreshing(false);
         Integer mainInt = Utils.getDataWithoutException(() -> resp.getMain().getTemp().intValue());
         Integer minInt = Utils.getDataWithoutException(() -> resp.getMain().getTempMin().intValue());
         Integer maxInt = Utils.getDataWithoutException(() -> resp.getMain().getTempMax().intValue());
@@ -106,6 +108,20 @@ public class MainFragment extends BaseFragment implements SwipeRefreshLayout.OnR
     @Override
     public void onRefresh() {
         localModel.sendWeatherRequest();
+    }
+
+    protected void setProgressStatus(Integer status){
+        switch (status){
+            case Utils.PROGRESS_SUCCESS:
+                swipeRefreshLayout.setRefreshing(false);
+                mainLayout.setVisibility(View.VISIBLE);
+                break;
+            case Utils.PROGRESS_FAIL:
+                swipeRefreshLayout.setRefreshing(false);
+                mainLayout.setVisibility(View.GONE);
+                break;
+
+        }
     }
 }
 

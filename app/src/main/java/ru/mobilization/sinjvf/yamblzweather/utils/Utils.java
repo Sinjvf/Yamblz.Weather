@@ -15,6 +15,9 @@ import ru.mobilization.sinjvf.yamblzweather.R;
 
 public class Utils {
     public static long MINUTE = 1000 * 60;
+    public static final int PROGRESS_SHOW = 0;
+    public static final int PROGRESS_SUCCESS = 1;
+    public static final int PROGRESS_FAIL = -1;
 
     public static String lastUpdateString(Context context) {
         Date date = new Date(Preferenses.getPrefLastTimeUpdateDate(context));

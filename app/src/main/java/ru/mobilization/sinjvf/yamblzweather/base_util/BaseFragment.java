@@ -24,10 +24,12 @@ public class BaseFragment extends LifecycleFragment {
     protected BaseFragmentViewModel baseModel;
     protected Unbinder unbinder;
 
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         baseModel.getTitle().observe(this, this::setTitleText);
+        baseModel.getProgress().observe(this, this::setProgressStatus);
         baseModel.setFragmentManager(getActivity().getSupportFragmentManager());
     }
 
@@ -44,6 +46,10 @@ public class BaseFragment extends LifecycleFragment {
         } catch (ClassCastException e) {
             e.printStackTrace();
         }
+    }
+
+    protected void setProgressStatus(Integer status){
+
     }
 
     @Override

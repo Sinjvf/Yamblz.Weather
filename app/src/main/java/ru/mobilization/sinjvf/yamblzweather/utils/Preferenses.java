@@ -15,7 +15,7 @@ public class Preferenses {
     private static final String PACKAGE = "ru.mobilization.sinjvf.yamblzweather";
 
     private static SharedPreferences getPrefs(Context context) {
-        return context.getSharedPreferences("com.example.app", Context.MODE_PRIVATE);
+        return context.getSharedPreferences(PACKAGE, Context.MODE_PRIVATE);
     }
 
 
@@ -39,7 +39,7 @@ public class Preferenses {
 
     private static String PREF_INTERVAL_TIME = "pref_interval_time";
     public static long getIntervalTime(Context context) {
-        return getPrefs(context).getLong(PREF_INTERVAL_TIME, 0);
+        return getPrefs(context).getLong(PREF_INTERVAL_TIME, 10* Utils.MINUTE);
     }
 
     public static void setIntervalTime(Context context, long interval) {

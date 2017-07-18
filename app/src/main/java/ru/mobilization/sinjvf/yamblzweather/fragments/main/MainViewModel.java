@@ -2,10 +2,14 @@ package ru.mobilization.sinjvf.yamblzweather.fragments.main;
 
 import android.app.Application;
 import android.arch.lifecycle.MutableLiveData;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.Keep;
 import android.util.Log;
 
+import io.reactivex.SingleObserver;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 import ru.mobilization.sinjvf.yamblzweather.BuildConfig;
 import ru.mobilization.sinjvf.yamblzweather.R;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragmentViewModel;
@@ -37,6 +41,7 @@ public class MainViewModel extends BaseFragmentViewModel {
         return weather;
     }
 
+
     public MutableLiveData<String> getLastUpdate() {
         if (lastUpdateTime == null){
             lastUpdateTime = new MutableLiveData<>();
@@ -58,8 +63,10 @@ public class MainViewModel extends BaseFragmentViewModel {
             Preferenses.setPrefLastTimeUpdate(context);
             lastUpdateTime.setValue(Utils.lastUpdateString(context));
             handler.postDelayed(this::sendWeatherRequest, Preferenses.getIntervalTime(context));
-        }));
+        }, progressObserver()));
     }
+
+
 
 
 }
