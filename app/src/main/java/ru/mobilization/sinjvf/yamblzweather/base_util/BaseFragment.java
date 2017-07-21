@@ -4,11 +4,20 @@ import android.arch.lifecycle.LifecycleFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
+import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import ru.mobilization.sinjvf.yamblzweather.R;
+import ru.mobilization.sinjvf.yamblzweather.activity.MainActivity;
+import ru.mobilization.sinjvf.yamblzweather.activity.MainActivityInterface;
+import timber.log.Timber;
 
 /**
  * Created by Sinjvf on 09.07.2017.
+ * Parent class for fragments
  */
 
 public class BaseFragment extends LifecycleFragment {
@@ -16,25 +25,42 @@ public class BaseFragment extends LifecycleFragment {
     protected BaseFragmentViewModel baseModel;
     protected Unbinder unbinder;
 
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         baseModel.getTitle().observe(this, this::setTitleText);
+        baseModel.getProgress().observe(this, this::setProgressStatus);
+        baseModel.setFragmentManager(getActivity().getSupportFragmentManager());
     }
 
-    protected void setTitleText(String text) {
-        Log.d(TAG, "setTitleText: " + text);
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        unbinder = ButterKnife.bind(this, view);
+        getArgs();
+    }
+
+    protected void setTitleText(int titleResId) {
         try {
-            ((MainActivity) getActivity()).initToolbar(text);
+            ((MainActivityInterface) getActivity()).setTitleText(titleResId);
         } catch (ClassCastException e) {
-            e.printStackTrace();
+            Timber.e(e.getMessage());
         }
+    }
+
+    //if we have the progress bar and want to show\hide it
+    protected void setProgressStatus(Integer status){
+
+    }
+    //if we have args in fragment and want to get it
+    protected void getArgs(){
+
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (unbinder != null)
-            unbinder.unbind();
+        unbinder.unbind();
     }
 }
