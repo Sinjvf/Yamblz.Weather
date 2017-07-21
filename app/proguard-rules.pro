@@ -81,3 +81,5 @@
 # Platform calls Class.forName on types which do not exist on Android to determine platform.
 -dontnote okhttp3.internal.Platform
 -dontwarn com.squareup.okhttp.**
+
+-dontwarn javax.annotation.**
