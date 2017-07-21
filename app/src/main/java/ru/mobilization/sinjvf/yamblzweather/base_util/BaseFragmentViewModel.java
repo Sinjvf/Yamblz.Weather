@@ -10,10 +10,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.app.FragmentManager;
 
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
-import ru.mobilization.sinjvf.yamblzweather.retrofit.BaseResponseCallback;
-import ru.mobilization.sinjvf.yamblzweather.retrofit.NonNullResp;
+import ru.mobilization.sinjvf.yamblzweather.BuildConfig;
+import ru.mobilization.sinjvf.yamblzweather.R;
+import ru.mobilization.sinjvf.yamblzweather.ui.DialogsFragment;
 import ru.mobilization.sinjvf.yamblzweather.utils.Utils;
 import timber.log.Timber;
 
@@ -65,28 +69,40 @@ public abstract class BaseFragmentViewModel extends AndroidViewModel {
         this.fragmentManager = fragmentManager;
     }
 
-    protected <T> BaseResponseCallback<T> getResponseCallback(NonNullResp<T> nonNullResp, SingleObserver<Integer> action) {
-        return new BaseResponseCallback<T>(context, fragmentManager, nonNullResp, action);
-    }
-
     @Override
     protected void onCleared() {
         super.onCleared();
         handler.removeCallbacksAndMessages(null);
     }
 
-    protected SingleObserver<Integer> progressObserver(){
-        return new SingleObserver<Integer>() {
+    protected <T> SingleObserver<T> getObserver(BaseSuccessActionListener<T> successListener){
+        return new SingleObserver<T>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {}
 
             @Override
-            public void onSuccess(@NonNull Integer aInt) {
-                progress.setValue(aInt);
+            public void onSuccess(@NonNull T response) {
+                progress.setValue(Utils.PROGRESS_SUCCESS);
+                successListener.onSussecc(response);
             }
 
             @Override
-            public void onError(@NonNull Throwable e) {}
+            public void onError(@NonNull Throwable t) {
+                progress.setValue(Utils.PROGRESS_FAIL);
+                String message;
+                Timber.e(t.getMessage());
+                //don't show strange errors in release
+                if (t instanceof UnknownHostException || t instanceof SocketTimeoutException) {
+                    message = context.getString(R.string.network_error);
+                }else
+                if(BuildConfig.DEBUG)
+                    message = t.getMessage();
+                else
+                    message = context.getString(R.string.oops_error);
+                DialogsFragment dialog = DialogsFragment.getInstance(context.getString(R.string.error), message, false);
+                dialog.show(fragmentManager, null);
+
+            }
         };
     }
 }

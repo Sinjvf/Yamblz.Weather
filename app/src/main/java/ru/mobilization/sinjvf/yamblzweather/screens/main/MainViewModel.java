@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.Keep;
 
+import io.reactivex.SingleObserver;
 import ru.mobilization.sinjvf.yamblzweather.R;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragmentViewModel;
 import ru.mobilization.sinjvf.yamblzweather.retrofit.ServiceHandler;
@@ -27,10 +28,10 @@ public class MainViewModel extends BaseFragmentViewModel {
     protected MutableLiveData<WeatherResponse> weather;
     protected MutableLiveData<String> lastUpdateTime;
 
-    public MutableLiveData<WeatherResponse> getWeatherData() {
+    public MutableLiveData<WeatherResponse> getWeatherData(String key) {
         if (weather == null){
             weather = new MutableLiveData<>();
-            sendWeatherRequest();
+            sendWeatherRequest(key);
         }
         return weather;
     }
@@ -49,14 +50,16 @@ public class MainViewModel extends BaseFragmentViewModel {
         return R.string.menu_main;
     }
 
-    public void sendWeatherRequest(){
+    public void sendWeatherRequest(String key){
         Timber.d("sendWeatherRequest:");
-        serviceHandler.getWeather(getResponseCallback(response -> {
+        SingleObserver<WeatherResponse> observer = getObserver(response -> {
             weather.setValue(response);
             Preferenses.setPrefLastTimeUpdate(context);
             lastUpdateTime.setValue(Utils.lastUpdateString(context));
-            handler.postDelayed(this::sendWeatherRequest, Preferenses.getIntervalTime(context));
-        }, progressObserver()));
+            handler.postDelayed(() -> sendWeatherRequest(key),
+                    Preferenses.getIntervalTime(context));
+        });
+        serviceHandler.getWeather(key, observer);
     }
 
 

@@ -38,7 +38,7 @@ public class BaseFragment extends LifecycleFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         unbinder = ButterKnife.bind(this, view);
-
+        getArgs();
     }
 
     protected void setTitleText(int titleResId) {
@@ -49,7 +49,12 @@ public class BaseFragment extends LifecycleFragment {
         }
     }
 
+    //if we have the progress bar and want to show\hide it
     protected void setProgressStatus(Integer status){
+
+    }
+    //if we have args in fragment and want to get it
+    protected void getArgs(){
 
     }
 

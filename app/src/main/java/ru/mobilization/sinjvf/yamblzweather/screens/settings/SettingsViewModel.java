@@ -4,6 +4,8 @@ import android.app.Application;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.Keep;
 
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.SingleObserver;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -23,7 +25,7 @@ public class SettingsViewModel extends BaseFragmentViewModel {
         super(application);
     }
     protected MutableLiveData<Long> interval;
-    private final long DEFAULT_INTERVAL = 10* Utils.MINUTE;
+    private final long DEFAULT_INTERVAL = TimeUnit.MINUTES.toMillis(Utils.TIME_10);
 
     public MutableLiveData<Long> getInterval() {
         if (interval == null){

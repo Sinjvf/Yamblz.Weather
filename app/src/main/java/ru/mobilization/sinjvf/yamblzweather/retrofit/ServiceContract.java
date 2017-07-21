@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import java.util.Map;
 
+import io.reactivex.Observable;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -33,7 +34,7 @@ class ServiceContract {
 
     interface WeatherAPI {
         @GET(WEATHER)
-        Call<WeatherResponse> getWeather(@QueryMap Map<String, String> map);
+        Observable<WeatherResponse> getWeather(@QueryMap Map<String, String> map);
     }
 
 
@@ -43,7 +44,7 @@ class ServiceContract {
         private static Retrofit.Builder builder =
                 new Retrofit.Builder()
                         .addConverterFactory(GsonConverterFactory.create(gson))
-                      //  .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                         .baseUrl(ServiceContract.BASE_URL);
 
         private static <S> S createService(Class<S> serviceClass) {

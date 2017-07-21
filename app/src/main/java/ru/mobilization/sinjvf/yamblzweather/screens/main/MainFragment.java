@@ -45,6 +45,8 @@ public class MainFragment extends BaseFragment implements SwipeRefreshLayout.OnR
     @BindView(R.id.main_layout)
     View mainLayout;
 
+    private String key;
+
 
     public static MainFragment getInstance(){
         return new MainFragment();
@@ -56,10 +58,14 @@ public class MainFragment extends BaseFragment implements SwipeRefreshLayout.OnR
         baseModel = localModel;
         super.onActivityCreated(savedInstanceState);
         //before supermethod calling we have null fragment manager
-        localModel.getWeatherData().observe(this, this::setWeather);
+        localModel.getWeatherData(key).observe(this, this::setWeather);
         localModel.getLastUpdate().observe(this, this::setLastUpdate);
     }
 
+    @Override
+    protected void getArgs() {
+        key = getString(R.string.moscow_id);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -79,11 +85,11 @@ public class MainFragment extends BaseFragment implements SwipeRefreshLayout.OnR
         Integer maxInt = Utils.getDataWithoutException(() -> resp.getMain().getTempMax().intValue());
         Integer humidity = Utils.getDataWithoutException(() -> resp.getMain().getHumidity());
         Integer wind = Utils.getDataWithoutException(() -> resp.getWind().getSpeed().intValue());
-        mainTempr.setText(String.format(getString(R.string.main_tempr), mainInt));
-        minTempr.setText(String.format(getString(R.string.min_tempr), minInt));
-        maxTempr.setText(String.format(getString(R.string.max_tempr), maxInt));
-        windView.setText(String.format(getString(R.string.wind), wind));
-        humidityView.setText(String.format(getString(R.string.percent), humidity));
+        mainTempr.setText(getString(R.string.main_tempr, mainInt));
+        minTempr.setText(getString(R.string.min_tempr, minInt));
+        maxTempr.setText(getString(R.string.max_tempr, maxInt));
+        windView.setText(getString(R.string.wind, wind));
+        humidityView.setText(getString(R.string.percent, humidity));
 
 
 
@@ -106,7 +112,7 @@ public class MainFragment extends BaseFragment implements SwipeRefreshLayout.OnR
 
     @Override
     public void onRefresh() {
-        localModel.sendWeatherRequest();
+        localModel.sendWeatherRequest(key);
     }
 
     protected void setProgressStatus(Integer status){
