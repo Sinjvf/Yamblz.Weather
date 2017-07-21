@@ -1,4 +1,4 @@
-package ru.mobilization.sinjvf.yamblzweather.fragments.about;
+package ru.mobilization.sinjvf.yamblzweather.screens.about;
 
 import android.app.Application;
 import android.support.annotation.Keep;

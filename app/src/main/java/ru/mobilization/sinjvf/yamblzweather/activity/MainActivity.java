@@ -21,9 +21,10 @@ import ru.mobilization.sinjvf.yamblzweather.R;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseActivity;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragment;
 import ru.mobilization.sinjvf.yamblzweather.events.OpenNewFragmentEvent;
-import ru.mobilization.sinjvf.yamblzweather.fragments.about.AboutFragment;
-import ru.mobilization.sinjvf.yamblzweather.fragments.main.MainFragment;
-import ru.mobilization.sinjvf.yamblzweather.fragments.settings.SettingsFragment;
+import ru.mobilization.sinjvf.yamblzweather.screens.about.AboutFragment;
+import ru.mobilization.sinjvf.yamblzweather.screens.main.MainFragment;
+import ru.mobilization.sinjvf.yamblzweather.screens.settings.SettingsFragment;
+import timber.log.Timber;
 
 /**
  * Created by Sinjvf on 09.07.2017.
@@ -53,6 +54,8 @@ public class MainActivity extends BaseActivity
         model.getCurrentFragment().observe(this, this::changeFragment);
         setSupportActionBar(toolbar);
         initDrawer();
+
+        Timber.tag(TAG);
     }
 
 
@@ -100,10 +103,11 @@ public class MainActivity extends BaseActivity
 
     public void changeFragment(@NonNull OpenNewFragmentEvent event) {
         FragmentManager fm = getSupportFragmentManager();
-        if (event.isAddToBackStack())
+        if (event.isAddToBackStack()) {
             fm.beginTransaction().addToBackStack(null).replace(R.id.fragment_container, event.getFgm()).commit();
-        else
+        }else {
             fm.beginTransaction().replace(R.id.fragment_container, event.getFgm()).commit();
+        }
     }
 
     @Override

@@ -1,22 +1,16 @@
-package ru.mobilization.sinjvf.yamblzweather.fragments.main;
+package ru.mobilization.sinjvf.yamblzweather.screens.main;
 
 import android.app.Application;
 import android.arch.lifecycle.MutableLiveData;
-import android.content.Intent;
-import android.os.Handler;
 import android.support.annotation.Keep;
-import android.util.Log;
 
-import io.reactivex.SingleObserver;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
-import ru.mobilization.sinjvf.yamblzweather.BuildConfig;
 import ru.mobilization.sinjvf.yamblzweather.R;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragmentViewModel;
 import ru.mobilization.sinjvf.yamblzweather.retrofit.ServiceHandler;
 import ru.mobilization.sinjvf.yamblzweather.retrofit.data.WeatherResponse;
 import ru.mobilization.sinjvf.yamblzweather.utils.Preferenses;
 import ru.mobilization.sinjvf.yamblzweather.utils.Utils;
+import timber.log.Timber;
 
 /**
  * Created by Sinjvf on 09.07.2017.
@@ -56,8 +50,7 @@ public class MainViewModel extends BaseFragmentViewModel {
     }
 
     public void sendWeatherRequest(){
-        if (BuildConfig.isDebug)
-            Log.d(TAG, "sendWeatherRequest: ");
+        Timber.d("sendWeatherRequest:");
         serviceHandler.getWeather(getResponseCallback(response -> {
             weather.setValue(response);
             Preferenses.setPrefLastTimeUpdate(context);

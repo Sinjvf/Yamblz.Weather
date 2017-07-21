@@ -7,18 +7,15 @@ import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
-import retrofit2.Call;
-import retrofit2.Response;
-import ru.mobilization.sinjvf.yamblzweather.BuildConfig;
 import ru.mobilization.sinjvf.yamblzweather.retrofit.BaseResponseCallback;
 import ru.mobilization.sinjvf.yamblzweather.retrofit.NonNullResp;
-import ru.mobilization.sinjvf.yamblzweather.retrofit.data.WeatherResponse;
 import ru.mobilization.sinjvf.yamblzweather.utils.Utils;
+import timber.log.Timber;
 
 /**
  * Created by Sinjvf on 09.07.2017.
@@ -32,12 +29,13 @@ public abstract class BaseFragmentViewModel extends AndroidViewModel {
     protected final Context context;
     protected FragmentManager fragmentManager;
 
-    protected MutableLiveData<Integer> progres;
+    protected MutableLiveData<Integer> progress;
     protected final Handler handler = new Handler();
 
     public BaseFragmentViewModel(Application application) {
         super(application);
         context = application.getApplicationContext();
+        Timber.tag(TAG);
     }
 
     public LiveData<Integer> getTitle() {
@@ -49,11 +47,11 @@ public abstract class BaseFragmentViewModel extends AndroidViewModel {
     }
 
     public MutableLiveData<Integer> getProgress() {
-        if (progres == null){
-            progres = new MutableLiveData<>();
-            progres.setValue(Utils.PROGRESS_SUCCESS);
+        if (progress == null){
+            progress = new MutableLiveData<>();
+            progress.setValue(Utils.PROGRESS_SUCCESS);
         }
-        return progres;
+        return progress;
     }
 
     protected void setToolbarText() {
@@ -61,7 +59,7 @@ public abstract class BaseFragmentViewModel extends AndroidViewModel {
     }
 
 
-    protected abstract int getTitleStringId();
+    protected abstract @StringRes int getTitleStringId();
 
     public void setFragmentManager(FragmentManager fragmentManager) {
         this.fragmentManager = fragmentManager;
@@ -80,15 +78,15 @@ public abstract class BaseFragmentViewModel extends AndroidViewModel {
     protected SingleObserver<Integer> progressObserver(){
         return new SingleObserver<Integer>() {
             @Override
-            public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {}
+            public void onSubscribe(@NonNull Disposable d) {}
 
             @Override
-            public void onSuccess(@io.reactivex.annotations.NonNull Integer aInt) {
-                progres.setValue(aInt);
+            public void onSuccess(@NonNull Integer aInt) {
+                progress.setValue(aInt);
             }
 
             @Override
-            public void onError(@io.reactivex.annotations.NonNull Throwable e) {}
+            public void onError(@NonNull Throwable e) {}
         };
     }
 }

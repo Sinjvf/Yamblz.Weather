@@ -15,14 +15,17 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import ru.mobilization.sinjvf.yamblzweather.R;
+import timber.log.Timber;
 
 /**
  * Created by Sinjvf on 16.07.2017.
  * Class for showing dialogs to user
  */
 
-public class Dialogs extends DialogFragment {
+public class DialogsFragment extends DialogFragment {
 
     @BindView(R.id.title)
     TextView titleView;
@@ -37,14 +40,14 @@ public class Dialogs extends DialogFragment {
 
     private String title, text;
     private boolean haveCancelButton;
-    private Observer<Boolean> action;
+    private SingleObserver<Boolean> action;
     private static final String TITLE_KEY = "title_key";
     private static final String TEXT_KEY = "text_key";
     private static final String HAVE_CANCEL_KEY = "have_cancel_key";
 
 
-    public static Dialogs getInstance(String title, String text, boolean haveCancelButton) {
-        Dialogs dialog = new Dialogs();
+    public static DialogsFragment getInstance(String title, String text, boolean haveCancelButton) {
+        DialogsFragment dialog = new DialogsFragment();
         Bundle bundle = new Bundle();
         bundle.putString(TITLE_KEY, title);
         bundle.putString(TEXT_KEY, text);
@@ -53,7 +56,7 @@ public class Dialogs extends DialogFragment {
         return dialog;
     }
 
-    public void setAction(Observer<Boolean> action) {
+    public void setAction(SingleObserver<Boolean> action) {
         this.action = action;
     }
 
@@ -84,7 +87,7 @@ public class Dialogs extends DialogFragment {
         try {
             getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         }catch (NullPointerException e){
-            e.printStackTrace();
+            Timber.e(e.getMessage());
         }
         getData();
         setData();
@@ -94,14 +97,14 @@ public class Dialogs extends DialogFragment {
     @OnClick(R.id.ok)
     public void onClickOk() {
         if (action != null)
-            Observable.fromArray(true).subscribe(action);
+            Single.fromObservable(Observable.fromArray(true)).subscribe(action);
         dismiss();
     }
 
     @OnClick(R.id.cancel)
     public void onClickCancel() {
         if (action != null)
-            Observable.fromArray(false).subscribe(action);
+            Single.fromObservable(Observable.fromArray(false)).subscribe(action);
         dismiss();
     }
 
@@ -109,5 +112,6 @@ public class Dialogs extends DialogFragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+
     }
 }

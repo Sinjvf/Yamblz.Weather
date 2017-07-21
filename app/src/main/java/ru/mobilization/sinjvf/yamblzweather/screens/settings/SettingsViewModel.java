@@ -1,17 +1,15 @@
-package ru.mobilization.sinjvf.yamblzweather.fragments.settings;
+package ru.mobilization.sinjvf.yamblzweather.screens.settings;
 
 import android.app.Application;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.Keep;
 
-import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import ru.mobilization.sinjvf.yamblzweather.R;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragmentViewModel;
-import ru.mobilization.sinjvf.yamblzweather.retrofit.data.WeatherResponse;
-import ru.mobilization.sinjvf.yamblzweather.ui.SelectIntervalDialog;
+import ru.mobilization.sinjvf.yamblzweather.ui.SelectIntervalDialogFragment;
 import ru.mobilization.sinjvf.yamblzweather.utils.Preferenses;
 import ru.mobilization.sinjvf.yamblzweather.utils.Utils;
 
@@ -43,7 +41,7 @@ public class SettingsViewModel extends BaseFragmentViewModel {
     }
 
     public void selectClicked(){
-        SelectIntervalDialog dialog = new SelectIntervalDialog();
+        SelectIntervalDialogFragment dialog = new SelectIntervalDialogFragment();
         dialog.setAction(new SingleObserver<Long>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {}

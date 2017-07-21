@@ -2,7 +2,6 @@ package ru.mobilization.sinjvf.yamblzweather.retrofit;
 
 import android.content.Context;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -15,9 +14,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import ru.mobilization.sinjvf.yamblzweather.BuildConfig;
 import ru.mobilization.sinjvf.yamblzweather.R;
-import ru.mobilization.sinjvf.yamblzweather.retrofit.data.WeatherResponse;
-import ru.mobilization.sinjvf.yamblzweather.ui.Dialogs;
+import ru.mobilization.sinjvf.yamblzweather.ui.DialogsFragment;
 import ru.mobilization.sinjvf.yamblzweather.utils.Utils;
+import timber.log.Timber;
 
 /**
  * Created by Sinjvf on 16.07.2017.
@@ -54,16 +53,16 @@ public  class BaseResponseCallback<T> implements Callback<T> {
             Single.fromObservable(Observable.fromArray(Utils.PROGRESS_FAIL)).subscribe(action);
         }
         String message;
-        t.printStackTrace();
+        Timber.e(t.getMessage());
         //don't show strange errors text in release
         if (t instanceof UnknownHostException || t instanceof SocketTimeoutException) {
             message = context.getString(R.string.network_error);
         }else
-            if(BuildConfig.isDebug)
+            if(BuildConfig.DEBUG)
                 message = t.getMessage();
             else
                 message = context.getString(R.string.oops_error);
-        Dialogs dialog = Dialogs.getInstance(context.getString(R.string.error), message, false);
+        DialogsFragment dialog = DialogsFragment.getInstance(context.getString(R.string.error), message, false);
         dialog.show(fragmentManager, null);
     }
 }

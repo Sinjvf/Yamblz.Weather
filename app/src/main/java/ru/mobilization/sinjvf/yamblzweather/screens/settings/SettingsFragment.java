@@ -1,7 +1,6 @@
-package ru.mobilization.sinjvf.yamblzweather.fragments.settings;
+package ru.mobilization.sinjvf.yamblzweather.screens.settings;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -10,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.mobilization.sinjvf.yamblzweather.R;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragment;

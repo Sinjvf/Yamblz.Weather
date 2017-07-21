@@ -1,10 +1,9 @@
-package ru.mobilization.sinjvf.yamblzweather.fragments.main;
+package ru.mobilization.sinjvf.yamblzweather.screens.main;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +13,11 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
-import ru.mobilization.sinjvf.yamblzweather.BuildConfig;
 import ru.mobilization.sinjvf.yamblzweather.R;
 import ru.mobilization.sinjvf.yamblzweather.utils.Utils;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragment;
 import ru.mobilization.sinjvf.yamblzweather.retrofit.data.WeatherResponse;
+import timber.log.Timber;
 
 /**
  * Created by Sinjvf on 09.07.2017.
@@ -96,8 +95,8 @@ public class MainFragment extends BaseFragment implements SwipeRefreshLayout.OnR
                     .fit()
                     .into(imageWeather);
         }
-        if (BuildConfig.isDebug)
-            Log.d(TAG, "setWeather: ");
+
+        Timber.d(TAG, "setWeather: ");
 
     }
     private void setLastUpdate(String lastUpdate){

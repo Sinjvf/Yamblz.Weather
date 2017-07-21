@@ -8,7 +8,7 @@ import android.support.annotation.Keep;
 
 
 import ru.mobilization.sinjvf.yamblzweather.events.OpenNewFragmentEvent;
-import ru.mobilization.sinjvf.yamblzweather.fragments.main.MainFragment;
+import ru.mobilization.sinjvf.yamblzweather.screens.main.MainFragment;
 
 /**
  * Created by Sinjvf on 11.07.2017.
@@ -31,10 +31,6 @@ public class MainActivityViewModel extends AndroidViewModel {
         return currentFragment;
     }
 
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-    }
 
 
     public void changeFragmentEvent(OpenNewFragmentEvent event) {

@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import ru.mobilization.sinjvf.yamblzweather.R;
+import timber.log.Timber;
 
 /**
  * Created by Sinjvf on 16.07.2017.
@@ -14,10 +14,15 @@ import ru.mobilization.sinjvf.yamblzweather.R;
  */
 
 public class Utils {
-    public static long MINUTE = 1000 * 60;
+    public static final long MINUTE = 1000 * 60;
     public static final int PROGRESS_SHOW = 0;
     public static final int PROGRESS_SUCCESS = 1;
     public static final int PROGRESS_FAIL = -1;
+
+    public static final int TIME_10 = 10;
+    public static final int TIME_15 = 15;
+    public static final int TIME_30 = 30;
+    public static final int TIME_60 = 60;
 
     public static String lastUpdateString(Context context) {
         Date date = new Date(Preferenses.getPrefLastTimeUpdateDate(context));
@@ -36,7 +41,7 @@ public class Utils {
         try {
             return getData.getData();
         } catch (NullPointerException e) {
-            e.printStackTrace();
+            Timber.e(e.getMessage());
         }
         return null;
     }

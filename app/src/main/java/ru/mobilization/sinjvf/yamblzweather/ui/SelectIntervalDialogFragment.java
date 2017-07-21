@@ -2,33 +2,33 @@ package ru.mobilization.sinjvf.yamblzweather.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
+
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import ru.mobilization.sinjvf.yamblzweather.R;
 import ru.mobilization.sinjvf.yamblzweather.utils.Preferenses;
 import ru.mobilization.sinjvf.yamblzweather.utils.Utils;
+import timber.log.Timber;
 
 /**
  * Created by Sinjvf on 16.07.2017.
  * Class for showing dialogs to user
  */
 
-public class SelectIntervalDialog extends DialogFragment {
+public class SelectIntervalDialogFragment extends DialogFragment {
 
     @BindView(R.id.radio_group)
     RadioGroup radioGroup;
@@ -56,7 +56,7 @@ public class SelectIntervalDialog extends DialogFragment {
         try {
             getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         }catch (NullPointerException e){
-            e.printStackTrace();
+            Timber.e(e.getMessage());
         }
         setData();
         return v;
@@ -65,18 +65,18 @@ public class SelectIntervalDialog extends DialogFragment {
 
     private void setData(){
 
-        radio10.setText(String.format(getString(R.string.n_min), 10));
-        radio15.setText(String.format(getString(R.string.n_min), 15));
-        radio30.setText(String.format(getString(R.string.n_min), 30));
-        radio60.setText(String.format(getString(R.string.n_min), 60));
+        radio10.setText(getString(R.string.n_min, Utils.TIME_10));
+        radio15.setText(getString(R.string.n_min, Utils.TIME_15));
+        radio30.setText(getString(R.string.n_min, Utils.TIME_30));
+        radio60.setText(getString(R.string.n_min, Utils.TIME_60));
         switch ((int)(Preferenses.getIntervalTime(getContext())/Utils.MINUTE)){
-            case 15:
+            case Utils.TIME_15:
                 radio15.setChecked(true);
                 break;
-            case 30:
+            case Utils.TIME_30:
                 radio30.setChecked(true);
                 break;
-            case 60:
+            case Utils.TIME_60:
                 radio60.setChecked(true);
                 break;
             default:
@@ -86,20 +86,20 @@ public class SelectIntervalDialog extends DialogFragment {
 
     @OnClick(R.id.ok)
     public void onClickOk() {
-        long time = 10* Utils.MINUTE;
+        long time = TimeUnit.MINUTES.toMillis(Utils.TIME_10);
         int id = radioGroup.getCheckedRadioButtonId();
         switch (id){
             case R.id.radio_10:
-                time = 10* Utils.MINUTE;
+                time = TimeUnit.MINUTES.toMillis(Utils.TIME_10);
                 break;
             case R.id.radio_15:
-                time = 15* Utils.MINUTE;
+                time = TimeUnit.MINUTES.toMillis(Utils.TIME_15);
                 break;
             case R.id.radio_30:
-                time = 30* Utils.MINUTE;
+                time = TimeUnit.MINUTES.toMillis(Utils.TIME_30);
                 break;
             case R.id.radio_60:
-                time = 60* Utils.MINUTE;
+                time = TimeUnit.MINUTES.toMillis(Utils.TIME_60);
                 break;
         }
         if (action != null) {

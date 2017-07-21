@@ -1,16 +1,14 @@
-package ru.mobilization.sinjvf.yamblzweather.fragments.about;
+package ru.mobilization.sinjvf.yamblzweather.screens.about;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
-import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import ru.mobilization.sinjvf.yamblzweather.BuildConfig;
 import ru.mobilization.sinjvf.yamblzweather.R;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragment;
@@ -50,7 +48,7 @@ public class AboutFragment extends BaseFragment {
     }
 
     private void setVers() {
-        String name = String.format(getString(R.string.about_version), BuildConfig.VERSION_NAME);
+        String name =  getString(R.string.about_version, BuildConfig.VERSION_NAME);
         versionName.setText(name);
     }
 

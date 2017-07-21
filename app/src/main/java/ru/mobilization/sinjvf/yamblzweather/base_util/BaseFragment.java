@@ -13,6 +13,7 @@ import butterknife.Unbinder;
 import ru.mobilization.sinjvf.yamblzweather.R;
 import ru.mobilization.sinjvf.yamblzweather.activity.MainActivity;
 import ru.mobilization.sinjvf.yamblzweather.activity.MainActivityInterface;
+import timber.log.Timber;
 
 /**
  * Created by Sinjvf on 09.07.2017.
@@ -44,7 +45,7 @@ public class BaseFragment extends LifecycleFragment {
         try {
             ((MainActivityInterface) getActivity()).setTitleText(titleResId);
         } catch (ClassCastException e) {
-            e.printStackTrace();
+            Timber.e(e.getMessage());
         }
     }
 

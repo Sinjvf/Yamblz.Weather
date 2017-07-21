@@ -12,6 +12,7 @@ import ru.mobilization.sinjvf.yamblzweather.BuildConfig;
 import ru.mobilization.sinjvf.yamblzweather.R;
 import ru.mobilization.sinjvf.yamblzweather.retrofit.data.BaseResponse;
 import ru.mobilization.sinjvf.yamblzweather.retrofit.data.WeatherResponse;
+import timber.log.Timber;
 
 /**
  * Created by Sinjvf on 15.07.2017.
@@ -51,8 +52,7 @@ public class ServiceHandler {
     * */
     public void getWeather(Callback<WeatherResponse> callback) {
         Map<String, String> map = new HashMap<>();
-        if (BuildConfig.isDebug)
-            Log.d(TAG, "getWeatherData: ");
+        Timber.d(TAG, "getWeatherData: ");
         map.put(ServiceContract.FIELD_APP_KEY, context.getString(R.string.api_key));
         map.put(ServiceContract.FIELD_CITY_ID, context.getString(R.string.moscow_id));
         map.put(ServiceContract.FIELD_UNITS, ServiceContract.UNITS_METRIC);
