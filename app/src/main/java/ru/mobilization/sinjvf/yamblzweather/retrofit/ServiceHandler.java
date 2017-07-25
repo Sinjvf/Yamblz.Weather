@@ -1,7 +1,8 @@
 package ru.mobilization.sinjvf.yamblzweather.retrofit;
 
 import android.content.Context;
-import android.util.Log;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,9 +12,6 @@ import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import ru.mobilization.sinjvf.yamblzweather.BuildConfig;
 import ru.mobilization.sinjvf.yamblzweather.R;
 import ru.mobilization.sinjvf.yamblzweather.retrofit.data.BaseResponse;
 import ru.mobilization.sinjvf.yamblzweather.retrofit.data.WeatherResponse;
@@ -53,18 +51,28 @@ public class ServiceHandler {
                 .subscribe(observer);
     }
 
-
     /*
     * requests
     * */
-    public void getWeather(String key, SingleObserver<WeatherResponse> observer) {
-        Map<String, String> map = new HashMap<>();
-        Timber.d(TAG, "getWeatherData: ");
-        map.put(ServiceContract.FIELD_APP_KEY, context.getString(R.string.api_key));
-        map.put(ServiceContract.FIELD_CITY_ID, key);
-        map.put(ServiceContract.FIELD_UNITS, ServiceContract.UNITS_METRIC);
+    public void getWeatherByCityId(String cityId, SingleObserver<WeatherResponse> observer) {
+        Map<String, String> map = buildBasicQueryMap();
+        map.put(ServiceContract.FIELD_CITY_ID, cityId);
+        Timber.d(TAG, "getWeatherDataByCityId by city id: ");
         callService(observer, () -> service.getWeather(map));
     }
 
+    public void getWeatherByCityCoords(LatLng cityCoords, SingleObserver<WeatherResponse> observer) {
+        Map<String, String> map = buildBasicQueryMap();
+        map.put(ServiceContract.FIELD_LAT, String.valueOf(cityCoords.latitude));
+        map.put(ServiceContract.FIELD_LON, String.valueOf(cityCoords.longitude));
+        Timber.d(TAG, "getWeatherDataByCityId by city coords: ");
+        callService(observer, () -> service.getWeather(map));
+    }
 
+    private Map<String, String> buildBasicQueryMap() {
+        Map<String, String> map = new HashMap<>();
+        map.put(ServiceContract.FIELD_APP_KEY, context.getString(R.string.api_key));
+        map.put(ServiceContract.FIELD_UNITS, ServiceContract.UNITS_METRIC);
+        return map;
+    }
 }

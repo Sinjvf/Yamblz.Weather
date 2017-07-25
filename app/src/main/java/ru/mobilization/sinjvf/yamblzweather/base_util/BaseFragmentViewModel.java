@@ -93,12 +93,12 @@ public abstract class BaseFragmentViewModel extends AndroidViewModel {
                 Timber.e(t.getMessage());
                 //don't show strange errors in release
                 if (t instanceof UnknownHostException || t instanceof SocketTimeoutException) {
-                    message = context.getString(R.string.network_error);
+                    message = context.getString(R.string.error_network);
                 }else
                 if(BuildConfig.DEBUG)
                     message = t.getMessage();
                 else
-                    message = context.getString(R.string.oops_error);
+                    message = context.getString(R.string.error_oops);
                 DialogsFragment dialog = DialogsFragment.getInstance(context.getString(R.string.error), message, false);
                 dialog.show(fragmentManager, null);
 

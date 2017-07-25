@@ -1,8 +1,11 @@
 package ru.mobilization.sinjvf.yamblzweather.screens.settings;
 
 import android.app.Application;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.Keep;
+
+import com.google.android.gms.location.places.Place;
 
 import java.util.concurrent.TimeUnit;
 
@@ -21,28 +24,39 @@ import ru.mobilization.sinjvf.yamblzweather.utils.Utils;
  */
 @Keep
 public class SettingsViewModel extends BaseFragmentViewModel {
+
     public SettingsViewModel(Application application) {
         super(application);
     }
+
     protected MutableLiveData<Long> interval;
+    protected MutableLiveData<CityInfo> cityInfo;
+
     private final long DEFAULT_INTERVAL = TimeUnit.MINUTES.toMillis(Utils.TIME_10);
 
-    public MutableLiveData<Long> getInterval() {
-        if (interval == null){
+    public LiveData<Long> getInterval() {
+        if (interval == null) {
             interval = new MutableLiveData<>();
             interval.setValue(DEFAULT_INTERVAL);
         }
         return interval;
     }
 
-
+    public LiveData<CityInfo> getCityInfo() {
+        if (cityInfo == null) {
+            CityInfo savedCityInfo = Preferenses.getCityInfo(context);
+            cityInfo = new MutableLiveData<>();
+            cityInfo.setValue(savedCityInfo);
+        }
+        return cityInfo;
+    }
 
     @Override
     protected int getTitleStringId() {
         return R.string.menu_tools;
     }
 
-    public void selectClicked(){
+    public void selectIntervalClicked(){
         SelectIntervalDialogFragment dialog = new SelectIntervalDialogFragment();
         dialog.setAction(new SingleObserver<Long>() {
             @Override
@@ -58,5 +72,11 @@ public class SettingsViewModel extends BaseFragmentViewModel {
             public void onError(@NonNull Throwable e) {}
         });
         dialog.show(fragmentManager, null);
+    }
+
+    public void selectCityClicked(Place place) {
+        CityInfo newCityInfo = new CityInfo(place.getName().toString(), place.getLatLng());
+        Preferenses.setCityInfo(context, newCityInfo);
+        cityInfo.postValue(newCityInfo);
     }
 }

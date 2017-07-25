@@ -1,4 +1,4 @@
-package ru.mobilization.sinjvf.yamblzweather.screens.main;
+package ru.mobilization.sinjvf.yamblzweather.screens.weather;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -10,10 +10,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import ru.mobilization.sinjvf.yamblzweather.R;
+import ru.mobilization.sinjvf.yamblzweather.utils.Preferenses;
 import ru.mobilization.sinjvf.yamblzweather.utils.Utils;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragment;
 import ru.mobilization.sinjvf.yamblzweather.retrofit.data.WeatherResponse;
@@ -24,8 +26,10 @@ import timber.log.Timber;
  * Fragment for weather screen - main application screen
  */
 
-public class MainFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener{
-    MainViewModel localModel;
+public class WeatherFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener{
+
+    @BindView(R.id.city_name)
+    TextView cityNameView;
     @BindView(R.id.main_tempr)
     TextView mainTempr;
     @BindView(R.id.min_tempr)
@@ -43,34 +47,38 @@ public class MainFragment extends BaseFragment implements SwipeRefreshLayout.OnR
     @BindView(R.id.swipe_refresh)
     SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.main_layout)
+
     View mainLayout;
 
-    private String key;
+    WeatherViewModel localModel;
 
+    private String cityId;
+    private LatLng cityCoords;
 
-    public static MainFragment getInstance(){
-        return new MainFragment();
+    public static WeatherFragment getInstance(){
+        return new WeatherFragment();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        localModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
+        localModel = ViewModelProviders.of(this).get(WeatherViewModel.class);
         baseModel = localModel;
         super.onActivityCreated(savedInstanceState);
         //before supermethod calling we have null fragment manager
-        localModel.getWeatherData(key).observe(this, this::setWeather);
+        localModel.getWeatherDataByCityCoords(cityCoords).observe(this, this::setWeather);
         localModel.getLastUpdate().observe(this, this::setLastUpdate);
     }
 
     @Override
     protected void getArgs() {
-        key = getString(R.string.moscow_id);
+        cityId = getString(R.string.moscow_id);
+        cityCoords = Preferenses.getCityInfo(getContext()).getCityCoords();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        return inflater.inflate(R.layout.fr_main, container, false);
+        return inflater.inflate(R.layout.fr_weather, container, false);
     }
 
     @Override
@@ -80,18 +88,20 @@ public class MainFragment extends BaseFragment implements SwipeRefreshLayout.OnR
     }
 
     public void setWeather(WeatherResponse resp){
+        // TODO: is it ok to get (localized!) city name from prefs right here?
+        String cityName = Preferenses.getCityInfo(getContext()).getCityName();
         Integer mainInt = Utils.getDataWithoutException(() -> resp.getMain().getTemp().intValue());
         Integer minInt = Utils.getDataWithoutException(() -> resp.getMain().getTempMin().intValue());
         Integer maxInt = Utils.getDataWithoutException(() -> resp.getMain().getTempMax().intValue());
         Integer humidity = Utils.getDataWithoutException(() -> resp.getMain().getHumidity());
         Integer wind = Utils.getDataWithoutException(() -> resp.getWind().getSpeed().intValue());
+
+        cityNameView.setText(cityName);
         mainTempr.setText(getString(R.string.main_tempr, mainInt));
         minTempr.setText(getString(R.string.min_tempr, minInt));
         maxTempr.setText(getString(R.string.max_tempr, maxInt));
         windView.setText(getString(R.string.wind, wind));
         humidityView.setText(getString(R.string.percent, humidity));
-
-
 
         String imageName = Utils.getDataWithoutException(() -> resp.getWeather().get(0).getIcon());
         if (imageName!=null) {
@@ -103,19 +113,18 @@ public class MainFragment extends BaseFragment implements SwipeRefreshLayout.OnR
         }
 
         Timber.d(TAG, "setWeather: ");
-
     }
+
     private void setLastUpdate(String lastUpdate){
         lastUpdatedView.setText(String.format(getString(R.string.last_update), lastUpdate));
     }
 
-
     @Override
     public void onRefresh() {
-        localModel.sendWeatherRequest(key);
+        localModel.sendWeatherRequestByCityCoords(cityCoords);
     }
 
-    protected void setProgressStatus(Integer status){
+    protected void setProgressStatus(int status){
         switch (status){
             case Utils.PROGRESS_SUCCESS:
                 swipeRefreshLayout.setRefreshing(false);
@@ -125,7 +134,6 @@ public class MainFragment extends BaseFragment implements SwipeRefreshLayout.OnR
                 swipeRefreshLayout.setRefreshing(false);
                 mainLayout.setVisibility(View.GONE);
                 break;
-
         }
     }
 }

@@ -47,11 +47,15 @@ public class AboutFragment extends BaseFragment {
         setVers();
     }
 
+    @Override
+    protected void setProgressStatus(int status) {}
+
+    @Override
+    protected void getArgs() {}
+
     private void setVers() {
         String name =  getString(R.string.about_version, BuildConfig.VERSION_NAME);
         versionName.setText(name);
     }
-
-
 }
 

@@ -1,8 +1,11 @@
-package ru.mobilization.sinjvf.yamblzweather.screens.main;
+package ru.mobilization.sinjvf.yamblzweather.screens.weather;
 
 import android.app.Application;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.Keep;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import io.reactivex.SingleObserver;
 import ru.mobilization.sinjvf.yamblzweather.R;
@@ -18,26 +21,33 @@ import timber.log.Timber;
  * ViewModel for main fragment
  */
 @Keep
-public class MainViewModel extends BaseFragmentViewModel {
+public class WeatherViewModel extends BaseFragmentViewModel {
     ServiceHandler serviceHandler = ServiceHandler.getInstance(getApplication().getApplicationContext());
 
-    public MainViewModel(Application application) {
+    public WeatherViewModel(Application application) {
         super(application);
     }
 
     protected MutableLiveData<WeatherResponse> weather;
     protected MutableLiveData<String> lastUpdateTime;
 
-    public MutableLiveData<WeatherResponse> getWeatherData(String key) {
-        if (weather == null){
+    public LiveData<WeatherResponse> getWeatherDataByCityId(String cityId) {
+        if (weather == null) {
             weather = new MutableLiveData<>();
-            sendWeatherRequest(key);
+            sendWeatherRequestByCityId(cityId);
         }
         return weather;
     }
 
+    public LiveData<WeatherResponse> getWeatherDataByCityCoords(LatLng cityCoords) {
+        if (weather == null) {
+            weather = new MutableLiveData<>();
+            sendWeatherRequestByCityCoords(cityCoords);
+        }
+        return weather;
+    }
 
-    public MutableLiveData<String> getLastUpdate() {
+    public LiveData<String> getLastUpdate() {
         if (lastUpdateTime == null){
             lastUpdateTime = new MutableLiveData<>();
             lastUpdateTime.setValue(Utils.lastUpdateString(context));
@@ -50,19 +60,27 @@ public class MainViewModel extends BaseFragmentViewModel {
         return R.string.menu_main;
     }
 
-    public void sendWeatherRequest(String key){
-        Timber.d("sendWeatherRequest:");
+    public void sendWeatherRequestByCityId(String cityId){
+        Timber.d("sendWeatherRequestByCityId:");
         SingleObserver<WeatherResponse> observer = getObserver(response -> {
             weather.setValue(response);
             Preferenses.setPrefLastTimeUpdate(context);
             lastUpdateTime.setValue(Utils.lastUpdateString(context));
-            handler.postDelayed(() -> sendWeatherRequest(key),
+            handler.postDelayed(() -> sendWeatherRequestByCityId(cityId),
                     Preferenses.getIntervalTime(context));
         });
-        serviceHandler.getWeather(key, observer);
+        serviceHandler.getWeatherByCityId(cityId, observer);
     }
 
-
-
-
+    public void sendWeatherRequestByCityCoords(LatLng cityCoords){
+        Timber.d("sendWeatherRequestByCityCoords:");
+        SingleObserver<WeatherResponse> observer = getObserver(response -> {
+            weather.setValue(response);
+            Preferenses.setPrefLastTimeUpdate(context);
+            lastUpdateTime.setValue(Utils.lastUpdateString(context));
+            handler.postDelayed(() -> sendWeatherRequestByCityCoords(cityCoords),
+                    Preferenses.getIntervalTime(context));
+        });
+        serviceHandler.getWeatherByCityCoords(cityCoords, observer);
+    }
 }

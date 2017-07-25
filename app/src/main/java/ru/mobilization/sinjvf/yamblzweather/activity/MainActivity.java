@@ -22,7 +22,7 @@ import ru.mobilization.sinjvf.yamblzweather.base_util.BaseActivity;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragment;
 import ru.mobilization.sinjvf.yamblzweather.events.OpenNewFragmentEvent;
 import ru.mobilization.sinjvf.yamblzweather.screens.about.AboutFragment;
-import ru.mobilization.sinjvf.yamblzweather.screens.main.MainFragment;
+import ru.mobilization.sinjvf.yamblzweather.screens.weather.WeatherFragment;
 import ru.mobilization.sinjvf.yamblzweather.screens.settings.SettingsFragment;
 import timber.log.Timber;
 
@@ -37,12 +37,14 @@ public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, MainActivityInterface {
 
     protected final String TAG = "tag:" + getClass().getSimpleName();
+
     @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.nav_view)
     NavigationView navigationView;
+
     MainActivityViewModel model;
 
     @Override
@@ -58,7 +60,6 @@ public class MainActivity extends BaseActivity
         Timber.tag(TAG);
     }
 
-
     private void initDrawer() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -66,7 +67,6 @@ public class MainActivity extends BaseActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
     }
-
 
     @Override
     public void onBackPressed() {
@@ -77,35 +77,33 @@ public class MainActivity extends BaseActivity
         }
     }
 
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         BaseFragment fgm;
         switch (id) {
+            case R.id.nav_main:
+                fgm = WeatherFragment.getInstance();
+                break;
             case R.id.nav_tools:
                 fgm = SettingsFragment.getInstance();
                 break;
             case R.id.nav_about:
                 fgm = AboutFragment.getInstance();
                 break;
-            case R.id.nav_main:
-                fgm = MainFragment.getInstance();
-                break;
             default:
-                fgm = MainFragment.getInstance();
+                fgm = WeatherFragment.getInstance();
         }
-        model.changeFragmentEvent(new OpenNewFragmentEvent(fgm, true));
+        model.changeFragmentEvent(new OpenNewFragmentEvent(fgm, false));
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
 
     public void changeFragment(@NonNull OpenNewFragmentEvent event) {
         FragmentManager fm = getSupportFragmentManager();
         if (event.isAddToBackStack()) {
             fm.beginTransaction().addToBackStack(null).replace(R.id.fragment_container, event.getFgm()).commit();
-        }else {
+        } else {
             fm.beginTransaction().replace(R.id.fragment_container, event.getFgm()).commit();
         }
     }

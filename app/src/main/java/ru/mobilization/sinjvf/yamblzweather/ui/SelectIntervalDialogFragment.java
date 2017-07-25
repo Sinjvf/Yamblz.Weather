@@ -43,28 +43,24 @@ public class SelectIntervalDialogFragment extends DialogFragment {
 
     Unbinder unbinder;
     private SingleObserver<Long> action;
+
     public void setAction(SingleObserver<Long> action) {
         this.action = action;
     }
-
-
-
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.el_dialog_select_interval, container, false);
         unbinder = ButterKnife.bind(this, v);
         try {
             getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e){
             Timber.e(e.getMessage());
         }
         setData();
         return v;
     }
 
-
     private void setData(){
-
         radio10.setText(getString(R.string.n_min, Utils.TIME_10));
         radio15.setText(getString(R.string.n_min, Utils.TIME_15));
         radio30.setText(getString(R.string.n_min, Utils.TIME_30));
@@ -103,6 +99,7 @@ public class SelectIntervalDialogFragment extends DialogFragment {
                 break;
         }
         if (action != null) {
+            // FIXME fromArray() -> just()
             Single.fromObservable(Observable.fromArray(time)).subscribe(action);
         }
         dismiss();

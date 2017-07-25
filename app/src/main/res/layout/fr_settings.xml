@@ -1,30 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/margin_medium">
+    android:divider="@drawable/divider"
+    android:orientation="vertical"
+    android:showDividers="middle|end">
 
+    <RelativeLayout
+        android:id="@+id/interval_selection"
+        style="@style/SettingsListItem">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:textColor="@color/greyText"
-        android:id="@+id/interval_text"
-        android:clickable="true"
-        />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="@string/updating_interval"
+            android:textSize="@dimen/text_size_list_item"/>
 
+        <TextView
+            android:id="@+id/interval_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:textColor="@color/greyText"
+            android:textSize="@dimen/text_size_list_item"
+            tools:text="10 min"/>
+    </RelativeLayout>
 
-    <TextView
-        android:layout_alignTop="@id/interval_text"
-        android:layout_toLeftOf="@id/interval_text"
-        android:layout_alignParentLeft="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/select_interval"
-        android:text="@string/updating_interval"
-        android:clickable="true"
-        />
+    <RelativeLayout
+        android:id="@+id/city_selection"
+        style="@style/SettingsListItem">
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/city_name_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="@string/settings_city_selection"
+            android:textSize="@dimen/text_size_list_item"/>
+
+        <TextView
+            android:id="@+id/city_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:textColor="@color/greyText"
+            android:textSize="@dimen/text_size_list_item"/>
+
+        <ProgressBar
+            android:id="@+id/progress_city_selection"
+            android:layout_width="@dimen/progress_bar_size"
+            android:layout_height="@dimen/progress_bar_size"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
+    </RelativeLayout>
+</LinearLayout>
