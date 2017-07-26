@@ -21,8 +21,11 @@
     <string name="last_update">Последнее обновление: %s</string>
 
     <string name="settings_city_selection">Город</string>
+    <string name="city_autocomplete_hint">Введите название города</string>
+    <string name="settings_city_selection_title">Выбор города</string>
 
     <string name="error">Ошибка</string>
+    <string name="error_with_explanation">Ошибка: %1$s</string>
     <string name="error_network">Ошибка сети!\nПожалуйста, попробуйте позже</string>
     <string name="error_oops">Упс, что-то пошло не так\nПожалуйста, попробуйте позже</string>
     <string name="error_gp_service_not_available">Google Play Services недоступны: %1$s</string>

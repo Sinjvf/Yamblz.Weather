@@ -14,10 +14,11 @@
     <dimen name="min_dialog_width">200dp</dimen>
     <dimen name="icon_size">40dp</dimen>
 
-    <dimen name="margin_big">32dp</dimen>
-    <dimen name="margin_medium">16dp</dimen>
+    <dimen name="margin_tiny">4dp</dimen>
     <dimen name="margin_small">8dp</dimen>
-    <dimen name="margin_little">4dp</dimen>
+    <dimen name="margin_medium">16dp</dimen>
+    <dimen name="margin_big">32dp</dimen>
+    <dimen name="margin_huge">64dp</dimen>
 
     <dimen name="list_item_height">72dp</dimen>
 

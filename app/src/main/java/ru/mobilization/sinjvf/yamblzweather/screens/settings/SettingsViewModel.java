@@ -14,9 +14,11 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import ru.mobilization.sinjvf.yamblzweather.R;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragmentViewModel;
+import ru.mobilization.sinjvf.yamblzweather.ui.SelectCityDialogFragment;
 import ru.mobilization.sinjvf.yamblzweather.ui.SelectIntervalDialogFragment;
 import ru.mobilization.sinjvf.yamblzweather.utils.Preferenses;
 import ru.mobilization.sinjvf.yamblzweather.utils.Utils;
+import timber.log.Timber;
 
 /**
  * Created by Sinjvf on 09.07.2017.
@@ -74,9 +76,24 @@ public class SettingsViewModel extends BaseFragmentViewModel {
         dialog.show(fragmentManager, null);
     }
 
-    public void selectCityClicked(Place place) {
-        CityInfo newCityInfo = new CityInfo(place.getName().toString(), place.getLatLng());
-        Preferenses.setCityInfo(context, newCityInfo);
-        cityInfo.postValue(newCityInfo);
+    public void selectCityClicked() {
+        SelectCityDialogFragment dialog = new SelectCityDialogFragment();
+        dialog.setAction(new SingleObserver<Place>() {
+            @Override
+            public void onSubscribe(@NonNull Disposable d) {}
+
+            @Override
+            public void onSuccess(@NonNull Place place) {
+                CityInfo newCityInfo = new CityInfo(place.getName().toString(), place.getLatLng());
+                Preferenses.setCityInfo(context, newCityInfo);
+                cityInfo.setValue(newCityInfo);
+
+                Timber.d("New cityInfo has been set! " + newCityInfo.toString());
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {}
+        });
+        dialog.show(fragmentManager, null);
     }
 }

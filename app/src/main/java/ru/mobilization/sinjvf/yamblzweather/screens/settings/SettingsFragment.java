@@ -75,53 +75,7 @@ public class SettingsFragment extends BaseFragment {
 
     @OnClick(R.id.city_selection)
     public void selectCityClicked() {
-        //localModel.selectCityClicked();
-        setProgressStatus(Utils.PROGRESS_SHOW);
-        try {
-            AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
-                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
-                    .build();
-
-            Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
-                    .setFilter(typeFilter)
-                    .build(getActivity());
-            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-        } catch (GooglePlayServicesRepairableException e) {
-            setProgressStatus(Utils.PROGRESS_FAIL);
-            Timber.e(e);
-            GoogleApiAvailability.getInstance().getErrorDialog(getActivity(), e.getConnectionStatusCode(), 0).show();
-        } catch (GooglePlayServicesNotAvailableException e) {
-            setProgressStatus(Utils.PROGRESS_FAIL);
-            Timber.e(e);
-            String errorMsg = String.format(getString(R.string.error_gp_service_not_available),
-                    GoogleApiAvailability.getInstance().getErrorString(e.errorCode));
-            Toast.makeText(getContext(), errorMsg, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
-            setProgressStatus(Utils.PROGRESS_SUCCESS);
-            switch (resultCode) {
-                case Activity.RESULT_OK:
-                    Place place = PlaceAutocomplete.getPlace(getActivity(), data);
-                    localModel.selectCityClicked(place);
-                    break;
-                case PlaceAutocomplete.RESULT_ERROR:
-                    Status status = PlaceAutocomplete.getStatus(getActivity(), data);
-                    Timber.e(status.getStatusMessage());
-                    Toast.makeText(getContext(), getString(R.string.error), Toast.LENGTH_SHORT).show();
-                    break;
-                case Activity.RESULT_CANCELED:
-                    Timber.i("City selection cancelled!");
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
+        localModel.selectCityClicked();
     }
 
     public void setInterval(Long interval){

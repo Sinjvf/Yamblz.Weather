@@ -35,8 +35,11 @@
     <string name="image_path" translatable="false">http://openweathermap.org/img/w/%s.png</string>
 
     <string name="settings_city_selection">City</string>
+    <string name="city_autocomplete_hint">Enter city name</string>
+    <string name="settings_city_selection_title">City selection</string>
 
     <string name="error">Error</string>
+    <string name="error_with_explanation">Error: %1$s</string>
     <string name="error_network">Network error!\nPlease, try later</string>
     <string name="error_oops">Oops, something wrong.\nPlease, try later</string>
     <string name="error_gp_service_not_available">Google Play Services are not available: %1$s</string>

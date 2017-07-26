@@ -28,4 +28,10 @@ public class CityInfo {
     public LatLng getCityCoords() {
         return cityCoords;
     }
+
+    @Override
+    public String toString() {
+        return "Place name=" + cityName +
+                ", coords=[" + cityCoords.latitude + ", " + cityCoords.longitude + "]";
+    }
 }
