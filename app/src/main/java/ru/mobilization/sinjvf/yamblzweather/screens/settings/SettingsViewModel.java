@@ -34,12 +34,11 @@ public class SettingsViewModel extends BaseFragmentViewModel {
     protected MutableLiveData<Long> interval;
     protected MutableLiveData<CityInfo> cityInfo;
 
-    private final long DEFAULT_INTERVAL = TimeUnit.MINUTES.toMillis(Utils.TIME_10);
-
     public LiveData<Long> getInterval() {
         if (interval == null) {
+            long savedInterval = Preferenses.getIntervalTime(context);
             interval = new MutableLiveData<>();
-            interval.setValue(DEFAULT_INTERVAL);
+            interval.setValue(savedInterval);
         }
         return interval;
     }
@@ -59,41 +58,23 @@ public class SettingsViewModel extends BaseFragmentViewModel {
     }
 
     public void selectIntervalClicked(){
-        SelectIntervalDialogFragment dialog = new SelectIntervalDialogFragment();
-        dialog.setAction(new SingleObserver<Long>() {
-            @Override
-            public void onSubscribe(@NonNull Disposable d) {}
-
-            @Override
-            public void onSuccess(@NonNull Long aLong) {
-                Preferenses.setIntervalTime(context, aLong);
-                interval.setValue(aLong);
-            }
-
-            @Override
-            public void onError(@NonNull Throwable e) {}
-        });
-        dialog.show(fragmentManager, null);
+        new SelectIntervalDialogFragment().show(fragmentManager, null);
     }
 
     public void selectCityClicked() {
-        SelectCityDialogFragment dialog = new SelectCityDialogFragment();
-        dialog.setAction(new SingleObserver<Place>() {
-            @Override
-            public void onSubscribe(@NonNull Disposable d) {}
+        new SelectCityDialogFragment().show(fragmentManager, null);
+    }
 
-            @Override
-            public void onSuccess(@NonNull Place place) {
-                CityInfo newCityInfo = new CityInfo(place.getName().toString(), place.getLatLng());
-                Preferenses.setCityInfo(context, newCityInfo);
-                cityInfo.setValue(newCityInfo);
+    public void updateCityInfo(Place place) {
+        CityInfo newCityInfo = new CityInfo(place.getName().toString(), place.getLatLng());
+        Preferenses.setCityInfo(context, newCityInfo);
+        cityInfo.setValue(newCityInfo);
 
-                Timber.d("New cityInfo has been set! " + newCityInfo.toString());
-            }
+        Timber.d("New cityInfo has been set! " + newCityInfo.toString());
+    }
 
-            @Override
-            public void onError(@NonNull Throwable e) {}
-        });
-        dialog.show(fragmentManager, null);
+    public void updateInterval(Long newInterval) {
+        Preferenses.setIntervalTime(getApplication(), newInterval);
+        interval.setValue(newInterval);
     }
 }

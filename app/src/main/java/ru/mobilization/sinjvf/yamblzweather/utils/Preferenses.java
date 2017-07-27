@@ -7,10 +7,10 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import ru.mobilization.sinjvf.yamblzweather.screens.settings.CityInfo;
 
-import static ru.mobilization.sinjvf.yamblzweather.utils.Utils.TIME_10;
 
 /**
  * Created by Sinjvf on 16.07.2017.
@@ -44,8 +44,9 @@ public class Preferenses {
 
 
     private static String PREF_INTERVAL_TIME = "pref_interval_time";
+    private static final long DEFAULT_INTERVAL = TimeUnit.MINUTES.toMillis(Utils.TIME_10);
     public static long getIntervalTime(Context context) {
-        return getPrefs(context).getLong(PREF_INTERVAL_TIME, TIME_10* Utils.MINUTE);
+        return getPrefs(context).getLong(PREF_INTERVAL_TIME, DEFAULT_INTERVAL);
     }
 
     public static void setIntervalTime(Context context, long interval) {

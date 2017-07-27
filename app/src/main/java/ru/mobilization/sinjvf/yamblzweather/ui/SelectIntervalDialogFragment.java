@@ -1,6 +1,8 @@
 package ru.mobilization.sinjvf.yamblzweather.ui;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +17,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
 import ru.mobilization.sinjvf.yamblzweather.R;
+import ru.mobilization.sinjvf.yamblzweather.screens.settings.SettingsViewModel;
 import ru.mobilization.sinjvf.yamblzweather.utils.Preferenses;
 import ru.mobilization.sinjvf.yamblzweather.utils.Utils;
 import timber.log.Timber;
@@ -42,11 +42,8 @@ public class SelectIntervalDialogFragment extends DialogFragment {
     RadioButton radio60;
 
     Unbinder unbinder;
-    private SingleObserver<Long> action;
 
-    public void setAction(SingleObserver<Long> action) {
-        this.action = action;
-    }
+    private SettingsViewModel settingsModel;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.el_dialog_select_interval, container, false);
@@ -56,8 +53,14 @@ public class SelectIntervalDialogFragment extends DialogFragment {
         } catch (NullPointerException e){
             Timber.e(e.getMessage());
         }
-        setData();
         return v;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        settingsModel = ViewModelProviders.of(getActivity()).get(SettingsViewModel.class);
+        setData();
     }
 
     private void setData(){
@@ -98,10 +101,7 @@ public class SelectIntervalDialogFragment extends DialogFragment {
                 time = TimeUnit.MINUTES.toMillis(Utils.TIME_60);
                 break;
         }
-        if (action != null) {
-            // FIXME fromArray() -> just()
-            Single.fromObservable(Observable.fromArray(time)).subscribe(action);
-        }
+        settingsModel.updateInterval(time);
         dismiss();
     }
 
