@@ -23,7 +23,8 @@
         android:layout_below="@id/autocomplete_progress"
         android:inputType="textCapSentences"
         android:scrollbars="vertical"
-        android:hint="@string/city_autocomplete_hint"/>
+        android:hint="@string/city_autocomplete_hint"
+        android:imeOptions="flagNoExtractUi"/>
 
     <TextView
         android:id="@+id/autocomplete_error"
