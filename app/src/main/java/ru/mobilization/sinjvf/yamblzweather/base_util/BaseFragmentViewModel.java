@@ -82,27 +82,31 @@ public abstract class BaseFragmentViewModel extends AndroidViewModel {
 
             @Override
             public void onSuccess(@NonNull T response) {
-                progress.setValue(Utils.PROGRESS_SUCCESS);
+                updateProgress(Utils.PROGRESS_SUCCESS);
                 successListener.onSussecc(response);
             }
 
             @Override
             public void onError(@NonNull Throwable t) {
-                progress.setValue(Utils.PROGRESS_FAIL);
+                updateProgress(Utils.PROGRESS_FAIL);
                 String message;
                 Timber.e(t.getMessage());
                 //don't show strange errors in release
                 if (t instanceof UnknownHostException || t instanceof SocketTimeoutException) {
-                    message = context.getString(R.string.network_error);
+                    message = context.getString(R.string.error_network);
                 }else
                 if(BuildConfig.DEBUG)
                     message = t.getMessage();
                 else
-                    message = context.getString(R.string.oops_error);
+                    message = context.getString(R.string.error_oops);
                 DialogsFragment dialog = DialogsFragment.getInstance(context.getString(R.string.error), message, false);
                 dialog.show(fragmentManager, null);
-
             }
         };
+    }
+
+    private void updateProgress(int status) {
+        if (progress == null) progress = new MutableLiveData<>();
+        progress.setValue(status);
     }
 }

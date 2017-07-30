@@ -8,7 +8,7 @@ import android.support.annotation.Keep;
 
 
 import ru.mobilization.sinjvf.yamblzweather.events.OpenNewFragmentEvent;
-import ru.mobilization.sinjvf.yamblzweather.screens.main.MainFragment;
+import ru.mobilization.sinjvf.yamblzweather.screens.weather.WeatherFragment;
 
 /**
  * Created by Sinjvf on 11.07.2017.
@@ -26,7 +26,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     public LiveData<OpenNewFragmentEvent> getCurrentFragment() {
         if (currentFragment == null) {
             currentFragment = new MutableLiveData<>();
-            currentFragment.setValue(new OpenNewFragmentEvent(MainFragment.getInstance(), false));
+            currentFragment.setValue(new OpenNewFragmentEvent(WeatherFragment.getInstance(), false));
         }
         return currentFragment;
     }

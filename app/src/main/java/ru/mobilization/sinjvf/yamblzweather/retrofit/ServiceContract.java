@@ -28,6 +28,8 @@ class ServiceContract {
     static final String FIELD_APP_KEY = "appid";
     static final String FIELD_CITY_ID = "id";
     static final String FIELD_UNITS = "units";
+    static final String FIELD_LAT = "lat";
+    static final String FIELD_LON = "lon";
 
 
     static final String UNITS_METRIC = "metric";

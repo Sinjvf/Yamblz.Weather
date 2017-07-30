@@ -25,7 +25,6 @@ public class BaseFragment extends LifecycleFragment {
     protected BaseFragmentViewModel baseModel;
     protected Unbinder unbinder;
 
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -50,13 +49,10 @@ public class BaseFragment extends LifecycleFragment {
     }
 
     //if we have the progress bar and want to show\hide it
-    protected void setProgressStatus(Integer status){
+    protected void setProgressStatus(int status) {}
 
-    }
     //if we have args in fragment and want to get it
-    protected void getArgs(){
-
-    }
+    protected void getArgs() {}
 
     @Override
     public void onDestroyView() {

@@ -1,30 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-
     <string name="app_name">Погода</string>
     <string name="menu_tools">Настройки</string>
     <string name="menu_about">О программе</string>
-    <string name="menu_main">Погода</string>
+    <string name="menu_weather">Погода</string>
 
+    <string name="moscow_name">Москва</string>
 
     <string name="about_title">Приложение \"погода\"</string>
     <string name="about_descr">Приложение написано в рамках проекта \"Мобилизация\" компании Яндекс</string>
     <string name="about_author">Со всеми вопросами и пожеланиями обращайтесь по адресу: Sinjvf@yandex.ru</string>
-    <string name="about_version">Номер версии: %s </string>
+    <string name="about_version">Номер версии: %s</string>
     <string name="updating_interval">Интервал обновления</string>
     <string name="n_min">%d мин</string>
 
     <string name="wind">%d м/с</string>
 
-
     <string name="ok">ок</string>
     <string name="cancel">закрыть</string>
-    <string name="error">Ошибка</string>
-    <string name="network_error">Ошибка сети!\nПожалуйста, попробуйте позже</string>
-    <string name="oops_error">Упс, что-то пошло не так\nПожалуйста, попробуйте позже</string>
     <string name="last_update">Последнее обновление: %s</string>
 
+    <string name="settings_city_selection">Город</string>
+    <string name="city_autocomplete_hint">Введите название города</string>
+    <string name="settings_city_selection_title">Выбор города</string>
+    <string name="city_autocomplete_zero_predictions">Городов не найдено</string>
 
-
+    <string name="error">Ошибка</string>
+    <string name="error_with_explanation">Ошибка: %1$s</string>
+    <string name="error_network">Ошибка сети!\nПожалуйста, попробуйте позже</string>
+    <string name="error_connection">Ошибка соединения</string>
+    <string name="error_oops">Упс, что-то пошло не так\nПожалуйста, попробуйте позже</string>
+    <string name="error_gp_service_not_available">Google Play Services недоступны: %1$s</string>
 </resources>

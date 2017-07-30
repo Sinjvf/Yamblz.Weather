@@ -7,12 +7,12 @@
         translatable="false">Close navigation drawer</string>
 
     <string name="api_key" translatable="false">4910f098be51f2bea56f920eff28f314</string>
+    <string name="moscow_name">Moscow</string>
     <string name="moscow_id" translatable="false">524901</string>
 
     <string name="menu_tools">Settings</string>
     <string name="menu_about">About</string>
-    <string name="menu_main">Weather</string>
-
+    <string name="menu_weather">Weather</string>
 
     <string name="about_title">\"The weather\" application</string>
     <string name="about_descr">This application will show you the weather.\n
@@ -20,12 +20,8 @@
     <string name="about_author">With all questions and requests please contact Sinjvf@yandex.ru</string>
     <string name="about_version">Version number: %s</string>
 
-
     <string name="ok">ok</string>
     <string name="cancel">cancel</string>
-    <string name="error">Error</string>
-    <string name="network_error">Network error!\nPlease, try later</string>
-    <string name="oops_error">Oops, something wrong.\nPlease, try later</string>
     <string name="last_update">Last update at: %s</string>
     <string name="updating_interval">Updating interval</string>
     <string name="n_min">%d min</string>
@@ -33,10 +29,20 @@
     <string name="wind">%d m/s</string>
     <string name="percent" translatable="false">%d %%</string>
 
-
-
     <string name="main_tempr" translatable="false">%d °C</string>
     <string name="min_tempr" translatable="false">Min: %d °C</string>
     <string name="max_tempr" translatable="false">Max: %d °C</string>
     <string name="image_path" translatable="false">http://openweathermap.org/img/w/%s.png</string>
+
+    <string name="settings_city_selection">City</string>
+    <string name="city_autocomplete_hint">Enter city name</string>
+    <string name="settings_city_selection_title">City selection</string>
+    <string name="city_autocomplete_zero_predictions">No city suggestions</string>
+
+    <string name="error">Error</string>
+    <string name="error_with_explanation">Error: %1$s</string>
+    <string name="error_network">Network error!\nPlease, try later</string>
+    <string name="error_connection">Connection error</string>
+    <string name="error_oops">Oops, something wrong.\nPlease, try later</string>
+    <string name="error_gp_service_not_available">Google Play Services are not available: %1$s</string>
 </resources>

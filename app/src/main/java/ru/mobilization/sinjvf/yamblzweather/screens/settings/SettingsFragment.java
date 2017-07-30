@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -19,11 +20,19 @@ import ru.mobilization.sinjvf.yamblzweather.utils.Utils;
  * Fragment for settings screen
  */
 
-public class SettingsFragment extends BaseFragment{
-    SettingsViewModel localModel;
+public class SettingsFragment extends BaseFragment {
+
     @BindView(R.id.interval_text)
     TextView intervalView;
 
+    @BindView(R.id.city_name_title)
+    TextView cityTitleView;
+    @BindView(R.id.city_name_text)
+    TextView cityNameView;
+    @BindView(R.id.progress_city_selection)
+    ProgressBar progressCitySelection;
+
+    SettingsViewModel localModel;
 
     public static SettingsFragment getInstance(){
         return new SettingsFragment();
@@ -34,6 +43,7 @@ public class SettingsFragment extends BaseFragment{
         localModel = ViewModelProviders.of(getActivity()).get(SettingsViewModel.class);
         baseModel = localModel;
         localModel.getInterval().observe(this, this::setInterval);
+        localModel.getCityInfo().observe(this, this::setCityInfo);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -44,14 +54,14 @@ public class SettingsFragment extends BaseFragment{
     }
 
 
-    @OnClick(R.id.select_interval)
+    @OnClick(R.id.interval_selection)
     public void selectIntervalClicked(){
-        localModel.selectClicked();
+        localModel.selectIntervalClicked();
     }
 
-    @OnClick(R.id.interval_text)
-    public void selectIntervalTextClicked(){
-        localModel.selectClicked();
+    @OnClick(R.id.city_selection)
+    public void selectCityClicked() {
+        localModel.selectCityClicked();
     }
 
     public void setInterval(Long interval){
@@ -59,7 +69,24 @@ public class SettingsFragment extends BaseFragment{
         intervalView.setText(String.format(getString(R.string.n_min), minutes));
     }
 
+    public void setCityInfo(CityInfo cityInfo){
+        cityNameView.setText(cityInfo.getCityName());
+    }
 
-
+    @Override
+    protected void setProgressStatus(int status) {
+        switch (status) {
+            case Utils.PROGRESS_SHOW:
+                cityTitleView.setVisibility(View.GONE);
+                cityNameView.setVisibility(View.GONE);
+                progressCitySelection.setVisibility(View.VISIBLE);
+                break;
+            case Utils.PROGRESS_FAIL:
+            case Utils.PROGRESS_SUCCESS:
+                cityTitleView.setVisibility(View.VISIBLE);
+                cityNameView.setVisibility(View.VISIBLE);
+                progressCitySelection.setVisibility(View.GONE);
+                break;
+        }
+    }
 }
-
