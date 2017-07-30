@@ -41,12 +41,15 @@ android {
 }
 
 ext {
-    supportVers = '26.0.0-alpha1'
+    supportVers = '25.3.1'
     butterknifeVers = '8.7.0'
     retrofitVers = '2.1.0'
     okhttpVers = '3.4.1'
     rxJavaVers = '2.1.0'
     lifecycleVers = '1.0.0-alpha3'
+    mockitoVers = '2.8.47'
+    googlePlayServicesVers = '11.0.2'
+    espressoVers = '2.2.2'
 }
 
 dependencies {
@@ -71,15 +74,16 @@ dependencies {
 
     compile "io.reactivex.rxjava2:rxandroid:2.0.1"
     compile "io.reactivex.rxjava2:rxjava:$rxJavaVers"
+    compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
 
     compile "android.arch.lifecycle:runtime:$lifecycleVers"
     compile "android.arch.lifecycle:extensions:$lifecycleVers"
     annotationProcessor "android.arch.lifecycle:compiler:$lifecycleVers"
 
-    compile 'com.google.android.gms:play-services-places:11.0.2'
+    compile "com.google.android.gms:play-services-places:$googlePlayServicesVers"
 
     testCompile 'junit:junit:4.12'
-    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2.2'){
+    androidTestCompile ("com.android.support.test.espresso:espresso-contrib:$espressoVers"){
         exclude group: 'com.android.support', module: 'appcompat-v7'
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -87,7 +91,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'recyclerview-v7'
         exclude group: 'com.android.support', module: 'support-v4'
     }
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestCompile("com.android.support.test.espresso:espresso-core:$espressoVers", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
@@ -95,4 +99,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
+    testCompile 'com.squareup.okhttp3:mockwebserver:3.8.0'
+    testCompile "org.mockito:mockito-core:$mockitoVers"
+    testCompile "android.arch.core:core-testing:$lifecycleVers"
 }
