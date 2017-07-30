@@ -3,14 +3,14 @@
     <string name="app_name">Погода</string>
     <string name="menu_tools">Настройки</string>
     <string name="menu_about">О программе</string>
-    <string name="menu_main">Погода</string>
+    <string name="menu_weather">Погода</string>
 
     <string name="moscow_name">Москва</string>
 
     <string name="about_title">Приложение \"погода\"</string>
     <string name="about_descr">Приложение написано в рамках проекта \"Мобилизация\" компании Яндекс</string>
     <string name="about_author">Со всеми вопросами и пожеланиями обращайтесь по адресу: Sinjvf@yandex.ru</string>
-    <string name="about_version">Номер версии: %s </string>
+    <string name="about_version">Номер версии: %s</string>
     <string name="updating_interval">Интервал обновления</string>
     <string name="n_min">%d мин</string>
 

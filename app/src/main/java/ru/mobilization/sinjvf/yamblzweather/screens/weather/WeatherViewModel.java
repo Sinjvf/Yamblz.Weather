@@ -22,7 +22,6 @@ import timber.log.Timber;
  */
 @Keep
 public class WeatherViewModel extends BaseFragmentViewModel {
-    ServiceHandler serviceHandler = ServiceHandler.getInstance(getApplication().getApplicationContext());
 
     public WeatherViewModel(Application application) {
         super(application);
@@ -40,9 +39,13 @@ public class WeatherViewModel extends BaseFragmentViewModel {
     }
 
     public LiveData<WeatherResponse> getWeatherDataByCityCoords(LatLng cityCoords) {
+        return getWeatherDataByCityCoords(cityCoords, true);
+    }
+
+    public LiveData<WeatherResponse> getWeatherDataByCityCoords(LatLng cityCoords, boolean repeat) {
         if (weather == null) {
             weather = new MutableLiveData<>();
-            sendWeatherRequestByCityCoords(cityCoords);
+            sendWeatherRequestByCityCoords(cityCoords, repeat);
         }
         return weather;
     }
@@ -57,30 +60,45 @@ public class WeatherViewModel extends BaseFragmentViewModel {
 
     @Override
     protected int getTitleStringId() {
-        return R.string.menu_main;
+        return R.string.menu_weather;
     }
 
     public void sendWeatherRequestByCityId(String cityId){
         Timber.d("sendWeatherRequestByCityId:");
         SingleObserver<WeatherResponse> observer = getObserver(response -> {
-            weather.setValue(response);
-            Preferenses.setPrefLastTimeUpdate(context);
-            lastUpdateTime.setValue(Utils.lastUpdateString(context));
+            updateWeather(response);
+            updateInterval();
             handler.postDelayed(() -> sendWeatherRequestByCityId(cityId),
                     Preferenses.getIntervalTime(context));
         });
-        serviceHandler.getWeatherByCityId(cityId, observer);
+        ServiceHandler.getInstance(context).getWeatherByCityId(cityId, observer);
     }
 
     public void sendWeatherRequestByCityCoords(LatLng cityCoords){
+        sendWeatherRequestByCityCoords(cityCoords, true);
+    }
+
+    public void sendWeatherRequestByCityCoords(LatLng cityCoords, boolean repeat){
         Timber.d("sendWeatherRequestByCityCoords:");
         SingleObserver<WeatherResponse> observer = getObserver(response -> {
-            weather.setValue(response);
-            Preferenses.setPrefLastTimeUpdate(context);
-            lastUpdateTime.setValue(Utils.lastUpdateString(context));
-            handler.postDelayed(() -> sendWeatherRequestByCityCoords(cityCoords),
-                    Preferenses.getIntervalTime(context));
+            updateWeather(response);
+            updateInterval();
+            if (repeat) {
+                handler.postDelayed(() -> sendWeatherRequestByCityCoords(cityCoords, repeat),
+                        Preferenses.getIntervalTime(context));
+            }
         });
-        serviceHandler.getWeatherByCityCoords(cityCoords, observer);
+        ServiceHandler.getInstance(context).getWeatherByCityCoords(cityCoords, observer);
+    }
+
+    private void updateWeather(WeatherResponse response) {
+        if (weather == null) weather = new MutableLiveData<>();
+        weather.setValue(response);
+    }
+
+    private void updateInterval() {
+        Preferenses.setPrefLastTimeUpdate(context);
+        if (lastUpdateTime == null) lastUpdateTime = new MutableLiveData<>();
+        lastUpdateTime.setValue(Utils.lastUpdateString(context));
     }
 }

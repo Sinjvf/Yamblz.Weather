@@ -82,13 +82,13 @@ public abstract class BaseFragmentViewModel extends AndroidViewModel {
 
             @Override
             public void onSuccess(@NonNull T response) {
-                progress.setValue(Utils.PROGRESS_SUCCESS);
+                updateProgress(Utils.PROGRESS_SUCCESS);
                 successListener.onSussecc(response);
             }
 
             @Override
             public void onError(@NonNull Throwable t) {
-                progress.setValue(Utils.PROGRESS_FAIL);
+                updateProgress(Utils.PROGRESS_FAIL);
                 String message;
                 Timber.e(t.getMessage());
                 //don't show strange errors in release
@@ -101,8 +101,12 @@ public abstract class BaseFragmentViewModel extends AndroidViewModel {
                     message = context.getString(R.string.error_oops);
                 DialogsFragment dialog = DialogsFragment.getInstance(context.getString(R.string.error), message, false);
                 dialog.show(fragmentManager, null);
-
             }
         };
+    }
+
+    private void updateProgress(int status) {
+        if (progress == null) progress = new MutableLiveData<>();
+        progress.setValue(status);
     }
 }

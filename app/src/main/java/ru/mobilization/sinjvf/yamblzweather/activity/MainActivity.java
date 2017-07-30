@@ -82,7 +82,7 @@ public class MainActivity extends BaseActivity
         int id = item.getItemId();
         BaseFragment fgm;
         switch (id) {
-            case R.id.nav_main:
+            case R.id.nav_weather:
                 fgm = WeatherFragment.getInstance();
                 break;
             case R.id.nav_tools:
