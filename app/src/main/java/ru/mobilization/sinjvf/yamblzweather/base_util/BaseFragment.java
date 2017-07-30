@@ -20,7 +20,7 @@ import timber.log.Timber;
  * Parent class for fragments
  */
 
-public abstract class BaseFragment extends LifecycleFragment {
+public class BaseFragment extends LifecycleFragment {
     protected final String TAG = "tag:" + getClass().getSimpleName();
     protected BaseFragmentViewModel baseModel;
     protected Unbinder unbinder;
@@ -49,10 +49,10 @@ public abstract class BaseFragment extends LifecycleFragment {
     }
 
     //if we have the progress bar and want to show\hide it
-    protected abstract void setProgressStatus(int status);
+    protected void setProgressStatus(int status) {}
 
     //if we have args in fragment and want to get it
-    protected abstract void getArgs();
+    protected void getArgs() {}
 
     @Override
     public void onDestroyView() {

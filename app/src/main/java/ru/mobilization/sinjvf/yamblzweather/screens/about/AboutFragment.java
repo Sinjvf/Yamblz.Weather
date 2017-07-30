@@ -20,7 +20,7 @@ import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragment;
 
 public class AboutFragment extends BaseFragment {
     AboutViewModel localModel;
-    @BindView(R.id.vers_name)
+    @BindView(R.id.about_app_version)
     TextView versionName;
 
 
@@ -46,12 +46,6 @@ public class AboutFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         setVers();
     }
-
-    @Override
-    protected void setProgressStatus(int status) {}
-
-    @Override
-    protected void getArgs() {}
 
     private void setVers() {
         String name =  getString(R.string.about_version, BuildConfig.VERSION_NAME);

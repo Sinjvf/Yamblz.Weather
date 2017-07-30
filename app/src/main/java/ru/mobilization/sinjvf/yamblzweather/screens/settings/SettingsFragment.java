@@ -89,9 +89,4 @@ public class SettingsFragment extends BaseFragment {
                 break;
         }
     }
-
-    @Override
-    protected void getArgs() {
-        
-    }
 }
