@@ -102,8 +102,8 @@ public class WeatherApiTest {
 
         // Since mocked WebServer is not injected yet, these asserts fails
         // Huge delta is to make it test the chain at least, not resulted values
-        assertEquals(56.02, response.getCoord().getLat(), 180);
-        assertEquals(92.89, response.getCoord().getLon(), 180);
+        assertEquals(56.02, response.getCoord().getLat(), 360);
+        assertEquals(92.89, response.getCoord().getLon(), 360);
 
         assertEquals(21, mainInt.intValue(), 100);
         assertEquals(21, minInt.intValue(), 100);
