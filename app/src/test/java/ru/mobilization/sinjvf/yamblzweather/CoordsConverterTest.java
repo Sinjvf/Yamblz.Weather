@@ -30,6 +30,16 @@ public class CoordsConverterTest {
     }
 
     @Test
+    public void testFromStringToCoords_Valid_Comma() {
+        String coordsString = "89,0234234 177,2342";
+        LatLng latLng = CoordsConverter.fromStringToCoords(coordsString);
+        double expectedLatitude = 89.0234234;
+        double expectedLongitude = 177.2342;
+        assertEquals(expectedLatitude, latLng.latitude, 0);
+        assertEquals(expectedLongitude, latLng.longitude, 0);
+    }
+
+    @Test
     public void testFromStringToCoords_OutOfRange() {
         String coordsString = "899.0234234 1770.2342";
         LatLng latLng = CoordsConverter.fromStringToCoords(coordsString);
@@ -46,16 +56,9 @@ public class CoordsConverterTest {
     }
 
     @Test
-    public void testFromCoordsToString_Valid() {
+    public void testFromCoordsToString() {
         LatLng latLng = new LatLng(54.1234546465, 66.43214565);
         String coordsString = CoordsConverter.fromCoordsToString(latLng);
         assertEquals("54.1234546465 66.4321456500", coordsString);
-    }
-
-    @Test
-    public void testFromCoordsToString_Invalid() {
-        LatLng latLng = new LatLng(-54.1234546465, 66.43214565);
-        String coordsString = CoordsConverter.fromCoordsToString(latLng);
-        assertEquals("-54.1234546465 66.4321456500", coordsString);
     }
 }
