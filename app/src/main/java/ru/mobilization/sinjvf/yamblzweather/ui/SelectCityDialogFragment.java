@@ -35,6 +35,7 @@ import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import ru.mobilization.sinjvf.yamblzweather.R;
+import ru.mobilization.sinjvf.yamblzweather.screens.settings.CityInfo;
 import ru.mobilization.sinjvf.yamblzweather.screens.settings.SettingsViewModel;
 import timber.log.Timber;
 
@@ -62,6 +63,7 @@ public class SelectCityDialogFragment extends DialogFragment {
 
     private Handler mainHandler = new Handler(Looper.getMainLooper());
     private CompositeDisposable disposables = new CompositeDisposable();
+    private PlaceAutocompleteAdapter adapter;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.el_dialog_select_city, container, false);
@@ -97,7 +99,7 @@ public class SelectCityDialogFragment extends DialogFragment {
         AutocompleteFilter cityFilter = new AutocompleteFilter.Builder()
                 .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
                 .build();
-        PlaceAutocompleteAdapter adapter = new PlaceAutocompleteAdapter(getContext(), googleApiClient, null,
+        adapter = new PlaceAutocompleteAdapter(getContext(), googleApiClient, null,
                 cityFilter, callbackListener);
         autoCompleteTextView.setAdapter(adapter);
 
@@ -106,8 +108,9 @@ public class SelectCityDialogFragment extends DialogFragment {
                 .map(adapter::getItem)
                 .map(AutocompletePrediction::getPlaceId)
                 .switchMap(placeId -> getPlaceById(placeId).toObservable())
-                .subscribe(place -> {
-                    settingsModel.updateCityInfo(place);
+                .map(CityInfo::new)
+                .subscribe(cityInfo -> {
+                    settingsModel.updateCityInfo(cityInfo);
                     dismiss();
                 }, error -> {
                     Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
@@ -158,30 +161,48 @@ public class SelectCityDialogFragment extends DialogFragment {
     public void onDestroyView() {
         unbinder.unbind();
         disposables.dispose();
+        if (adapter != null) {
+            adapter.setCallbackListener(null);
+        }
+        callbackListener = null;
         super.onDestroyView();
     }
 
+    /** These view manipulation methods could be called from the background thread,
+     * so we use handler*/
     private void showError(String errorMsg) {
         mainHandler.post(() -> {
-            autoCompleteErrorView.setText(errorMsg);
-            autoCompleteErrorView.setVisibility(View.VISIBLE);
-            autoCompleteProgress.setVisibility(View.INVISIBLE);
+            if (autoCompleteErrorView != null && autoCompleteProgress != null) {
+                autoCompleteErrorView.setText(errorMsg);
+                autoCompleteErrorView.setVisibility(View.VISIBLE);
+                autoCompleteProgress.setVisibility(View.INVISIBLE);
+            }
         });
     }
 
     private void hideError() {
         mainHandler.post(() -> {
-            autoCompleteErrorView.setText("");
-            autoCompleteErrorView.setVisibility(View.GONE);
+            if (autoCompleteErrorView != null) {
+                autoCompleteErrorView.setText("");
+                autoCompleteErrorView.setVisibility(View.GONE);
+            }
         });
     }
 
     private void showLoading() {
-        mainHandler.post(() -> autoCompleteProgress.setVisibility(View.VISIBLE));
+        mainHandler.post(() -> {
+            if (autoCompleteProgress != null) {
+                autoCompleteProgress.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private void hideLoading() {
-        mainHandler.post(() -> autoCompleteProgress.setVisibility(View.INVISIBLE));
+        mainHandler.post(() -> {
+            if (autoCompleteProgress != null) {
+                autoCompleteProgress.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     private AutocompleteCallbackListener callbackListener = new AutocompleteCallbackListener() {

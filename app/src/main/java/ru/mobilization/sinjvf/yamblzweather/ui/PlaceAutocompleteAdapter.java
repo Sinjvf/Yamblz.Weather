@@ -42,19 +42,26 @@ public class PlaceAutocompleteAdapter
     private ArrayList<AutocompletePrediction> resultList;
 
     private GoogleApiClient googleApiClient;
+    @Nullable
     private LatLngBounds bounds;
+    @Nullable
     private AutocompleteFilter placeFilter;
+    @Nullable
     private AutocompleteCallbackListener callbackListener;
 
     public PlaceAutocompleteAdapter(@NonNull Context context,
                                     @NonNull GoogleApiClient googleApiClient,
                                     @Nullable LatLngBounds bounds,
                                     @Nullable AutocompleteFilter filter,
-                                    @NonNull AutocompleteCallbackListener callbackListener) {
+                                    @Nullable AutocompleteCallbackListener callbackListener) {
         super(context, android.R.layout.simple_expandable_list_item_2, android.R.id.text1);
         this.googleApiClient = googleApiClient;
         this.bounds = bounds;
         this.placeFilter = filter;
+        this.callbackListener = callbackListener;
+    }
+
+    public void setCallbackListener(AutocompleteCallbackListener callbackListener) {
         this.callbackListener = callbackListener;
     }
 
@@ -85,12 +92,12 @@ public class PlaceAutocompleteAdapter
     public Filter getFilter() {
         return new Filter() {
             @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
+            protected FilterResults performFiltering(CharSequence input) {
                 FilterResults results = new FilterResults();
 
                 ArrayList<AutocompletePrediction> filterData = new ArrayList<>();
-                if (constraint != null) {
-                    filterData = getAutocomplete(constraint);
+                if (input != null) {
+                    filterData = getAutocomplete(input);
                 }
 
                 results.values = filterData;
@@ -104,7 +111,7 @@ public class PlaceAutocompleteAdapter
             }
 
             @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
+            protected void publishResults(CharSequence input, FilterResults results) {
                 if (results != null && results.count > 0) {
                     resultList = (ArrayList<AutocompletePrediction>) results.values;
                     notifyDataSetChanged();
@@ -125,14 +132,17 @@ public class PlaceAutocompleteAdapter
         };
     }
 
-    private ArrayList<AutocompletePrediction> getAutocomplete(CharSequence constraint) {
-        callbackListener.onHideError();
-        callbackListener.onShowLoading();
+    private ArrayList<AutocompletePrediction> getAutocomplete(CharSequence input) {
+        if (callbackListener == null) {
+            return null;
+        }
+        hideError();
+        showLoading();
         if (googleApiClient.isConnected()) {
-            Timber.d("Starting autocomplete query for: " + constraint);
+            Timber.d("Starting autocomplete query for: " + input);
 
             PendingResult<AutocompletePredictionBuffer> results =
-                    Places.GeoDataApi.getAutocompletePredictions(googleApiClient, constraint.toString(), bounds, placeFilter);
+                    Places.GeoDataApi.getAutocompletePredictions(googleApiClient, input.toString(), bounds, placeFilter);
 
             // This method should have been called off the main UI thread
             AutocompletePredictionBuffer autocompletePredictions = results
@@ -141,7 +151,7 @@ public class PlaceAutocompleteAdapter
             // Confirm that the query completed successfully, otherwise return null
             final Status status = autocompletePredictions.getStatus();
             if (!status.isSuccess()) {
-                callbackListener.onError(R.string.error_connection);
+                sendError(R.string.error_connection);
                 Timber.e("Error getting autocomplete prediction API call: " + status.toString());
                 autocompletePredictions.release();
                 return null;
@@ -149,17 +159,41 @@ public class PlaceAutocompleteAdapter
 
             int predictionsCount = autocompletePredictions.getCount();
             if (predictionsCount == 0) {
-                callbackListener.onError(R.string.city_autocomplete_zero_predictions);
+                sendError(R.string.city_autocomplete_zero_predictions);
             }
             Timber.i("Query completed. Received " + predictionsCount + " predictions.");
 
-            callbackListener.onHideLoading();
+            hideLoading();
             // Freeze the results immutable representation that can be stored safely.
             return DataBufferUtils.freezeAndClose(autocompletePredictions);
         } else {
-            callbackListener.onError(R.string.error);
+            sendError(R.string.error);
             Timber.e("Google API client is not connected for autocomplete query.");
             return null;
+        }
+    }
+
+    private void sendError(@StringRes int stringRes) {
+        if (callbackListener != null) {
+            callbackListener.onError(stringRes);
+        }
+    }
+
+    private void hideError() {
+        if (callbackListener != null) {
+            callbackListener.onHideError();
+        }
+    }
+
+    private void hideLoading() {
+        if (callbackListener != null) {
+            callbackListener.onHideLoading();
+        }
+    }
+
+    private void showLoading() {
+        if (callbackListener != null) {
+            callbackListener.onShowLoading();
         }
     }
 

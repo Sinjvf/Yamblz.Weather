@@ -4,21 +4,13 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.Keep;
+import android.support.annotation.NonNull;
 
-import com.google.android.gms.location.places.Place;
-
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.SingleObserver;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
 import ru.mobilization.sinjvf.yamblzweather.R;
 import ru.mobilization.sinjvf.yamblzweather.base_util.BaseFragmentViewModel;
 import ru.mobilization.sinjvf.yamblzweather.ui.SelectCityDialogFragment;
 import ru.mobilization.sinjvf.yamblzweather.ui.SelectIntervalDialogFragment;
 import ru.mobilization.sinjvf.yamblzweather.utils.Preferenses;
-import ru.mobilization.sinjvf.yamblzweather.utils.Utils;
-import timber.log.Timber;
 
 /**
  * Created by Sinjvf on 09.07.2017.
@@ -34,6 +26,7 @@ public class SettingsViewModel extends BaseFragmentViewModel {
     protected MutableLiveData<Long> interval;
     protected MutableLiveData<CityInfo> cityInfo;
 
+    @NonNull
     public LiveData<Long> getInterval() {
         if (interval == null) {
             long savedInterval = Preferenses.getIntervalTime(context);
@@ -43,6 +36,7 @@ public class SettingsViewModel extends BaseFragmentViewModel {
         return interval;
     }
 
+    @NonNull
     public LiveData<CityInfo> getCityInfo() {
         if (cityInfo == null) {
             CityInfo savedCityInfo = Preferenses.getCityInfo(context);
@@ -65,16 +59,15 @@ public class SettingsViewModel extends BaseFragmentViewModel {
         new SelectCityDialogFragment().show(fragmentManager, null);
     }
 
-    public void updateCityInfo(Place place) {
-        CityInfo newCityInfo = new CityInfo(place.getName().toString(), place.getLatLng());
+    public void updateCityInfo(CityInfo newCityInfo) {
         Preferenses.setCityInfo(context, newCityInfo);
+        if (cityInfo == null) cityInfo = new MutableLiveData<>();
         cityInfo.setValue(newCityInfo);
-
-        Timber.d("New cityInfo has been set! " + newCityInfo.toString());
     }
 
     public void updateInterval(Long newInterval) {
-        Preferenses.setIntervalTime(getApplication(), newInterval);
+        Preferenses.setIntervalTime(context, newInterval);
+        if (interval == null) interval = new MutableLiveData<>();
         interval.setValue(newInterval);
     }
 }
