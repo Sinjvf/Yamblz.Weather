@@ -7,11 +7,17 @@ import android.support.annotation.Keep;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import io.reactivex.SingleObserver;
+import javax.inject.Inject;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
+import io.reactivex.schedulers.Schedulers;
 import ru.exwhythat.yather.R;
+import ru.exwhythat.yather.YatherApp;
 import ru.exwhythat.yather.base_util.BaseFragmentViewModel;
-import ru.exwhythat.yather.retrofit.ServiceHandler;
-import ru.exwhythat.yather.retrofit.data.WeatherResponse;
+import ru.exwhythat.yather.network.weather.WeatherItem;
+import ru.exwhythat.yather.repository.RemoteWeatherRepository;
 import ru.exwhythat.yather.utils.Preferenses;
 import ru.exwhythat.yather.utils.Utils;
 import timber.log.Timber;
@@ -23,35 +29,30 @@ import timber.log.Timber;
 @Keep
 public class WeatherViewModel extends BaseFragmentViewModel {
 
+    @Inject
+    RemoteWeatherRepository remoteWeatherRepository;
+
+    private Disposable weatherSubscription = Disposables.disposed();
+
     public WeatherViewModel(Application application) {
         super(application);
+        YatherApp.get(application).plusDataComponent().inject(this);
+        Timber.tag("wvmDebug").d("Data component injected!");
     }
 
-    protected MutableLiveData<WeatherResponse> weather;
+    protected MutableLiveData<WeatherItem> weather;
     protected MutableLiveData<String> lastUpdateTime;
 
-    public LiveData<WeatherResponse> getWeatherDataByCityId(String cityId) {
+    public LiveData<WeatherItem> getWeatherDataByCityCoords(LatLng cityCoords) {
         if (weather == null) {
             weather = new MutableLiveData<>();
-            sendWeatherRequestByCityId(cityId);
-        }
-        return weather;
-    }
-
-    public LiveData<WeatherResponse> getWeatherDataByCityCoords(LatLng cityCoords) {
-        return getWeatherDataByCityCoords(cityCoords, true);
-    }
-
-    public LiveData<WeatherResponse> getWeatherDataByCityCoords(LatLng cityCoords, boolean repeat) {
-        if (weather == null) {
-            weather = new MutableLiveData<>();
-            sendWeatherRequestByCityCoords(cityCoords, repeat);
+            sendWeatherRequestByCityCoords(cityCoords);
         }
         return weather;
     }
 
     public LiveData<String> getLastUpdate() {
-        if (lastUpdateTime == null){
+        if (lastUpdateTime == null) {
             lastUpdateTime = new MutableLiveData<>();
             lastUpdateTime.setValue(Utils.lastUpdateString(context));
         }
@@ -63,42 +64,40 @@ public class WeatherViewModel extends BaseFragmentViewModel {
         return R.string.menu_weather;
     }
 
-    public void sendWeatherRequestByCityId(String cityId){
-        Timber.d("sendWeatherRequestByCityId:");
-        SingleObserver<WeatherResponse> observer = getObserver(response -> {
-            updateWeather(response);
-            updateInterval();
-            handler.postDelayed(() -> sendWeatherRequestByCityId(cityId),
-                    Preferenses.getIntervalTime(context));
-        });
-        ServiceHandler.getInstance(context).getWeatherByCityId(cityId, observer);
+    public void sendWeatherRequestByCityCoords(LatLng cityCoords) {
+        weatherSubscription.dispose();
+        weatherSubscription = remoteWeatherRepository.getCurrentWeatherByLocation(cityCoords)
+                .map(WeatherItem::new)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onSuccess, this::onError);
     }
 
-    public void sendWeatherRequestByCityCoords(LatLng cityCoords){
-        sendWeatherRequestByCityCoords(cityCoords, true);
+    private void onSuccess(WeatherItem weather) {
+        updateWeather(weather);
+        updateInterval();
     }
 
-    public void sendWeatherRequestByCityCoords(LatLng cityCoords, boolean repeat){
-        Timber.d("sendWeatherRequestByCityCoords:");
-        SingleObserver<WeatherResponse> observer = getObserver(response -> {
-            updateWeather(response);
-            updateInterval();
-            if (repeat) {
-                handler.postDelayed(() -> sendWeatherRequestByCityCoords(cityCoords, repeat),
-                        Preferenses.getIntervalTime(context));
-            }
-        });
-        ServiceHandler.getInstance(context).getWeatherByCityCoords(cityCoords, observer);
+    private void onError(Throwable throwable) {
+        // TODO: how to show an error?
     }
 
-    private void updateWeather(WeatherResponse response) {
+    private void updateWeather(WeatherItem newWeather) {
         if (weather == null) weather = new MutableLiveData<>();
-        weather.setValue(response);
+        weather.setValue(newWeather);
     }
 
     private void updateInterval() {
         Preferenses.setPrefLastTimeUpdate(context);
         if (lastUpdateTime == null) lastUpdateTime = new MutableLiveData<>();
         lastUpdateTime.setValue(Utils.lastUpdateString(context));
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        weatherSubscription.dispose();
+        YatherApp.get(getApplication()).clearDataComponent();
+        Timber.tag("wvmDebug").d("Data component cleared!");
     }
 }

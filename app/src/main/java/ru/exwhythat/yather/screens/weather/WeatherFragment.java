@@ -15,10 +15,9 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import ru.exwhythat.yather.R;
+import ru.exwhythat.yather.network.weather.WeatherItem;
 import ru.exwhythat.yather.utils.Preferenses;
-import ru.exwhythat.yather.utils.Utils;
 import ru.exwhythat.yather.base_util.BaseFragment;
-import ru.exwhythat.yather.retrofit.data.WeatherResponse;
 import timber.log.Timber;
 
 /**
@@ -52,7 +51,6 @@ public class WeatherFragment extends BaseFragment implements SwipeRefreshLayout.
 
     WeatherViewModel localModel;
 
-    private String cityId;
     private LatLng cityCoords;
 
     public static WeatherFragment getInstance(){
@@ -64,14 +62,12 @@ public class WeatherFragment extends BaseFragment implements SwipeRefreshLayout.
         localModel = ViewModelProviders.of(this).get(WeatherViewModel.class);
         baseModel = localModel;
         super.onActivityCreated(savedInstanceState);
-        //before supermethod calling we have null fragment manager
         localModel.getWeatherDataByCityCoords(cityCoords).observe(this, this::setWeather);
         localModel.getLastUpdate().observe(this, this::setLastUpdate);
     }
 
     @Override
     protected void getArgs() {
-        cityId = getString(R.string.moscow_id);
         cityCoords = Preferenses.getCityInfo(getContext()).getCityCoords();
     }
 
@@ -87,32 +83,35 @@ public class WeatherFragment extends BaseFragment implements SwipeRefreshLayout.
         swipeRefreshLayout.setOnRefreshListener(this);
     }
 
-    public void setWeather(WeatherResponse resp){
-        // TODO: is it ok to get (localized!) city name from prefs right here?
+    private void setWeather(WeatherItem weather){
+        if (weather == null) {
+            setIsLoading(true);
+            return;
+        }
+        setWeatherDataToViews(weather);
+        loadWeatherIcon(weather.getImageUrlName());
+        setIsLoading(false);
+        Timber.d("setWeather: " + weather);
+    }
+
+    private void setWeatherDataToViews(WeatherItem weather) {
         String cityName = Preferenses.getCityInfo(getContext()).getCityName();
-        Integer mainInt = Utils.getDataWithoutException(() -> resp.getMain().getTemp().intValue());
-        Integer minInt = Utils.getDataWithoutException(() -> resp.getMain().getTempMin().intValue());
-        Integer maxInt = Utils.getDataWithoutException(() -> resp.getMain().getTempMax().intValue());
-        Integer humidity = Utils.getDataWithoutException(() -> resp.getMain().getHumidity());
-        Integer wind = Utils.getDataWithoutException(() -> resp.getWind().getSpeed().intValue());
-
         cityNameView.setText(cityName);
-        mainTempr.setText(getString(R.string.main_tempr, mainInt));
-        minTempr.setText(getString(R.string.min_tempr, minInt));
-        maxTempr.setText(getString(R.string.max_tempr, maxInt));
-        windView.setText(getString(R.string.wind, wind));
-        humidityView.setText(getString(R.string.percent, humidity));
+        mainTempr.setText(getString(R.string.main_tempr, weather.getMainTemp()));
+        minTempr.setText(getString(R.string.min_tempr, weather.getMinTemp()));
+        maxTempr.setText(getString(R.string.max_tempr, weather.getMaxTemp()));
+        windView.setText(getString(R.string.wind, weather.getWindSpeed()));
+        humidityView.setText(getString(R.string.percent, (int) weather.getHumidity()));
+    }
 
-        String imageName = Utils.getDataWithoutException(() -> resp.getWeather().get(0).getIcon());
-        if (imageName!=null) {
+    private void loadWeatherIcon(String imageName) {
+        if (imageName != null) {
             String imageFullPath = String.format(getString(R.string.image_path), imageName);
             Picasso.with(getContext())
                     .load(imageFullPath)
                     .fit()
                     .into(imageWeather);
         }
-
-        Timber.d(TAG, "setWeather: ");
     }
 
     private void setLastUpdate(String lastUpdate){
@@ -124,17 +123,9 @@ public class WeatherFragment extends BaseFragment implements SwipeRefreshLayout.
         localModel.sendWeatherRequestByCityCoords(cityCoords);
     }
 
-    protected void setProgressStatus(int status){
-        switch (status){
-            case Utils.PROGRESS_SUCCESS:
-                swipeRefreshLayout.setRefreshing(false);
-                mainLayout.setVisibility(View.VISIBLE);
-                break;
-            case Utils.PROGRESS_FAIL:
-                swipeRefreshLayout.setRefreshing(false);
-                mainLayout.setVisibility(View.GONE);
-                break;
-        }
+    private void setIsLoading(boolean isLoading) {
+        swipeRefreshLayout.setRefreshing(isLoading);
+        mainLayout.setVisibility(isLoading ? View.GONE : View.VISIBLE);
     }
 }
 

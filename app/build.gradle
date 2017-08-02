@@ -50,6 +50,9 @@ ext {
     mockitoVers = '2.8.47'
     googlePlayServicesVers = '11.0.2'
     espressoVers = '2.2.2'
+    daggerVers = '2.11'
+    stethoVers = '1.5.0'
+    leakCanaryVers = '1.5.1'
 }
 
 dependencies {
@@ -72,6 +75,9 @@ dependencies {
     annotationProcessor "com.jakewharton:butterknife-compiler:$butterknifeVers"
     compile 'com.jakewharton.timber:timber:4.5.1'
 
+    compile "com.google.dagger:dagger:$daggerVers"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVers"
+
     compile "io.reactivex.rxjava2:rxandroid:2.0.1"
     compile "io.reactivex.rxjava2:rxjava:$rxJavaVers"
     compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
@@ -81,6 +87,13 @@ dependencies {
     annotationProcessor "android.arch.lifecycle:compiler:$lifecycleVers"
 
     compile "com.google.android.gms:play-services-places:$googlePlayServicesVers"
+
+    compile "com.facebook.stetho:stetho:$stethoVers"
+    compile "com.facebook.stetho:stetho-okhttp3:$stethoVers"
+
+    debugCompile "com.squareup.leakcanary:leakcanary-android:$leakCanaryVers"
+    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVers"
+    testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVers"
 
     testCompile 'junit:junit:4.12'
     androidTestCompile ("com.android.support.test.espresso:espresso-contrib:$espressoVers"){
