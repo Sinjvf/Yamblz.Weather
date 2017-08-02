@@ -1,4 +1,4 @@
-package ru.exwhythat.yather.retrofit.data;
+package ru.exwhythat.yather.network.weather.parts;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -12,24 +12,16 @@ public class Coord {
 
     @SerializedName("lon")
     @Expose
-    private Double lon;
+    private double lon;
     @SerializedName("lat")
     @Expose
-    private Double lat;
+    private double lat;
 
-    public Double getLon() {
+    public double getLon() {
         return lon;
     }
 
-    public void setLon(Double lon) {
-        this.lon = lon;
-    }
-
-    public Double getLat() {
+    public double getLat() {
         return lat;
-    }
-
-    public void setLat(Double lat) {
-        this.lat = lat;
     }
 }

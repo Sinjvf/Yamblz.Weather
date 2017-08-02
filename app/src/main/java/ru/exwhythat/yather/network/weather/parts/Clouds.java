@@ -1,4 +1,4 @@
-package ru.exwhythat.yather.retrofit.data;
+package ru.exwhythat.yather.network.weather.parts;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -12,13 +12,9 @@ public class Clouds {
 
     @SerializedName("all")
     @Expose
-    private Integer all;
+    private int all;
 
-    public Integer getAll() {
+    public int getAll() {
         return all;
-    }
-
-    public void setAll(Integer all) {
-        this.all = all;
     }
 }

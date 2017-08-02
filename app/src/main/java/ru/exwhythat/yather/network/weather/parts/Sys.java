@@ -1,4 +1,4 @@
-package ru.exwhythat.yather.retrofit.data;
+package ru.exwhythat.yather.network.weather.parts;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -12,44 +12,44 @@ public class Sys {
 
     @SerializedName("type")
     @Expose
-    private Integer type;
+    private int type;
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private int id;
     @SerializedName("message")
     @Expose
-    private Double message;
+    private double message;
     @SerializedName("country")
     @Expose
     private String country;
     @SerializedName("sunrise")
     @Expose
-    private Integer sunrise;
+    private int sunrise;
     @SerializedName("sunset")
     @Expose
-    private Integer sunset;
+    private int sunset;
 
-    public Integer getType() {
+    public int getType() {
         return type;
     }
 
-    public void setType(Integer type) {
+    public void setType(int type) {
         this.type = type;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public Double getMessage() {
+    public double getMessage() {
         return message;
     }
 
-    public void setMessage(Double message) {
+    public void setMessage(double message) {
         this.message = message;
     }
 
@@ -61,19 +61,19 @@ public class Sys {
         this.country = country;
     }
 
-    public Integer getSunrise() {
+    public int getSunrise() {
         return sunrise;
     }
 
-    public void setSunrise(Integer sunrise) {
+    public void setSunrise(int sunrise) {
         this.sunrise = sunrise;
     }
 
-    public Integer getSunset() {
+    public int getSunset() {
         return sunset;
     }
 
-    public void setSunset(Integer sunset) {
+    public void setSunset(int sunset) {
         this.sunset = sunset;
     }
 }

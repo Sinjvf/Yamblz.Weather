@@ -1,4 +1,4 @@
-package ru.exwhythat.yather.retrofit.data;
+package ru.exwhythat.yather.network.weather.parts;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -12,24 +12,24 @@ public class Wind {
 
     @SerializedName("speed")
     @Expose
-    private Double speed;
+    private double speed;
     @SerializedName("deg")
     @Expose
-    private Double deg;
+    private double deg;
 
-    public Double getSpeed() {
+    public double getSpeed() {
         return speed;
     }
 
-    public void setSpeed(Double speed) {
+    public void setSpeed(double speed) {
         this.speed = speed;
     }
 
-    public Double getDeg() {
+    public double getDeg() {
         return deg;
     }
 
-    public void setDeg(Double deg) {
+    public void setDeg(double deg) {
         this.deg = deg;
     }
 }
