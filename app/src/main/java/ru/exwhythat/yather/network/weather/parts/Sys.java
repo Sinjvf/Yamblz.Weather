@@ -10,24 +10,20 @@ import com.google.gson.annotations.SerializedName;
 
 public class Sys {
 
-    @SerializedName("type")
-    @Expose
+    @SerializedName("type") @Expose
     private int type;
-    @SerializedName("id")
-    @Expose
+    @SerializedName("id") @Expose
     private int id;
-    @SerializedName("message")
-    @Expose
+    @SerializedName("message") @Expose
     private double message;
-    @SerializedName("country")
-    @Expose
+    @SerializedName("country") @Expose
     private String country;
-    @SerializedName("sunrise")
-    @Expose
+    @SerializedName("sunrise") @Expose
     private int sunrise;
-    @SerializedName("sunset")
-    @Expose
+    @SerializedName("sunset") @Expose
     private int sunset;
+    @SerializedName("pod") @Expose
+    private String pod;
 
     public int getType() {
         return type;
@@ -75,5 +71,13 @@ public class Sys {
 
     public void setSunset(int sunset) {
         this.sunset = sunset;
+    }
+
+    public String getPod() {
+        return pod;
+    }
+
+    public void setPod(String pod) {
+        this.pod = pod;
     }
 }

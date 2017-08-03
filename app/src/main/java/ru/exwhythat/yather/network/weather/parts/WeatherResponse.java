@@ -11,89 +11,146 @@ import java.util.List;
  * it is the response of weather request
  */
 
-public class WeatherResponse extends BaseResponse{
-    @SerializedName("coord")
-    @Expose
-    private Coord coord;
-    @SerializedName("weather")
-    @Expose
-    private List<Weather> weather = null;
-    @SerializedName("base")
-    @Expose
-    private String base;
-    @SerializedName("main")
-    @Expose
+public class WeatherResponse extends BaseResponse {
+
+    @SerializedName("dt") @Expose
+    private int dateCalculation;
+    @SerializedName("main") @Expose
     private Main main;
-    @SerializedName("visibility")
-    @Expose
-    private int visibility;
-    @SerializedName("wind")
-    @Expose
-    private Wind wind;
-    @SerializedName("clouds")
-    @Expose
+    @SerializedName("weather") @Expose
+    private List<Weather> weather = null;
+    @SerializedName("clouds") @Expose
     private Clouds clouds;
-    @SerializedName("dt")
-    @Expose
-    private int dt;
-    @SerializedName("sys")
-    @Expose
+    @SerializedName("rain") @Expose
+    private Rain rain;
+    @SerializedName("snow") @Expose
+    private Snow snow;
+    @SerializedName("wind") @Expose
+    private Wind wind;
+    @SerializedName("sys") @Expose
     private Sys sys;
-    @SerializedName("id")
-    @Expose
-    private int id;
-    @SerializedName("name")
-    @Expose
-    private String name;
-    @SerializedName("cod")
-    @Expose
+    @SerializedName("coord") @Expose
+    private Coord coord;
+    @SerializedName("base") @Expose
+    private String base;
+    @SerializedName("visibility") @Expose
+    private int visibility;
+    @SerializedName("id") @Expose
+    private int cityId;
+    @SerializedName("name") @Expose
+    private String cityName;
+    @SerializedName("cod") @Expose
     private int cod;
 
-    public Coord getCoord() {
-        return coord;
+    public int getDateCalculation() {
+        return dateCalculation;
     }
 
-    public List<Weather> getWeather() {
-        return weather;
-    }
-
-    public String getBase() {
-        return base;
+    public void setDateCalculation(int dateCalculation) {
+        this.dateCalculation = dateCalculation;
     }
 
     public Main getMain() {
         return main;
     }
 
-    public int getVisibility() {
-        return visibility;
+    public void setMain(Main main) {
+        this.main = main;
     }
 
-    public Wind getWind() {
-        return wind;
+    public List<Weather> getWeather() {
+        return weather;
+    }
+
+    public void setWeather(List<Weather> weather) {
+        this.weather = weather;
     }
 
     public Clouds getClouds() {
         return clouds;
     }
 
-    public int getDt() {
-        return dt;
+    public void setClouds(Clouds clouds) {
+        this.clouds = clouds;
+    }
+
+    public Rain getRain() {
+        return rain;
+    }
+
+    public void setRain(Rain rain) {
+        this.rain = rain;
+    }
+
+    public Snow getSnow() {
+        return snow;
+    }
+
+    public void setSnow(Snow snow) {
+        this.snow = snow;
+    }
+
+    public Wind getWind() {
+        return wind;
+    }
+
+    public void setWind(Wind wind) {
+        this.wind = wind;
     }
 
     public Sys getSys() {
         return sys;
     }
 
-    public int getId() {
-        return id;
+    public void setSys(Sys sys) {
+        this.sys = sys;
     }
 
-    public String getName() {
-        return name;
+    public Coord getCoord() {
+        return coord;
+    }
+
+    public void setCoord(Coord coord) {
+        this.coord = coord;
+    }
+
+    public String getBase() {
+        return base;
+    }
+
+    public void setBase(String base) {
+        this.base = base;
+    }
+
+    public int getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(int visibility) {
+        this.visibility = visibility;
+    }
+
+    public int getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(int cityId) {
+        this.cityId = cityId;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
     }
 
     public int getCod() {
         return cod;
+    }
+
+    public void setCod(int cod) {
+        this.cod = cod;
     }
 }
