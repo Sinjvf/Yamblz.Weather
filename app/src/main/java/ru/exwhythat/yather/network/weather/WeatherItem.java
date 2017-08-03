@@ -59,4 +59,33 @@ public class WeatherItem {
                 ", imageUrlName='" + imageUrlName + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof WeatherItem)) return false;
+
+        WeatherItem that = (WeatherItem) o;
+
+        if (mainTemp != that.mainTemp) return false;
+        if (minTemp != that.minTemp) return false;
+        if (maxTemp != that.maxTemp) return false;
+        if (Double.compare(that.humidity, humidity) != 0) return false;
+        if (windSpeed != that.windSpeed) return false;
+        return imageUrlName != null ? imageUrlName.equals(that.imageUrlName) : that.imageUrlName == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = mainTemp;
+        result = 31 * result + minTemp;
+        result = 31 * result + maxTemp;
+        temp = Double.doubleToLongBits(humidity);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + windSpeed;
+        result = 31 * result + (imageUrlName != null ? imageUrlName.hashCode() : 0);
+        return result;
+    }
 }
