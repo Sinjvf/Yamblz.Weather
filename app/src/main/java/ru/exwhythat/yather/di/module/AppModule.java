@@ -4,6 +4,8 @@ import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
@@ -12,7 +14,6 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.exwhythat.yather.BuildConfig;
-import ru.exwhythat.yather.di.DataScope;
 import ru.exwhythat.yather.network.weather.WeatherApi;
 import ru.exwhythat.yather.network.weather.WeatherApiKeyInsertInterceptor;
 
@@ -20,19 +21,19 @@ import ru.exwhythat.yather.network.weather.WeatherApiKeyInsertInterceptor;
  * Created by exwhythat on 01.08.17.
  */
 
-@Module
-public class NetworkModule {
+@Module(includes = ViewModelModule.class)
+public class AppModule {
 
     private static final String WEATHER_API_END_POINT = "http://api.openweathermap.org/data/2.5/";
 
+    @Singleton
     @Provides
-    @DataScope
     public Gson provideGson() {
         return new GsonBuilder().create();
     }
 
+    @Singleton
     @Provides
-    @DataScope
     OkHttpClient provideOkHttpClient() {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -45,8 +46,8 @@ public class NetworkModule {
         return builder.build();
     }
 
+    @Singleton
     @Provides
-    @DataScope
     WeatherApi provideWeatherApi(OkHttpClient baseHttpClient) {
         OkHttpClient weatherHttpClient = baseHttpClient.newBuilder()
                 .addInterceptor(new WeatherApiKeyInsertInterceptor())

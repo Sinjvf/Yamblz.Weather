@@ -1,5 +1,6 @@
 package ru.exwhythat.yather.screens.settings;
 
+import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,10 +10,13 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.base_util.BaseFragment;
+import ru.exwhythat.yather.di.Injectable;
 import ru.exwhythat.yather.utils.Utils;
 
 /**
@@ -20,7 +24,7 @@ import ru.exwhythat.yather.utils.Utils;
  * Fragment for settings screen
  */
 
-public class SettingsFragment extends BaseFragment {
+public class SettingsFragment extends BaseFragment implements Injectable {
 
     @BindView(R.id.interval_text)
     TextView intervalView;
@@ -32,6 +36,9 @@ public class SettingsFragment extends BaseFragment {
     @BindView(R.id.progress_city_selection)
     ProgressBar progressCitySelection;
 
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+
     SettingsViewModel localModel;
 
     public static SettingsFragment getInstance(){
@@ -40,7 +47,7 @@ public class SettingsFragment extends BaseFragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        localModel = ViewModelProviders.of(getActivity()).get(SettingsViewModel.class);
+        localModel = ViewModelProviders.of(getActivity(), viewModelFactory).get(SettingsViewModel.class);
         baseModel = localModel;
         localModel.getInterval().observe(this, this::setInterval);
         localModel.getCityInfo().observe(this, this::setCityInfo);

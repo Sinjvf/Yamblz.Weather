@@ -1,5 +1,6 @@
 package ru.exwhythat.yather.screens.weather;
 
+import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,8 +14,11 @@ import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
 import com.squareup.picasso.Picasso;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import ru.exwhythat.yather.R;
+import ru.exwhythat.yather.di.Injectable;
 import ru.exwhythat.yather.network.weather.WeatherItem;
 import ru.exwhythat.yather.utils.Preferenses;
 import ru.exwhythat.yather.base_util.BaseFragment;
@@ -25,7 +29,7 @@ import timber.log.Timber;
  * Fragment for weather screen - main application screen
  */
 
-public class WeatherFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener{
+public class WeatherFragment extends BaseFragment implements Injectable, SwipeRefreshLayout.OnRefreshListener {
 
     @BindView(R.id.city_name)
     TextView cityNameView;
@@ -49,7 +53,10 @@ public class WeatherFragment extends BaseFragment implements SwipeRefreshLayout.
 
     View mainLayout;
 
-    WeatherViewModel localModel;
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+
+    private WeatherViewModel localModel;
 
     private LatLng cityCoords;
 
@@ -59,7 +66,7 @@ public class WeatherFragment extends BaseFragment implements SwipeRefreshLayout.
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        localModel = ViewModelProviders.of(this).get(WeatherViewModel.class);
+        localModel = ViewModelProviders.of(this, viewModelFactory).get(WeatherViewModel.class);
         baseModel = localModel;
         super.onActivityCreated(savedInstanceState);
         localModel.getWeatherDataByCityCoords(cityCoords).observe(this, this::setWeather);

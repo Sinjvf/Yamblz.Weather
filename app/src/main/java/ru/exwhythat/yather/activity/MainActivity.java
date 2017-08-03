@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.design.widget.NavigationView;
@@ -15,8 +16,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.support.HasSupportFragmentInjector;
 import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.base_util.BaseActivity;
 import ru.exwhythat.yather.base_util.BaseFragment;
@@ -34,7 +39,7 @@ import timber.log.Timber;
 
 @Keep
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, MainActivityInterface {
+        implements NavigationView.OnNavigationItemSelectedListener, MainActivityInterface, HasSupportFragmentInjector {
 
     protected final String TAG = "tag:" + getClass().getSimpleName();
 
@@ -44,6 +49,9 @@ public class MainActivity extends BaseActivity
     Toolbar toolbar;
     @BindView(R.id.nav_view)
     NavigationView navigationView;
+
+    @Inject
+    DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
 
     MainActivityViewModel model;
 
@@ -116,5 +124,10 @@ public class MainActivity extends BaseActivity
             if (actionbar == null) return;
             actionbar.setTitle(title);
         }
+    }
+
+    @Override
+    public DispatchingAndroidInjector<Fragment> supportFragmentInjector() {
+        return dispatchingAndroidInjector;
     }
 }

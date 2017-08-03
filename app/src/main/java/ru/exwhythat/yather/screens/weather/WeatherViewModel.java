@@ -14,7 +14,6 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.schedulers.Schedulers;
 import ru.exwhythat.yather.R;
-import ru.exwhythat.yather.YatherApp;
 import ru.exwhythat.yather.base_util.BaseFragmentViewModel;
 import ru.exwhythat.yather.network.weather.WeatherItem;
 import ru.exwhythat.yather.repository.RemoteWeatherRepository;
@@ -29,19 +28,18 @@ import timber.log.Timber;
 @Keep
 public class WeatherViewModel extends BaseFragmentViewModel {
 
-    @Inject
-    RemoteWeatherRepository remoteWeatherRepository;
+    private RemoteWeatherRepository remoteWeatherRepository;
 
     private Disposable weatherSubscription = Disposables.disposed();
 
-    public WeatherViewModel(Application application) {
-        super(application);
-        YatherApp.get(application).plusDataComponent().inject(this);
-        Timber.tag("wvmDebug").d("Data component injected!");
-    }
-
     protected MutableLiveData<WeatherItem> weather;
     protected MutableLiveData<String> lastUpdateTime;
+
+    @Inject
+    public WeatherViewModel(Application application, RemoteWeatherRepository remoteWeatherRepository) {
+        super(application);
+        this.remoteWeatherRepository = remoteWeatherRepository;
+    }
 
     public LiveData<WeatherItem> getWeatherDataByCityCoords(LatLng cityCoords) {
         if (weather == null) {
@@ -97,7 +95,5 @@ public class WeatherViewModel extends BaseFragmentViewModel {
     protected void onCleared() {
         super.onCleared();
         weatherSubscription.dispose();
-        YatherApp.get(getApplication()).clearDataComponent();
-        Timber.tag("wvmDebug").d("Data component cleared!");
     }
 }

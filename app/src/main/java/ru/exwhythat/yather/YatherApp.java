@@ -1,17 +1,17 @@
 package ru.exwhythat.yather;
 
+import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.squareup.leakcanary.LeakCanary;
 
-import ru.exwhythat.yather.di.component.AppComponent;
-import ru.exwhythat.yather.di.component.DaggerAppComponent;
-import ru.exwhythat.yather.di.component.DataComponent;
-import ru.exwhythat.yather.di.module.ApplicationModule;
-import ru.exwhythat.yather.di.module.NetworkModule;
+import javax.inject.Inject;
+
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasActivityInjector;
+import ru.exwhythat.yather.di.AppInjector;
 import timber.log.Timber;
 
 /**
@@ -20,10 +20,10 @@ import timber.log.Timber;
  * Init some libraries' instances if need
  */
 
-public class YatherApp extends Application {
+public class YatherApp extends Application implements HasActivityInjector {
 
-    private AppComponent appComponent;
-    private DataComponent dataComponent;
+    @Inject
+    DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
 
     @Override
     public void onCreate() {
@@ -37,35 +37,19 @@ public class YatherApp extends Application {
         }
         LeakCanary.install(this);
 
-        appComponent = DaggerAppComponent.builder()
-                .applicationModule(new ApplicationModule(this))
-                .build();
-
         if (BuildConfig.DEBUG) {
             Timber.plant(new YatherDebugTree());
             Stetho.initializeWithDefaults(this);
         } else {
             Timber.plant(new CrashReportingTree());
         }
+
+        AppInjector.init(this);
     }
 
-    public DataComponent plusDataComponent() {
-        if (dataComponent == null) {
-            dataComponent = appComponent.plus(new NetworkModule());
-        }
-        return dataComponent;
-    }
-
-    public void clearDataComponent() {
-        dataComponent = null;
-    }
-
-    public AppComponent getAppComponent() {
-        return appComponent;
-    }
-
-    public static YatherApp get(Context context) {
-        return ((YatherApp)context.getApplicationContext());
+    @Override
+    public DispatchingAndroidInjector<Activity> activityInjector() {
+        return dispatchingAndroidInjector;
     }
 
     /** Customized Timber.DebugTree */

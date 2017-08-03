@@ -6,6 +6,8 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
+import javax.inject.Inject;
+
 import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.base_util.BaseFragmentViewModel;
 import ru.exwhythat.yather.ui.SelectCityDialogFragment;
@@ -19,6 +21,7 @@ import ru.exwhythat.yather.utils.Preferenses;
 @Keep
 public class SettingsViewModel extends BaseFragmentViewModel {
 
+    @Inject
     public SettingsViewModel(Application application) {
         super(application);
     }
