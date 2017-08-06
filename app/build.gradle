@@ -46,7 +46,7 @@ ext {
     retrofitVers = '2.1.0'
     okhttpVers = '3.4.1'
     rxJavaVers = '2.1.0'
-    lifecycleVers = '1.0.0-alpha8'
+    lifecycleVers = '1.0.0-alpha7'
     mockitoVers = '2.8.47'
     googlePlayServicesVers = '11.0.2'
     espressoVers = '2.2.2'
@@ -88,6 +88,9 @@ dependencies {
     compile "android.arch.lifecycle:runtime:$lifecycleVers"
     compile "android.arch.lifecycle:extensions:$lifecycleVers"
     annotationProcessor "android.arch.lifecycle:compiler:$lifecycleVers"
+    compile "android.arch.persistence.room:runtime:$lifecycleVers"
+    annotationProcessor "android.arch.persistence.room:compiler:$lifecycleVers"
+    compile "android.arch.persistence.room:rxjava2:$lifecycleVers"
 
     compile "com.google.android.gms:play-services-places:$googlePlayServicesVers"
 
