@@ -4,6 +4,7 @@ import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
 import ru.exwhythat.yather.screens.settings.SettingsFragment;
 import ru.exwhythat.yather.screens.weather.WeatherFragment;
+import ru.exwhythat.yather.ui.SelectCityDialogFragment;
 
 /**
  * Created by exwhythat on 03.08.17.
@@ -16,4 +17,7 @@ public abstract class FragmentBuilderModule {
 
     @ContributesAndroidInjector
     abstract SettingsFragment contributeSettingsFragment();
+
+    @ContributesAndroidInjector
+    abstract SelectCityDialogFragment contributeSelectCityDialogFragment();
 }

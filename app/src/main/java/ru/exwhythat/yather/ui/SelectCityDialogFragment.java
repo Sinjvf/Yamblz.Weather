@@ -27,14 +27,20 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import ru.exwhythat.yather.R;
+import ru.exwhythat.yather.data.repository.RemoteWeatherRepository;
+import ru.exwhythat.yather.di.Injectable;
 import ru.exwhythat.yather.screens.settings.CityInfo;
 import ru.exwhythat.yather.screens.settings.SettingsViewModel;
 import timber.log.Timber;
@@ -46,7 +52,7 @@ import static ru.exwhythat.yather.ui.PlaceAutocompleteAdapter.*;
  * Class for showing dialogs to user
  */
 
-public class SelectCityDialogFragment extends DialogFragment {
+public class SelectCityDialogFragment extends DialogFragment implements Injectable {
 
     @BindView(R.id.autocomplete_cities)
     AutoCompleteTextView autoCompleteTextView;
@@ -59,6 +65,9 @@ public class SelectCityDialogFragment extends DialogFragment {
 
     private GoogleApiClient googleApiClient;
 
+    @Inject
+    RemoteWeatherRepository remoteRepo;
+
     Unbinder unbinder;
 
     private Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -70,7 +79,7 @@ public class SelectCityDialogFragment extends DialogFragment {
         Window window = getDialog().getWindow();
         if (window != null) {
             window.requestFeature(Window.FEATURE_NO_TITLE);
-            window.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
+            window.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
         }
         unbinder = ButterKnife.bind(this, v);
         return v;
@@ -108,13 +117,19 @@ public class SelectCityDialogFragment extends DialogFragment {
                 .map(adapter::getItem)
                 .map(AutocompletePrediction::getPlaceId)
                 .switchMap(placeId -> getPlaceById(placeId).toObservable())
-                .map(CityInfo::new)
-                .subscribe(cityInfo -> {
-                    settingsModel.updateCityInfo(cityInfo);
+                .map(place -> remoteRepo.getCityIdByLatLng(place.getLatLng())
+                        .map(cityId -> new CityInfo(place.getName().toString(), cityId))
+                        .subscribeOn(Schedulers.io())
+                )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(cityInfoSingle -> {
+                    settingsModel.updateSelectedCity(cityInfoSingle);
                     dismiss();
                 }, error -> {
                     Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                     Timber.e("Place query did not complete. Error: " + error.getMessage());
+                    dismiss();
                 });
         disposables.add(updatePlaceSubscription);
     }
@@ -140,7 +155,6 @@ public class SelectCityDialogFragment extends DialogFragment {
                             ", coords=[" + place.getLatLng().latitude + ", " + place.getLatLng().longitude + "]");
                     emit.onSuccess(place);
                 }
-                emit.setCancellable(places::release);
             });
         });
     }

@@ -25,7 +25,7 @@ public class Utils {
     public static final int TIME_60 = 60;
 
     public static String lastUpdateString(Context context) {
-        Date date = new Date(Preferenses.getPrefLastTimeUpdateDate(context));
+        Date date = new Date(Prefs.getPrefLastTimeUpdateDate(context));
         SimpleDateFormat sf = new SimpleDateFormat(" HH:mm, dd.MM.yy ", Locale.getDefault());
         return sf.format(date);
     }

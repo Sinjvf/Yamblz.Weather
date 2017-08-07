@@ -5,8 +5,10 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
+import ru.exwhythat.yather.data.local.CityDao;
 import ru.exwhythat.yather.data.local.CurrentWeatherDao;
 import ru.exwhythat.yather.data.local.ForecastWeatherDao;
+import ru.exwhythat.yather.data.local.entities.City;
 import ru.exwhythat.yather.data.local.entities.CurrentWeather;
 import ru.exwhythat.yather.data.local.entities.ForecastWeather;
 
@@ -16,11 +18,14 @@ import ru.exwhythat.yather.data.local.entities.ForecastWeather;
 
 public class LocalWeatherRepository implements WeatherRepository {
 
+    private final CityDao cityDao;
     private final CurrentWeatherDao currentWeatherDao;
     private final ForecastWeatherDao forecastWeatherDao;
 
     @Inject
-    public LocalWeatherRepository(CurrentWeatherDao currentWeatherDao, ForecastWeatherDao forecastWeatherDao) {
+    public LocalWeatherRepository(CityDao cityDao, CurrentWeatherDao currentWeatherDao,
+                                  ForecastWeatherDao forecastWeatherDao) {
+        this.cityDao = cityDao;
         this.currentWeatherDao = currentWeatherDao;
         this.forecastWeatherDao = forecastWeatherDao;
     }
@@ -44,5 +49,9 @@ public class LocalWeatherRepository implements WeatherRepository {
             forecastWeatherDao.deleteForCity(forecast.get(0).getApiCityId());
             forecastWeatherDao.insertAll(forecast);
         }
+    }
+
+    public void addNewCity(City city) {
+        cityDao.insert(city);
     }
 }

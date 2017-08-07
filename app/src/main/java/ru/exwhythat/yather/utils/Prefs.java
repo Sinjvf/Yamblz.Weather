@@ -16,11 +16,20 @@ import ru.exwhythat.yather.screens.settings.CityInfo;
  * works with shared preference
  */
 
-public class Preferenses {
+public class Prefs {
     private static final String PACKAGE = "ru.exwhythat.yather";
 
-    private static SharedPreferences getPrefs(Context context) {
+    public static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PACKAGE, Context.MODE_PRIVATE);
+    }
+
+    public static final String PREF_UNITS = "pref_units";
+    public static void setUnits(Context context, String units) {
+        getPrefs(context).edit().putString(PREF_UNITS, units).apply();
+    }
+
+    public static String getUnits(Context context, String defaultUnits) {
+        return getPrefs(context).getString(PREF_UNITS, defaultUnits);
     }
 
 
@@ -53,17 +62,33 @@ public class Preferenses {
     }
 
     //region CityInfo Preferences
-    public static final CityInfo DEFAULT_CITY_INFO = new CityInfo("Moscow", 55, 37);
+    public static final CityInfo DEFAULT_CITY_INFO = new CityInfo("Moscow", 524901);
 
-    public static void setCityInfo(Context context, CityInfo cityInfo) {
+    public static void setSelectedCity(Context context, CityInfo cityInfo) {
         setCityName(context, cityInfo.getCityName());
-        setCityCoords(context, cityInfo.getCityCoords());
+        setCityId(context, cityInfo.getCityId());
     }
 
-    public static CityInfo getCityInfo(Context context) {
+    /*public static void setSelectedCity(Context context, CityInfo cityInfo) {
+        setCityName(context, cityInfo.getCityName());
+        setCityCoords(context, cityInfo.getCityCoords());
+    }*/
+
+    public static CityInfo getSelectedCity(Context context) {
+        int cityId = getCityId(context);
         String cityName = getCityName(context);
-        LatLng cityCoords = getCityCoords(context);
-        return new CityInfo(cityName, cityCoords);
+        return new CityInfo(cityName, cityId);
+        //LatLng cityCoords = getCityCoords(context);
+        //return new CityInfo(cityName, cityCoords);
+    }
+
+    public static final String PREF_CITY_ID = "pref_city_id";
+    private static int getCityId(Context context) {
+        return getPrefs(context).getInt(PREF_CITY_ID, DEFAULT_CITY_INFO.getCityId());
+    }
+
+    private static void setCityId(Context context, int cityId) {
+        getPrefs(context).edit().putInt(PREF_CITY_ID, cityId).apply();
     }
 
     public static final String PREF_CITY_NAME = "pref_city_name";
@@ -75,7 +100,7 @@ public class Preferenses {
         getPrefs(context).edit().putString(PREF_CITY_NAME, cityName).apply();
     }
 
-    public static final String PREF_CITY_COORDS = "pref_city_coords";
+    /*public static final String PREF_CITY_COORDS = "pref_city_coords";
     private static LatLng getCityCoords(Context context) {
         String defaultCoords = getDefaultCoordsAsString();
         String strCoords = getPrefs(context).getString(PREF_CITY_COORDS, defaultCoords);
@@ -90,6 +115,6 @@ public class Preferenses {
     private static String getDefaultCoordsAsString() {
         LatLng defaultCoords = DEFAULT_CITY_INFO.getCityCoords();
         return CoordsConverter.fromCoordsToString(defaultCoords);
-    }
+    }*/
     //endregion
 }

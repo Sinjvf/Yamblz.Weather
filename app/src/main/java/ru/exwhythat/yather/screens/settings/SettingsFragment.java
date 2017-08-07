@@ -16,6 +16,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.base_util.BaseFragment;
+import ru.exwhythat.yather.data.repository.RemoteWeatherRepository;
 import ru.exwhythat.yather.di.Injectable;
 import ru.exwhythat.yather.utils.Utils;
 
@@ -38,6 +39,9 @@ public class SettingsFragment extends BaseFragment implements Injectable {
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
+
+    @Inject
+    RemoteWeatherRepository remoteRepo;
 
     SettingsViewModel localModel;
 
@@ -95,5 +99,9 @@ public class SettingsFragment extends BaseFragment implements Injectable {
                 progressCitySelection.setVisibility(View.GONE);
                 break;
         }
+    }
+
+    public RemoteWeatherRepository getRemoteRepo() {
+        return remoteRepo;
     }
 }

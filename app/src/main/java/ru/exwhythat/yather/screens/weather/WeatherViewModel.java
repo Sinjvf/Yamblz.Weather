@@ -5,8 +5,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.Keep;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -15,9 +13,9 @@ import io.reactivex.disposables.Disposables;
 import io.reactivex.schedulers.Schedulers;
 import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.base_util.BaseFragmentViewModel;
-import ru.exwhythat.yather.network.weather.WeatherItem;
-import ru.exwhythat.yather.repository.RemoteWeatherRepository;
-import ru.exwhythat.yather.utils.Preferenses;
+import ru.exwhythat.yather.data.local.entities.CurrentWeather;
+import ru.exwhythat.yather.data.repository.WeatherRepo;
+import ru.exwhythat.yather.utils.Prefs;
 import ru.exwhythat.yather.utils.Utils;
 import timber.log.Timber;
 
@@ -28,23 +26,23 @@ import timber.log.Timber;
 @Keep
 public class WeatherViewModel extends BaseFragmentViewModel {
 
-    private RemoteWeatherRepository remoteWeatherRepository;
+    private WeatherRepo weatherRepo;
 
     private Disposable weatherSubscription = Disposables.disposed();
 
-    protected MutableLiveData<WeatherItem> weather;
+    protected MutableLiveData<CurrentWeather> weather;
     protected MutableLiveData<String> lastUpdateTime;
 
     @Inject
-    public WeatherViewModel(Application application, RemoteWeatherRepository remoteWeatherRepository) {
+    public WeatherViewModel(Application application, WeatherRepo weatherRepo) {
         super(application);
-        this.remoteWeatherRepository = remoteWeatherRepository;
+        this.weatherRepo = weatherRepo;
     }
 
-    public LiveData<WeatherItem> getWeatherDataByCityCoords(LatLng cityCoords) {
+    public LiveData<CurrentWeather> getWeatherForSelectedCity() {
         if (weather == null) {
             weather = new MutableLiveData<>();
-            sendWeatherRequestByCityCoords(cityCoords);
+            getWeatherFromDbOrNetwork();
         }
         return weather;
     }
@@ -62,31 +60,39 @@ public class WeatherViewModel extends BaseFragmentViewModel {
         return R.string.menu_weather;
     }
 
-    public void sendWeatherRequestByCityCoords(LatLng cityCoords) {
+    public void getWeatherFromDbOrNetwork() {
         weatherSubscription.dispose();
-        weatherSubscription = remoteWeatherRepository.getCurrentWeatherByLocation(cityCoords)
-                .map(WeatherItem::new)
+        weatherSubscription = weatherRepo.getWeatherForSelectedCity()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onSuccess, this::onError);
+                .subscribe(this::onNext, this::onError);
     }
 
-    private void onSuccess(WeatherItem weather) {
+    public void forceUpdateCurrentWeather() {
+        weatherSubscription.dispose();
+        weatherSubscription = weatherRepo.getFreshWeatherForSelectedCity()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onNext, this::onError);
+    }
+
+    private void onNext(CurrentWeather weather) {
         updateWeather(weather);
         updateInterval();
     }
 
     private void onError(Throwable throwable) {
         // TODO: how to show an error?
+        Timber.e(throwable);
     }
 
-    private void updateWeather(WeatherItem newWeather) {
+    private void updateWeather(CurrentWeather newWeather) {
         if (weather == null) weather = new MutableLiveData<>();
         weather.setValue(newWeather);
     }
 
     private void updateInterval() {
-        Preferenses.setPrefLastTimeUpdate(context);
+        Prefs.setPrefLastTimeUpdate(context);
         if (lastUpdateTime == null) lastUpdateTime = new MutableLiveData<>();
         lastUpdateTime.setValue(Utils.lastUpdateString(context));
     }

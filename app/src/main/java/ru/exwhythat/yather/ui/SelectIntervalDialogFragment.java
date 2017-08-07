@@ -19,7 +19,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.screens.settings.SettingsViewModel;
-import ru.exwhythat.yather.utils.Preferenses;
+import ru.exwhythat.yather.utils.Prefs;
 import ru.exwhythat.yather.utils.Utils;
 import timber.log.Timber;
 
@@ -68,7 +68,7 @@ public class SelectIntervalDialogFragment extends DialogFragment {
         radio15.setText(getString(R.string.n_min, Utils.TIME_15));
         radio30.setText(getString(R.string.n_min, Utils.TIME_30));
         radio60.setText(getString(R.string.n_min, Utils.TIME_60));
-        switch ((int)(Preferenses.getIntervalTime(getContext())/Utils.MINUTE)){
+        switch ((int)(Prefs.getIntervalTime(getContext())/Utils.MINUTE)){
             case Utils.TIME_15:
                 radio15.setChecked(true);
                 break;

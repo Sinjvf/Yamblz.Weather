@@ -1,7 +1,12 @@
 package ru.exwhythat.yather.di.module;
 
 import android.app.Application;
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Room;
+import android.arch.persistence.room.RoomDatabase;
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
 
 import javax.inject.Singleton;
 
@@ -11,6 +16,7 @@ import ru.exwhythat.yather.data.local.CityDao;
 import ru.exwhythat.yather.data.local.CurrentWeatherDao;
 import ru.exwhythat.yather.data.local.ForecastWeatherDao;
 import ru.exwhythat.yather.data.local.YatherDb;
+import ru.exwhythat.yather.utils.Prefs;
 
 /**
  * Created by exwhythat on 8/6/17.
@@ -22,7 +28,19 @@ public class DbModule {
     @Singleton
     @Provides
     YatherDb provideDb(Application application) {
-        return Room.databaseBuilder(application, YatherDb.class, "yather.db").build();
+        return Room.databaseBuilder(application, YatherDb.class, "yather.db")
+                .addCallback(new RoomDatabase.Callback() {
+                    @Override
+                    public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                        super.onCreate(db);
+                        // FIXME: insert default city on database creation
+                        ContentValues cv = new ContentValues();
+                        cv.put("apiCityId", Prefs.DEFAULT_CITY_INFO.getCityId());
+                        cv.put("name", Prefs.DEFAULT_CITY_INFO.getCityName());
+                        db.insert("city", SQLiteDatabase.CONFLICT_REPLACE, cv);
+                    }
+                })
+                .build();
     }
 
     @Singleton

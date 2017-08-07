@@ -18,9 +18,9 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import ru.exwhythat.yather.R;
+import ru.exwhythat.yather.data.local.entities.CurrentWeather;
 import ru.exwhythat.yather.di.Injectable;
-import ru.exwhythat.yather.network.weather.WeatherItem;
-import ru.exwhythat.yather.utils.Preferenses;
+import ru.exwhythat.yather.utils.Prefs;
 import ru.exwhythat.yather.base_util.BaseFragment;
 import timber.log.Timber;
 
@@ -58,7 +58,7 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
 
     private WeatherViewModel localModel;
 
-    private LatLng cityCoords;
+    private int cityId;
 
     public static WeatherFragment getInstance(){
         return new WeatherFragment();
@@ -69,13 +69,14 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
         localModel = ViewModelProviders.of(this, viewModelFactory).get(WeatherViewModel.class);
         baseModel = localModel;
         super.onActivityCreated(savedInstanceState);
-        localModel.getWeatherDataByCityCoords(cityCoords).observe(this, this::setWeather);
+        //cityId = Prefs.getSelectedCity(getContext()).getCityId();
+        localModel.getWeatherForSelectedCity().observe(this, this::setWeather);
         localModel.getLastUpdate().observe(this, this::setLastUpdate);
     }
 
     @Override
     protected void getArgs() {
-        cityCoords = Preferenses.getCityInfo(getContext()).getCityCoords();
+        cityId = Prefs.getSelectedCity(getContext()).getCityId();
     }
 
     @Override
@@ -90,25 +91,23 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
         swipeRefreshLayout.setOnRefreshListener(this);
     }
 
-    private void setWeather(WeatherItem weather){
+    private void setWeather(CurrentWeather weather){
         if (weather == null) {
             setIsLoading(true);
             return;
         }
         setWeatherDataToViews(weather);
-        loadWeatherIcon(weather.getImageUrlName());
+        loadWeatherIcon(weather.getBaseWeather().getIconId());
         setIsLoading(false);
         Timber.d("setWeather: " + weather);
     }
 
-    private void setWeatherDataToViews(WeatherItem weather) {
-        String cityName = Preferenses.getCityInfo(getContext()).getCityName();
+    private void setWeatherDataToViews(CurrentWeather weather) {
+        String cityName = Prefs.getSelectedCity(getContext()).getCityName();
         cityNameView.setText(cityName);
-        mainTempr.setText(getString(R.string.main_tempr, weather.getMainTemp()));
-        minTempr.setText(getString(R.string.min_tempr, weather.getMinTemp()));
-        maxTempr.setText(getString(R.string.max_tempr, weather.getMaxTemp()));
-        windView.setText(getString(R.string.wind, weather.getWindSpeed()));
-        humidityView.setText(getString(R.string.percent, (int) weather.getHumidity()));
+        mainTempr.setText(getString(R.string.main_tempr, (int)weather.getBaseWeather().getTemp()));
+        windView.setText(getString(R.string.wind, (int)weather.getWindSpeed()));
+        humidityView.setText(getString(R.string.percent, (int)weather.getHumidity()));
     }
 
     private void loadWeatherIcon(String imageName) {
@@ -127,7 +126,7 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
 
     @Override
     public void onRefresh() {
-        localModel.sendWeatherRequestByCityCoords(cityCoords);
+        localModel.forceUpdateCurrentWeather();
     }
 
     private void setIsLoading(boolean isLoading) {

@@ -1,7 +1,7 @@
 package ru.exwhythat.yather.screens.settings;
 
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.maps.model.LatLng;
+
+import ru.exwhythat.yather.data.local.entities.City;
 
 /**
  * Created by exwhythat on 24.07.17.
@@ -9,54 +9,51 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class CityInfo {
 
+    private int cityId;
     private String cityName;
-    private LatLng cityCoords;
 
-    public CityInfo(String cityName, LatLng cityCoords) {
+    public CityInfo(String cityName, int cityId) {
         this.cityName = cityName;
-        this.cityCoords = cityCoords;
+        this.cityId = cityId;
     }
 
-    public CityInfo(String cityName, double latitude, double longitude) {
-        this.cityName = cityName;
-        this.cityCoords = new LatLng(latitude, longitude);
+    public static class Mapper {
+        public static City toCity(CityInfo cityInfo) {
+            return new City(cityInfo.getCityId(), cityInfo.getCityName());
+        }
     }
 
-    public CityInfo(Place place) {
-        this.cityName = place.getName().toString();
-        this.cityCoords = place.getLatLng();
+    public int getCityId() {
+        return cityId;
     }
 
     public String getCityName() {
         return cityName;
     }
 
-    public LatLng getCityCoords() {
-        return cityCoords;
-    }
-
     @Override
     public String toString() {
-        return "Place name=" + cityName +
-                ", coords=[" + cityCoords.latitude + ", " + cityCoords.longitude + "]";
+        return "CityInfo{" +
+                "cityId=" + cityId +
+                ", cityName='" + cityName + '\'' +
+                '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof CityInfo)) return false;
 
         CityInfo cityInfo = (CityInfo) o;
 
-        if (!cityName.equals(cityInfo.cityName)) return false;
-        return cityCoords.equals(cityInfo.cityCoords);
-
+        if (cityId != cityInfo.cityId) return false;
+        return cityName.equals(cityInfo.cityName);
     }
 
     @Override
     public int hashCode() {
-        int result = cityName.hashCode();
-        result = 31 * result + cityCoords.hashCode();
+        int result = cityId;
+        result = 31 * result + cityName.hashCode();
         return result;
     }
 }
