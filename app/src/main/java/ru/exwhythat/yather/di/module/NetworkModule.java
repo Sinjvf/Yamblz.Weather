@@ -1,5 +1,7 @@
 package ru.exwhythat.yather.di.module;
 
+import android.content.Context;
+
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,8 +16,8 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.exwhythat.yather.BuildConfig;
-import ru.exwhythat.yather.network.weather.WeatherApi;
-import ru.exwhythat.yather.network.weather.WeatherApiKeyInsertInterceptor;
+import ru.exwhythat.yather.data.remote.WeatherApi;
+import ru.exwhythat.yather.data.remote.WeatherApiInterceptor;
 
 /**
  * Created by exwhythat on 8/4/17.
@@ -48,9 +50,9 @@ public class NetworkModule {
 
     @Singleton
     @Provides
-    WeatherApi provideWeatherApi(OkHttpClient baseHttpClient) {
+    WeatherApi provideWeatherApi(Context context, OkHttpClient baseHttpClient) {
         OkHttpClient weatherHttpClient = baseHttpClient.newBuilder()
-                .addInterceptor(new WeatherApiKeyInsertInterceptor())
+                .addInterceptor(new WeatherApiInterceptor(context))
                 .build();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(WEATHER_API_END_POINT)
