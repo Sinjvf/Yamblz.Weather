@@ -2,10 +2,12 @@ package ru.exwhythat.yather;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 import javax.inject.Inject;
 
@@ -22,6 +24,8 @@ import timber.log.Timber;
 
 public class YatherApp extends Application implements HasActivityInjector {
 
+    private RefWatcher refWatcher;
+
     @Inject
     DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
 
@@ -35,7 +39,7 @@ public class YatherApp extends Application implements HasActivityInjector {
             // You should not init your app in this process.
             return;
         }
-        LeakCanary.install(this);
+        refWatcher = LeakCanary.install(this);
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new YatherDebugTree());
@@ -45,6 +49,11 @@ public class YatherApp extends Application implements HasActivityInjector {
         }
 
         AppInjector.init(this);
+    }
+
+    public static RefWatcher getRefWatcher(Context context) {
+        YatherApp application = (YatherApp) context.getApplicationContext();
+        return application.refWatcher;
     }
 
     @Override

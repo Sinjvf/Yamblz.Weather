@@ -92,7 +92,7 @@ public class MainActivity extends BaseActivity
         if (event.isAddToBackStack()) {
             fm.beginTransaction()
                     .addToBackStack(null)
-                    .setCustomAnimations(R.anim.my_fade_in, R.anim.my_fade_out, R.anim.my_fade_in, R.anim.my_fade_out)
+                    .setCustomAnimations(R.anim.fast_fade_in, R.anim.fast_fade_out, R.anim.fast_fade_in, R.anim.fast_fade_out)
                     .replace(R.id.fragment_container, event.getFgm())
                     .commit();
         } else {

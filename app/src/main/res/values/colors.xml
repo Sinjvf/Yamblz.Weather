@@ -8,5 +8,6 @@
 
     <color name="greyText">#888888</color>
 
+    <color name="mainText">#ffffffaa</color>
 
 </resources>

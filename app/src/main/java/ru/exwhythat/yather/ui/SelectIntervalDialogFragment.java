@@ -18,6 +18,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import ru.exwhythat.yather.R;
+import ru.exwhythat.yather.YatherApp;
 import ru.exwhythat.yather.screens.settings.SettingsViewModel;
 import ru.exwhythat.yather.utils.Prefs;
 import ru.exwhythat.yather.utils.Utils;
@@ -110,5 +111,11 @@ public class SelectIntervalDialogFragment extends DialogFragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        YatherApp.getRefWatcher(getActivity()).watch(this);
     }
 }

@@ -39,6 +39,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import ru.exwhythat.yather.R;
+import ru.exwhythat.yather.YatherApp;
 import ru.exwhythat.yather.data.repository.RemoteWeatherRepository;
 import ru.exwhythat.yather.di.Injectable;
 import ru.exwhythat.yather.screens.settings.CityInfo;
@@ -180,6 +181,12 @@ public class SelectCityDialogFragment extends DialogFragment implements Injectab
         }
         callbackListener = null;
         super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        YatherApp.getRefWatcher(getActivity()).watch(this);
     }
 
     /** These view manipulation methods could be called from the background thread,

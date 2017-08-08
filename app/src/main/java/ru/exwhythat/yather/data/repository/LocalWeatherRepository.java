@@ -54,4 +54,12 @@ public class LocalWeatherRepository implements WeatherRepository {
     public void addNewCity(City city) {
         cityDao.insert(city);
     }
+
+    public Flowable<List<City>> getCities() {
+        return cityDao.getAll();
+    }
+
+    public City getCityById(int cityId) {
+        return cityDao.getById(cityId);
+    }
 }

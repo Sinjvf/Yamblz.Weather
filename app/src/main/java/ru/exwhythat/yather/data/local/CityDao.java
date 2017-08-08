@@ -25,7 +25,7 @@ public interface CityDao {
     Flowable<List<City>> getAll();
 
     @Query("SELECT * FROM city WHERE apiCityId = :cityId")
-    Flowable<City> getById(int cityId);
+    City getById(int cityId);
 
     @Delete
     int deleteCity(City city);

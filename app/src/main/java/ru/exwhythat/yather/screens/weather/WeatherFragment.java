@@ -5,14 +5,18 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -50,11 +54,14 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
     @BindView(R.id.swipe_refresh)
     SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.main_layout)
-
     View mainLayout;
+    @BindView(R.id.citiesRecycler)
+    RecyclerView citiesRecycler;
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
+
+    private CitiesAdapter adapter;
 
     private WeatherViewModel localModel;
 
@@ -69,9 +76,27 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
         localModel = ViewModelProviders.of(this, viewModelFactory).get(WeatherViewModel.class);
         baseModel = localModel;
         super.onActivityCreated(savedInstanceState);
-        //cityId = Prefs.getSelectedCity(getContext()).getCityId();
         localModel.getWeatherForSelectedCity().observe(this, this::setWeather);
         localModel.getLastUpdate().observe(this, this::setLastUpdate);
+
+        adapter = new CitiesAdapter(getContext(), new ArrayList<>(), this, this::onCitySelected);
+        initRecyclerView(adapter);
+
+        localModel.getCities().observe(this, cities -> adapter.updateCities(cities));
+    }
+
+    private void onCitySelected(int cityId) {
+        localModel.onCitySelected(cityId);
+    }
+
+    private void initRecyclerView(CitiesAdapter adapter) {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(
+                getContext(), LinearLayoutManager.HORIZONTAL, false);
+        citiesRecycler.setLayoutManager(layoutManager);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
+                layoutManager.getOrientation());
+        citiesRecycler.addItemDecoration(dividerItemDecoration);
+        citiesRecycler.setAdapter(adapter);
     }
 
     @Override

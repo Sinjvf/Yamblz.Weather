@@ -7,6 +7,7 @@ import android.view.View;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import ru.exwhythat.yather.YatherApp;
 import ru.exwhythat.yather.activity.MainActivityInterface;
 import timber.log.Timber;
 
@@ -53,5 +54,11 @@ public class BaseFragment extends LifecycleFragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        YatherApp.getRefWatcher(getActivity()).watch(this);
     }
 }

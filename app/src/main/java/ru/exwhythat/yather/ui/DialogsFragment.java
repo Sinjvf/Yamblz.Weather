@@ -17,6 +17,7 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import ru.exwhythat.yather.R;
+import ru.exwhythat.yather.YatherApp;
 import timber.log.Timber;
 
 /**
@@ -111,6 +112,11 @@ public class DialogsFragment extends DialogFragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        YatherApp.getRefWatcher(getActivity()).watch(this);
     }
 }

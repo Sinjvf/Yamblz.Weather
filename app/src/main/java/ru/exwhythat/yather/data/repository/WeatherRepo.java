@@ -7,6 +7,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
+import ru.exwhythat.yather.data.local.entities.City;
 import ru.exwhythat.yather.data.local.entities.CurrentWeather;
 import ru.exwhythat.yather.data.local.entities.ForecastWeather;
 import ru.exwhythat.yather.utils.Prefs;
@@ -65,5 +66,13 @@ public class WeatherRepo {
     public Flowable<List<ForecastWeather>> getFreshForecastForCity(int cityId) {
         return remoteRepo.getForecastForCity(cityId)
                 .doOnNext(forecast -> localRepo.updateForecast(forecast));
+    }
+
+    public Flowable<List<City>> getCities() {
+        return localRepo.getCities();
+    }
+
+    public City getCityById(int cityId) {
+        return localRepo.getCityById(cityId);
     }
 }
