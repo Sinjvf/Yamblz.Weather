@@ -8,11 +8,8 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 
 
@@ -27,7 +24,6 @@ import ru.exwhythat.yather.base_util.BaseActivity;
 import ru.exwhythat.yather.base_util.BaseFragment;
 import ru.exwhythat.yather.events.OpenNewFragmentEvent;
 import ru.exwhythat.yather.screens.about.AboutFragment;
-import ru.exwhythat.yather.screens.weather.WeatherFragment;
 import ru.exwhythat.yather.screens.settings.SettingsFragment;
 import timber.log.Timber;
 
@@ -39,19 +35,17 @@ import timber.log.Timber;
 
 @Keep
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, MainActivityInterface, HasSupportFragmentInjector {
+        implements MainActivityInterface, HasSupportFragmentInjector, FragmentManager.OnBackStackChangedListener {
 
     protected final String TAG = "tag:" + getClass().getSimpleName();
 
-    @BindView(R.id.drawer_layout)
-    DrawerLayout drawer;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.nav_view)
-    NavigationView navigationView;
 
     @Inject
     DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
+
+    private Menu menu;
 
     MainActivityViewModel model;
 
@@ -63,36 +57,23 @@ public class MainActivity extends BaseActivity
         model = ViewModelProviders.of(this).get(MainActivityViewModel.class);
         model.getCurrentFragment().observe(this, this::changeFragment);
         setSupportActionBar(toolbar);
-        initDrawer();
-
         Timber.tag(TAG);
-    }
 
-    private void initDrawer() {
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-        navigationView.setNavigationItemSelectedListener(this);
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
+        setToolbarHomeAsUpAndMenu();
     }
 
     @Override
-    public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        this.menu = menu;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
+    public boolean onOptionsItemSelected(MenuItem item) {
         BaseFragment fgm;
-        switch (id) {
-            case R.id.nav_weather:
-                fgm = WeatherFragment.getInstance();
-                break;
+        switch (item.getItemId()) {
             case R.id.nav_tools:
                 fgm = SettingsFragment.getInstance();
                 break;
@@ -100,19 +81,24 @@ public class MainActivity extends BaseActivity
                 fgm = AboutFragment.getInstance();
                 break;
             default:
-                fgm = WeatherFragment.getInstance();
+                return super.onOptionsItemSelected(item);
         }
-        model.changeFragmentEvent(new OpenNewFragmentEvent(fgm, false));
-        drawer.closeDrawer(GravityCompat.START);
+        model.changeFragmentEvent(new OpenNewFragmentEvent(fgm, true));
         return true;
     }
 
     public void changeFragment(@NonNull OpenNewFragmentEvent event) {
         FragmentManager fm = getSupportFragmentManager();
         if (event.isAddToBackStack()) {
-            fm.beginTransaction().addToBackStack(null).replace(R.id.fragment_container, event.getFgm()).commit();
+            fm.beginTransaction()
+                    .addToBackStack(null)
+                    .setCustomAnimations(R.anim.my_fade_in, R.anim.my_fade_out, R.anim.my_fade_in, R.anim.my_fade_out)
+                    .replace(R.id.fragment_container, event.getFgm())
+                    .commit();
         } else {
-            fm.beginTransaction().replace(R.id.fragment_container, event.getFgm()).commit();
+            fm.beginTransaction()
+                    .replace(R.id.fragment_container, event.getFgm())
+                    .commit();
         }
     }
 
@@ -129,5 +115,32 @@ public class MainActivity extends BaseActivity
     @Override
     public DispatchingAndroidInjector<Fragment> supportFragmentInjector() {
         return dispatchingAndroidInjector;
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        setToolbarHomeAsUpAndMenu();
+    }
+
+    public void setToolbarHomeAsUpAndMenu(){
+        //Enable Up button only if there are entries in the back stack
+        boolean canback = getSupportFragmentManager().getBackStackEntryCount() > 0;
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setDisplayHomeAsUpEnabled(canback);
+        }
+        setMenuVisibility(!canback);
+    }
+
+    private void setMenuVisibility(boolean isVisible) {
+        if (menu != null) {
+            menu.setGroupVisible(R.id.nav_group, isVisible);
+        }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        getSupportFragmentManager().popBackStack();
+        return true;
     }
 }
