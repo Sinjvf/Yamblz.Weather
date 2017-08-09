@@ -26,7 +26,7 @@ public interface ForecastWeatherDao {
     @Query("SELECT * FROM forecastweather")
     Flowable<List<ForecastWeather>> getAll();
 
-    @Query("SELECT * FROM forecastweather WHERE apiCityId = :cityId")
+    @Query("SELECT * FROM forecastweather WHERE apiCityId = :cityId ORDER BY date")
     Flowable<List<ForecastWeather>> getForCity(int cityId);
 
     @Query("DELETE FROM forecastweather WHERE apiCityId = :cityId")

@@ -33,9 +33,8 @@ public class WeatherRepo {
         Flowable<CurrentWeather> loadFromDb = localRepo.getCurrentWeatherForCity(cityId);
         Flowable<CurrentWeather> fetchFromNetwork = remoteRepo.getCurrentWeatherForCity(cityId);
 
-        Flowable<CurrentWeather> concattedWeather = Flowable.merge(loadFromDb, fetchFromNetwork)
+        return Flowable.merge(loadFromDb, fetchFromNetwork)
                 .filter(weather -> weather != null);
-        return concattedWeather;
     }
 
     public Flowable<CurrentWeather> getWeatherForSelectedCity() {
@@ -53,18 +52,14 @@ public class WeatherRepo {
                 .doOnNext(currentWeather -> localRepo.updateCurrentWeather(currentWeather));
     }
 
-    public Flowable<List<ForecastWeather>> getForecastForCity(int cityId) {
-
-        Flowable<List<ForecastWeather>> loadFromDb = localRepo.getForecastForCity(cityId);
-        Flowable<List<ForecastWeather>> fetchFromNetwork = remoteRepo.getForecastForCity(cityId);
-
-        Flowable<List<ForecastWeather>> concattedWeather = Flowable.concat(loadFromDb, fetchFromNetwork);
-
-        return concattedWeather;
-    }
-
     public Flowable<List<ForecastWeather>> getFreshForecastForCity(int cityId) {
         return remoteRepo.getForecastForCity(cityId)
+                .doOnNext(forecast -> localRepo.updateForecast(forecast));
+    }
+
+    public Flowable<List<ForecastWeather>> getFreshForecastForSelectedCity() {
+        int selectedCityId = Prefs.getSelectedCity(appContext).getCityId();
+        return remoteRepo.getForecastForCity(selectedCityId)
                 .doOnNext(forecast -> localRepo.updateForecast(forecast));
     }
 

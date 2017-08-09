@@ -21,6 +21,9 @@
     <dimen name="margin_huge">64dp</dimen>
 
     <dimen name="list_item_height">72dp</dimen>
+    <dimen name="forecast_list_item_height">72dp</dimen>
 
     <dimen name="progress_bar_size">48dp</dimen>
+    <dimen name="forecast_list_text_size">24sp</dimen>
+    <dimen name="forecast_list_text_tempr_size">20sp</dimen>
 </resources>

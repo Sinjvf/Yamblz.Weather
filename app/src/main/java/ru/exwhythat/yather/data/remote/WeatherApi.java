@@ -4,7 +4,7 @@ package ru.exwhythat.yather.data.remote;
 import io.reactivex.Single;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
-import ru.exwhythat.yather.data.remote.model.ForecastResponse;
+import ru.exwhythat.yather.data.remote.model.DailyForecastResponse;
 import ru.exwhythat.yather.data.remote.model.WeatherResponse;
 
 /**
@@ -20,6 +20,7 @@ public interface WeatherApi {
     Single<WeatherResponse> getWeatherByLocation(@Query("lat") double lat,
                                               @Query("lon") double lon);
 
-    @GET("forecast")
-    Single<ForecastResponse> getForecastByCityId(@Query("id") int cityId);
+    /** @param daysCount maximum 16 */
+    @GET("forecast/daily")
+    Single<DailyForecastResponse> getForecastByCityId(@Query("id") int cityId, @Query("cnt") int daysCount);
 }

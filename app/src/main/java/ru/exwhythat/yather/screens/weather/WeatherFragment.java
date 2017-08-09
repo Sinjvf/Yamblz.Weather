@@ -13,10 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -34,6 +34,8 @@ import timber.log.Timber;
  */
 
 public class WeatherFragment extends BaseFragment implements Injectable, SwipeRefreshLayout.OnRefreshListener {
+
+    public static final String TAG = "WeatherFragment";
 
     @BindView(R.id.city_name)
     TextView cityNameView;
@@ -57,11 +59,14 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
     View mainLayout;
     @BindView(R.id.citiesRecycler)
     RecyclerView citiesRecycler;
+    @BindView(R.id.forecastRecycler)
+    RecyclerView forecastRecycler;
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
 
-    private CitiesAdapter adapter;
+    private CitiesAdapter citiesAdapter;
+    private ForecastAdapter forecastAdapter;
 
     private WeatherViewModel localModel;
 
@@ -79,17 +84,24 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
         localModel.getWeatherForSelectedCity().observe(this, this::setWeather);
         localModel.getLastUpdate().observe(this, this::setLastUpdate);
 
-        adapter = new CitiesAdapter(getContext(), new ArrayList<>(), this, this::onCitySelected);
-        initRecyclerView(adapter);
+        citiesAdapter = new CitiesAdapter(getContext(), this, this::onCitySelected);
+        initCitiesRecycler(citiesAdapter);
+        localModel.getCities().observe(this, cities -> citiesAdapter.updateCities(cities));
 
-        localModel.getCities().observe(this, cities -> adapter.updateCities(cities));
+        forecastAdapter = new ForecastAdapter(getContext(), this, this::onForecastClicked);
+        initForecastRecycler(forecastAdapter);
+        localModel.getForecast().observe(this, forecast -> forecastAdapter.updateForecast(forecast));
     }
 
     private void onCitySelected(int cityId) {
         localModel.onCitySelected(cityId);
     }
 
-    private void initRecyclerView(CitiesAdapter adapter) {
+    private void onForecastClicked(int forecastItemId) {
+        Toast.makeText(getContext(), "Forecast clicked: "  + forecastItemId, Toast.LENGTH_SHORT).show();
+    }
+
+    private void initCitiesRecycler(CitiesAdapter adapter) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(
                 getContext(), LinearLayoutManager.HORIZONTAL, false);
         citiesRecycler.setLayoutManager(layoutManager);
@@ -97,6 +109,16 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
                 layoutManager.getOrientation());
         citiesRecycler.addItemDecoration(dividerItemDecoration);
         citiesRecycler.setAdapter(adapter);
+    }
+
+    private void initForecastRecycler(ForecastAdapter adapter) {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(
+                getContext(), LinearLayoutManager.VERTICAL, false);
+        forecastRecycler.setLayoutManager(layoutManager);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
+                layoutManager.getOrientation());
+        forecastRecycler.addItemDecoration(dividerItemDecoration);
+        forecastRecycler.setAdapter(adapter);
     }
 
     @Override
@@ -130,7 +152,7 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
     private void setWeatherDataToViews(CurrentWeather weather) {
         String cityName = Prefs.getSelectedCity(getContext()).getCityName();
         cityNameView.setText(cityName);
-        mainTempr.setText(getString(R.string.main_tempr, (int)weather.getBaseWeather().getTemp()));
+        mainTempr.setText(getString(R.string.main_tempr, (int)weather.getTemp()));
         windView.setText(getString(R.string.wind, (int)weather.getWindSpeed()));
         humidityView.setText(getString(R.string.percent, (int)weather.getHumidity()));
     }

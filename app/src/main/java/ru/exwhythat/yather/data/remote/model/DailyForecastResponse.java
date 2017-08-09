@@ -14,7 +14,7 @@ import ru.exwhythat.yather.data.local.entities.ForecastWeather;
  * Created by exwhythat on 8/3/17.
  */
 
-public class ForecastResponse extends BaseResponse {
+public class DailyForecastResponse extends BaseResponse {
 
     @SerializedName("cod") @Expose
     private String cod;
@@ -23,24 +23,25 @@ public class ForecastResponse extends BaseResponse {
     @SerializedName("cnt") @Expose
     private int responseLinesCount;
     @SerializedName("list") @Expose
-    private List<ForecastList> list = null;
+    private List<DailyForecast> list = null;
     @SerializedName("city") @Expose
     private City city;
     
     public static class Mapper {
-        public static List<ForecastWeather> toForecast(ForecastResponse response) {
+        public static List<ForecastWeather> toForecast(DailyForecastResponse response) {
             List<ForecastWeather> result = new ArrayList<>();
 
-            for (ForecastList forecast: response.getList()) {
+            for (DailyForecast forecast: response.getList()) {
                 String main = forecast.getWeather().get(0).getMain();
                 String descr = forecast.getWeather().get(0).getDescription();
                 String icon = forecast.getWeather().get(0).getIcon();
-                long date = forecast.getDt();
-                double temp = forecast.getMain().getTemp();
-                BaseWeather baseWeather = new BaseWeather(main, descr, icon, new Date(date), temp);
+                long date = forecast.getDateUnix();
+                BaseWeather baseWeather = new BaseWeather(main, descr, icon, new Date(date*1000));
 
                 int apiCityId = response.getCity().getId();
-                result.add(new ForecastWeather(baseWeather, apiCityId));
+                double dayTemp = forecast.getTemp().getDay();
+                double nightTemp = forecast.getTemp().getNight();
+                result.add(new ForecastWeather(baseWeather, apiCityId, dayTemp, nightTemp));
             }
 
             return result;
@@ -71,11 +72,11 @@ public class ForecastResponse extends BaseResponse {
         this.responseLinesCount = responseLinesCount;
     }
 
-    public List<ForecastList> getList() {
+    public List<DailyForecast> getList() {
         return list;
     }
 
-    public void setList(List<ForecastList> list) {
+    public void setList(List<DailyForecast> list) {
         this.list = list;
     }
 

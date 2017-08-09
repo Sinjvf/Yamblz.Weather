@@ -12,14 +12,12 @@ public class BaseWeather {
     private String descr;
     private String iconId;
     private Date date;
-    private double temp;
 
-    public BaseWeather(String main, String descr, String iconId, Date date, double temp) {
+    public BaseWeather(String main, String descr, String iconId, Date date) {
         this.main = main;
         this.descr = descr;
         this.iconId = iconId;
         this.date = date;
-        this.temp = temp;
     }
 
     public String getMain() {
@@ -54,14 +52,6 @@ public class BaseWeather {
         this.date = date;
     }
 
-    public double getTemp() {
-        return temp;
-    }
-
-    public void setTemp(double temp) {
-        this.temp = temp;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -69,7 +59,6 @@ public class BaseWeather {
 
         BaseWeather that = (BaseWeather) o;
 
-        if (Double.compare(that.temp, temp) != 0) return false;
         if (!main.equals(that.main)) return false;
         if (!descr.equals(that.descr)) return false;
         if (!iconId.equals(that.iconId)) return false;
@@ -78,14 +67,10 @@ public class BaseWeather {
 
     @Override
     public int hashCode() {
-        int result;
-        long temp1;
-        result = main.hashCode();
+        int result = main.hashCode();
         result = 31 * result + descr.hashCode();
         result = 31 * result + iconId.hashCode();
         result = 31 * result + date.hashCode();
-        temp1 = Double.doubleToLongBits(temp);
-        result = 31 * result + (int) (temp1 ^ (temp1 >>> 32));
         return result;
     }
 }

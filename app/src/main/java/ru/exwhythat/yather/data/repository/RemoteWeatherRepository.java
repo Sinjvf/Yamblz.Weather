@@ -11,7 +11,8 @@ import io.reactivex.Single;
 import ru.exwhythat.yather.data.local.entities.CurrentWeather;
 import ru.exwhythat.yather.data.local.entities.ForecastWeather;
 import ru.exwhythat.yather.data.remote.WeatherApi;
-import ru.exwhythat.yather.data.remote.model.ForecastResponse;
+import ru.exwhythat.yather.data.remote.WeatherApiConstants;
+import ru.exwhythat.yather.data.remote.model.DailyForecastResponse;
 import ru.exwhythat.yather.data.remote.model.WeatherResponse;
 
 /**
@@ -35,8 +36,8 @@ public class RemoteWeatherRepository implements WeatherRepository {
 
     @Override
     public Flowable<List<ForecastWeather>> getForecastForCity(int cityId) {
-        return weatherApi.getForecastByCityId(cityId)
-                .map(ForecastResponse.Mapper::toForecast).toFlowable();
+        return weatherApi.getForecastByCityId(cityId, WeatherApiConstants.DEFAULT_FORECAST_DAYS_COUNT)
+                .map(DailyForecastResponse.Mapper::toForecast).toFlowable();
     }
 
     public Single<Integer> getCityIdByLatLng(LatLng latLng) {

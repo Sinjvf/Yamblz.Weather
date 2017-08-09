@@ -51,16 +51,16 @@ public class WeatherResponse extends BaseResponse {
             String main = response.getWeather().get(0).getMain();
             String descr = response.getWeather().get(0).getDescription();
             String icon = response.getWeather().get(0).getIcon();
-            long date = response.getDateCalculation();
-            double temp = response.getMain().getTemp();
-            BaseWeather baseWeather = new BaseWeather(main, descr, icon, new Date(date), temp);
+            long dateUnix = response.getDateCalculation();
+            BaseWeather baseWeather = new BaseWeather(main, descr, icon, new Date(dateUnix * 1000));
 
             int apiCityId = response.getCityId();
             int humidity = response.getMain().getHumidity();
             double windSpeed = response.getWind().getSpeed();
             double pressure = response.getMain().getPressure();
+            double temp = response.getMain().getTemp();
 
-            return new CurrentWeather(baseWeather, apiCityId, humidity, windSpeed, pressure);
+            return new CurrentWeather(baseWeather, apiCityId, humidity, windSpeed, pressure, temp);
         }
     }
 

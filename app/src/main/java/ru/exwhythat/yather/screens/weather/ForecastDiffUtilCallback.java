@@ -5,40 +5,40 @@ import android.support.v7.util.DiffUtil;
 
 import java.util.List;
 
-import ru.exwhythat.yather.data.local.entities.City;
+import ru.exwhythat.yather.data.local.entities.ForecastWeather;
 
 /**
  * Created by exwhythat on 8/8/17.
  */
 
-public class CitiesDiffUtilCallback extends DiffUtil.Callback{
+public class ForecastDiffUtilCallback extends DiffUtil.Callback{
 
-    private List<City> oldCities;
-    private List<City> newCities;
+    List<ForecastWeather> oldForecast;
+    List<ForecastWeather> newForecast;
 
-    public CitiesDiffUtilCallback(List<City> oldCities, List<City> newCities) {
-        this.oldCities = oldCities;
-        this.newCities = newCities;
+    public ForecastDiffUtilCallback(List<ForecastWeather> oldForecast, List<ForecastWeather> newForecast) {
+        this.oldForecast = oldForecast;
+        this.newForecast = newForecast;
     }
 
     @Override
     public int getOldListSize() {
-        return oldCities.size();
+        return oldForecast.size();
     }
 
     @Override
     public int getNewListSize() {
-        return newCities.size();
+        return newForecast.size();
     }
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldCities.get(oldItemPosition).getApiCityId() == newCities.get(newItemPosition).getApiCityId();
+        return oldForecast.get(oldItemPosition).getForecastId() == newForecast.get(newItemPosition).getForecastId();
     }
 
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldCities.get(oldItemPosition).equals(newCities.get(newItemPosition));
+        return oldForecast.get(oldItemPosition).equals(newForecast.get(newItemPosition));
     }
 
     @Nullable

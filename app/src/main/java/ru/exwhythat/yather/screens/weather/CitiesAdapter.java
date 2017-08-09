@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -26,14 +27,13 @@ import ru.exwhythat.yather.data.local.entities.City;
 public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHolder> implements LifecycleObserver {
 
     private Context context;
-    private List<City> cities;
+    private List<City> plainCities = new ArrayList<>();
     private OnCitySelectionListener selectionListener;
 
     private CitiesDiffUtilCallback diffUtilCallback;
 
-    public CitiesAdapter(Context context, List<City> cities, LifecycleOwner lifecycleOwner, OnCitySelectionListener listener) {
+    public CitiesAdapter(Context context, LifecycleOwner lifecycleOwner, OnCitySelectionListener listener) {
         this.context = context;
-        this.cities = cities;
         this.selectionListener = listener;
         lifecycleOwner.getLifecycle().addObserver(this);
     }
@@ -46,26 +46,24 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHo
 
     @Override
     public void onBindViewHolder(CityViewHolder holder, int position) {
-        final City city = cities.get(position);
+        final City city = plainCities.get(position);
         holder.cityName.setText(city.getName());
         holder.itemView.setOnClickListener(view -> selectionListener.onCitySelected(city.getApiCityId()));
     }
 
     @Override
     public int getItemCount() {
-        return cities.size();
+        return plainCities.size();
     }
 
-    public void updateCities(List<City> cities) {
-        diffUtilCallback = new CitiesDiffUtilCallback(this.cities, cities);
+    public void updateCities(List<City> newCities) {
+        diffUtilCallback = new CitiesDiffUtilCallback(plainCities, newCities);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtilCallback);
-        this.cities.clear();
-        this.cities = cities;
-        diffResult.dispatchUpdatesTo(this);
+        plainCities = newCities;
+        diffResult.dispatchUpdatesTo(CitiesAdapter.this);
     }
 
     class CityViewHolder extends RecyclerView.ViewHolder {
-
         @BindView(R.id.city_list_item_name)
         TextView cityName;
 
@@ -73,8 +71,8 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHo
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
-
     }
+
     public interface OnCitySelectionListener {
         void onCitySelected(int cityId);
     }
@@ -82,7 +80,6 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHo
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     void clear() {
         context = null;
-        cities = null;
         selectionListener = null;
         diffUtilCallback = null;
     }

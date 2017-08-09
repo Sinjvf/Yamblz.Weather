@@ -18,6 +18,7 @@ import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.base_util.BaseFragmentViewModel;
 import ru.exwhythat.yather.data.local.entities.City;
 import ru.exwhythat.yather.data.local.entities.CurrentWeather;
+import ru.exwhythat.yather.data.local.entities.ForecastWeather;
 import ru.exwhythat.yather.data.repository.WeatherRepo;
 import ru.exwhythat.yather.screens.settings.CityInfo;
 import ru.exwhythat.yather.utils.Prefs;
@@ -34,9 +35,11 @@ public class WeatherViewModel extends BaseFragmentViewModel {
     private WeatherRepo weatherRepo;
 
     private Disposable weatherSubscription = Disposables.disposed();
+    private Disposable forecastSubscription = Disposables.disposed();
 
     protected MutableLiveData<List<City>> cities;
     protected MutableLiveData<CurrentWeather> weather;
+    protected MutableLiveData<List<ForecastWeather>> forecast;
     protected MutableLiveData<String> lastUpdateTime;
 
     @Inject
@@ -69,17 +72,26 @@ public class WeatherViewModel extends BaseFragmentViewModel {
         return cities;
     }
 
+    public LiveData<List<ForecastWeather>> getForecast() {
+        if (forecast == null) {
+            forecast = new MutableLiveData<>();
+            forceUpdateForecast();
+        }
+        return forecast;
+    }
+
     public void onCitySelected(int cityId) {
         Single.just(cityId)
                 .map(id -> weatherRepo.getCityById(id))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onCityUpdated, this::onError);
+                .subscribe(this::updateCity, this::onError);
     }
 
-    private void onCityUpdated(City city) {
+    private void updateCity(City city) {
         Prefs.setSelectedCity(context, new CityInfo(city.getName(), city.getApiCityId()));
         forceUpdateCurrentWeather();
+        forceUpdateForecast();
     }
 
     @Override
@@ -105,9 +117,21 @@ public class WeatherViewModel extends BaseFragmentViewModel {
     public void forceUpdateCurrentWeather() {
         weatherSubscription.dispose();
         weatherSubscription = weatherRepo.getFreshWeatherForSelectedCity()
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onNextWeather, this::onError);
+    }
+
+    public void forceUpdateForecast() {
+        forecastSubscription.dispose();
+        forecastSubscription = weatherRepo.getFreshForecastForSelectedCity()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onNextForecast, this::onError);
+    }
+
+    private void onNextForecast(List<ForecastWeather> forecast) {
+        updateForecast(forecast);
     }
 
     private void onNextWeather(CurrentWeather weather) {
@@ -123,6 +147,11 @@ public class WeatherViewModel extends BaseFragmentViewModel {
     private void updateWeather(CurrentWeather newWeather) {
         if (weather == null) weather = new MutableLiveData<>();
         weather.setValue(newWeather);
+    }
+
+    private void updateForecast(List<ForecastWeather> newForecast) {
+        if (forecast == null) forecast = new MutableLiveData<>();
+        forecast.setValue(newForecast);
     }
 
     private void updateInterval() {

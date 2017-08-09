@@ -121,6 +121,13 @@
             android:layout_alignParentBottom="true"
             android:background="@color/colorPrimaryDark"
             android:paddingBottom="@dimen/margin_medium"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/forecastRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/main_layout"
+            android:layout_above="@id/citiesRecycler"/>
     </RelativeLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>

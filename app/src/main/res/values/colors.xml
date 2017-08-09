@@ -9,5 +9,9 @@
     <color name="greyText">#888888</color>
 
     <color name="mainText">#ffffffaa</color>
+    <color name="forecastText">#000000</color>
+
+    <color name="dayTempText">#cfc62828</color>
+    <color name="nightTempText">#b9536dfe</color>
 
 </resources>

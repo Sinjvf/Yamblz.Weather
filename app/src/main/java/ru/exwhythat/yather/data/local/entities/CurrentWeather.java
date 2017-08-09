@@ -25,13 +25,16 @@ public class CurrentWeather {
     private int humidity;
     private double windSpeed;
     private double pressure;
+    private double temp;
 
-    public CurrentWeather(BaseWeather baseWeather, int apiCityId, int humidity, double windSpeed, double pressure) {
+    public CurrentWeather(BaseWeather baseWeather, int apiCityId, int humidity, double windSpeed, double pressure,
+                          double temp) {
         this.baseWeather = baseWeather;
         this.apiCityId = apiCityId;
         this.humidity = humidity;
         this.windSpeed = windSpeed;
         this.pressure = pressure;
+        this.temp = temp;
     }
 
     public int getApiCityId() {
@@ -74,18 +77,27 @@ public class CurrentWeather {
         this.pressure = pressure;
     }
 
+    public double getTemp() {
+        return temp;
+    }
+
+    public void setTemp(double temp) {
+        this.temp = temp;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof CurrentWeather)) return false;
 
-        CurrentWeather weather = (CurrentWeather) o;
+        CurrentWeather that = (CurrentWeather) o;
 
-        if (apiCityId != weather.apiCityId) return false;
-        if (humidity != weather.humidity) return false;
-        if (Double.compare(weather.windSpeed, windSpeed) != 0) return false;
-        if (Double.compare(weather.pressure, pressure) != 0) return false;
-        return baseWeather.equals(weather.baseWeather);
+        if (apiCityId != that.apiCityId) return false;
+        if (humidity != that.humidity) return false;
+        if (Double.compare(that.windSpeed, windSpeed) != 0) return false;
+        if (Double.compare(that.pressure, pressure) != 0) return false;
+        if (Double.compare(that.temp, temp) != 0) return false;
+        return baseWeather.equals(that.baseWeather);
     }
 
     @Override
@@ -98,6 +110,8 @@ public class CurrentWeather {
         temp1 = Double.doubleToLongBits(windSpeed);
         result = 31 * result + (int) (temp1 ^ (temp1 >>> 32));
         temp1 = Double.doubleToLongBits(pressure);
+        result = 31 * result + (int) (temp1 ^ (temp1 >>> 32));
+        temp1 = Double.doubleToLongBits(temp);
         result = 31 * result + (int) (temp1 ^ (temp1 >>> 32));
         return result;
     }

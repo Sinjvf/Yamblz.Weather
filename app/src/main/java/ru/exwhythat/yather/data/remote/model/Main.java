@@ -25,7 +25,7 @@ public class Main {
     @SerializedName("grnd_level") @Expose
     private float grndLevel;
     @SerializedName("temp_kf") @Expose
-    private int tempKf;
+    private float tempKf;
 
     public float getTemp() {
         return temp;
@@ -83,11 +83,11 @@ public class Main {
         this.grndLevel = grndLevel;
     }
 
-    public int getTempKf() {
+    public float getTempKf() {
         return tempKf;
     }
 
-    public void setTempKf(int tempKf) {
+    public void setTempKf(float tempKf) {
         this.tempKf = tempKf;
     }
 }
