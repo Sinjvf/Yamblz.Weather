@@ -1,5 +1,6 @@
 package ru.exwhythat.yather.events;
 
+import io.reactivex.annotations.NonNull;
 import ru.exwhythat.yather.base_util.BaseFragment;
 
 /**
@@ -11,20 +12,20 @@ import ru.exwhythat.yather.base_util.BaseFragment;
 public class OpenNewFragmentEvent {
     private final BaseFragment fgm;
     private final boolean addToBackStack;
+    private final String tag;
 
-    public OpenNewFragmentEvent(BaseFragment fgm, boolean addToBackStack) {
+    public OpenNewFragmentEvent(@NonNull BaseFragment fgm, boolean addToBackStack, @NonNull String tag) {
         this.fgm = fgm;
         this.addToBackStack = addToBackStack;
+        this.tag = tag;
     }
 
+    @NonNull
     public BaseFragment getFgm() {
         return fgm;
     }
 
-
     public boolean isAddToBackStack() {
         return addToBackStack;
     }
-
-
 }

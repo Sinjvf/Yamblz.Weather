@@ -1,6 +1,5 @@
 package ru.exwhythat.yather.activity;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
@@ -11,7 +10,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-
 
 import javax.inject.Inject;
 
@@ -25,6 +23,7 @@ import ru.exwhythat.yather.base_util.BaseFragment;
 import ru.exwhythat.yather.events.OpenNewFragmentEvent;
 import ru.exwhythat.yather.screens.about.AboutFragment;
 import ru.exwhythat.yather.screens.settings.SettingsFragment;
+import ru.exwhythat.yather.screens.weather.WeatherFragment;
 import timber.log.Timber;
 
 /**
@@ -47,19 +46,22 @@ public class MainActivity extends BaseActivity
 
     private Menu menu;
 
-    MainActivityViewModel model;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        model = ViewModelProviders.of(this).get(MainActivityViewModel.class);
-        model.getCurrentFragment().observe(this, this::changeFragment);
         setSupportActionBar(toolbar);
         Timber.tag(TAG);
 
-        getSupportFragmentManager().addOnBackStackChangedListener(this);
+        FragmentManager fm = getSupportFragmentManager();
+        fm.addOnBackStackChangedListener(this);
+        if (savedInstanceState == null) {
+            fm.beginTransaction()
+                    .add(R.id.fragment_container, WeatherFragment.getInstance(), WeatherFragment.TAG)
+                    .commit();
+        }
+
         setToolbarHomeAsUpAndMenu();
     }
 
@@ -67,24 +69,35 @@ public class MainActivity extends BaseActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         this.menu = menu;
+        boolean isRootFragmentVisible = !isInnerFragmentVisible();
+        setMenuVisibility(isRootFragmentVisible);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         BaseFragment fgm;
+        String tag;
         switch (item.getItemId()) {
             case R.id.nav_tools:
                 fgm = SettingsFragment.getInstance();
+                tag = SettingsFragment.TAG;
                 break;
             case R.id.nav_about:
                 fgm = AboutFragment.getInstance();
+                tag = AboutFragment.TAG;
                 break;
             default:
                 return super.onOptionsItemSelected(item);
         }
-        model.changeFragmentEvent(new OpenNewFragmentEvent(fgm, true));
+        changeFragment(new OpenNewFragmentEvent(fgm, true, tag));
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        getSupportFragmentManager().removeOnBackStackChangedListener(this);
+        super.onDestroy();
     }
 
     public void changeFragment(@NonNull OpenNewFragmentEvent event) {
@@ -124,12 +137,16 @@ public class MainActivity extends BaseActivity
 
     public void setToolbarHomeAsUpAndMenu(){
         //Enable Up button only if there are entries in the back stack
-        boolean canback = getSupportFragmentManager().getBackStackEntryCount() > 0;
+        boolean isInner = isInnerFragmentVisible();
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
-            ab.setDisplayHomeAsUpEnabled(canback);
+            ab.setDisplayHomeAsUpEnabled(isInner);
         }
-        setMenuVisibility(!canback);
+        setMenuVisibility(!isInner);
+    }
+
+    private boolean isInnerFragmentVisible() {
+        return getSupportFragmentManager().getBackStackEntryCount() > 0;
     }
 
     private void setMenuVisibility(boolean isVisible) {

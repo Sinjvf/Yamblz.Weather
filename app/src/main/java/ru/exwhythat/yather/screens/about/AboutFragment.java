@@ -19,10 +19,12 @@ import ru.exwhythat.yather.base_util.BaseFragment;
  */
 
 public class AboutFragment extends BaseFragment {
+
+    public static final String TAG = "AboutFragment";
+
     AboutViewModel localModel;
     @BindView(R.id.about_app_version)
     TextView versionName;
-
 
     public static AboutFragment getInstance() {
         return new AboutFragment();

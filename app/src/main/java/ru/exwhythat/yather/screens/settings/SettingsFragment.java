@@ -27,6 +27,8 @@ import ru.exwhythat.yather.utils.Utils;
 
 public class SettingsFragment extends BaseFragment implements Injectable {
 
+    public static final String TAG = "SettingsFragment";
+
     @BindView(R.id.interval_text)
     TextView intervalView;
 
