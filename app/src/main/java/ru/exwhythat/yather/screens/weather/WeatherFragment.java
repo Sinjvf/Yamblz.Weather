@@ -22,6 +22,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import ru.exwhythat.yather.R;
+import ru.exwhythat.yather.activity.MainActivity;
 import ru.exwhythat.yather.data.local.entities.CurrentWeather;
 import ru.exwhythat.yather.di.Injectable;
 import ru.exwhythat.yather.utils.Prefs;
@@ -41,10 +42,6 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
     TextView cityNameView;
     @BindView(R.id.main_tempr)
     TextView mainTempr;
-    @BindView(R.id.min_tempr)
-    TextView minTempr;
-    @BindView(R.id.max_tempr)
-    TextView maxTempr;
     @BindView(R.id.last_updated)
     TextView lastUpdatedView;
     @BindView(R.id.image_weather)
@@ -55,8 +52,6 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
     TextView humidityView;
     @BindView(R.id.swipe_refresh)
     SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.main_layout)
-    View mainLayout;
     @BindView(R.id.citiesRecycler)
     RecyclerView citiesRecycler;
     @BindView(R.id.forecastRecycler)
@@ -72,6 +67,8 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
 
     private int cityId;
 
+    private boolean isTwoPane;
+
     public static WeatherFragment getInstance(){
         return new WeatherFragment();
     }
@@ -81,16 +78,24 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
         localModel = ViewModelProviders.of(this, viewModelFactory).get(WeatherViewModel.class);
         baseModel = localModel;
         super.onActivityCreated(savedInstanceState);
+        isTwoPane = ((MainActivity)getActivity()).getIsTwoPane();
+
         localModel.getWeatherForSelectedCity().observe(this, this::setWeather);
         localModel.getLastUpdate().observe(this, this::setLastUpdate);
 
-        citiesAdapter = new CitiesAdapter(getContext(), this, this::onCitySelected);
-        initCitiesRecycler(citiesAdapter);
+        initRecyclers();
         localModel.getCities().observe(this, cities -> citiesAdapter.updateCities(cities));
+        localModel.getForecast().observe(this, forecast -> forecastAdapter.updateForecast(forecast));
+    }
+
+    private void initRecyclers() {
+        citiesAdapter = new CitiesAdapter(getContext(), this, this::onCitySelected);
+        int citiesOrientation = isTwoPane ? LinearLayoutManager.VERTICAL : LinearLayoutManager.HORIZONTAL;
+        initRecycler(citiesRecycler, citiesAdapter, citiesOrientation);
 
         forecastAdapter = new ForecastAdapter(getContext(), this, this::onForecastClicked);
-        initForecastRecycler(forecastAdapter);
-        localModel.getForecast().observe(this, forecast -> forecastAdapter.updateForecast(forecast));
+        initRecycler(forecastRecycler, forecastAdapter, LinearLayoutManager.VERTICAL);
+        forecastRecycler.setNestedScrollingEnabled(false);
     }
 
     private void onCitySelected(int cityId) {
@@ -101,24 +106,13 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
         Toast.makeText(getContext(), "Forecast clicked: "  + forecastItemId, Toast.LENGTH_SHORT).show();
     }
 
-    private void initCitiesRecycler(CitiesAdapter adapter) {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(
-                getContext(), LinearLayoutManager.HORIZONTAL, false);
-        citiesRecycler.setLayoutManager(layoutManager);
+    private void initRecycler(RecyclerView rv, RecyclerView.Adapter adapter, int orientation) {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), orientation, false);
+        rv.setLayoutManager(layoutManager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 layoutManager.getOrientation());
-        citiesRecycler.addItemDecoration(dividerItemDecoration);
-        citiesRecycler.setAdapter(adapter);
-    }
-
-    private void initForecastRecycler(ForecastAdapter adapter) {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(
-                getContext(), LinearLayoutManager.VERTICAL, false);
-        forecastRecycler.setLayoutManager(layoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
-                layoutManager.getOrientation());
-        forecastRecycler.addItemDecoration(dividerItemDecoration);
-        forecastRecycler.setAdapter(adapter);
+        rv.addItemDecoration(dividerItemDecoration);
+        rv.setAdapter(adapter);
     }
 
     @Override
@@ -178,7 +172,6 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
 
     private void setIsLoading(boolean isLoading) {
         swipeRefreshLayout.setRefreshing(isLoading);
-        mainLayout.setVisibility(isLoading ? View.GONE : View.VISIBLE);
     }
 }
 

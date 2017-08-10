@@ -45,12 +45,16 @@ public class MainActivity extends BaseActivity
     DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
 
     private Menu menu;
+    private boolean isTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        isTwoPane = findViewById(R.id.landEmptyView) != null;
+
         setSupportActionBar(toolbar);
         Timber.tag(TAG);
 
@@ -159,5 +163,9 @@ public class MainActivity extends BaseActivity
     public boolean onSupportNavigateUp() {
         getSupportFragmentManager().popBackStack();
         return true;
+    }
+
+    public boolean getIsTwoPane() {
+        return isTwoPane;
     }
 }
