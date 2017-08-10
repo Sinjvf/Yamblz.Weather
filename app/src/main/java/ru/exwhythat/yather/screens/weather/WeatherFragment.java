@@ -3,7 +3,9 @@ package ru.exwhythat.yather.screens.weather;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,8 +17,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
-
 
 import javax.inject.Inject;
 
@@ -27,7 +27,10 @@ import ru.exwhythat.yather.data.local.entities.CurrentWeather;
 import ru.exwhythat.yather.di.Injectable;
 import ru.exwhythat.yather.utils.Prefs;
 import ru.exwhythat.yather.base_util.BaseFragment;
+import ru.exwhythat.yather.utils.StringUtils;
 import timber.log.Timber;
+
+import static ru.exwhythat.yather.data.remote.model.DailyForecastResponse.*;
 
 /**
  * Created by Sinjvf on 09.07.2017.
@@ -138,7 +141,6 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
             return;
         }
         setWeatherDataToViews(weather);
-        loadWeatherIcon(weather.getBaseWeather().getIconId());
         setIsLoading(false);
         Timber.d("setWeather: " + weather);
     }
@@ -146,18 +148,30 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
     private void setWeatherDataToViews(CurrentWeather weather) {
         String cityName = Prefs.getSelectedCity(getContext()).getCityName();
         cityNameView.setText(cityName);
-        mainTempr.setText(getString(R.string.main_tempr, (int)weather.getTemp()));
+
+        @WeatherState String weatherState = weather.getBaseWeather().getMain();
+        imageWeather.setImageDrawable(ContextCompat.getDrawable(getContext(), getDrawableResIdForWeatherState(weatherState)));
+
+        String tempr = getString(R.string.tempr_float, weather.getTemp());
+        mainTempr.setText(StringUtils.makeSignedTempr(tempr));
         windView.setText(getString(R.string.wind, (int)weather.getWindSpeed()));
         humidityView.setText(getString(R.string.percent, (int)weather.getHumidity()));
     }
 
-    private void loadWeatherIcon(String imageName) {
-        if (imageName != null) {
-            String imageFullPath = String.format(getString(R.string.image_path), imageName);
-            Picasso.with(getContext())
-                    .load(imageFullPath)
-                    .fit()
-                    .into(imageWeather);
+    private @DrawableRes int getDrawableResIdForWeatherState(@WeatherState String weatherState) {
+        switch (weatherState) {
+            case WeatherState.clear:
+                return R.drawable.ic_sun_big;
+            case WeatherState.rain:
+                return R.drawable.ic_rain_big;
+            case WeatherState.clouds:
+                return R.drawable.ic_cloud_big;
+            case WeatherState.snow:
+                return R.drawable.ic_snow_big;
+            case WeatherState.storm:
+                return R.drawable.ic_storm_big;
+            default:
+                return R.drawable.ic_help_outline;
         }
     }
 

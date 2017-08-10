@@ -12,7 +12,7 @@
         android:id="@+id/citiesRecycler"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorPrimary"
         android:paddingBottom="@dimen/margin_medium"/>
 
     <android.support.v4.widget.SwipeRefreshLayout
@@ -45,23 +45,19 @@
 
                 <ImageView
                     android:id="@+id/image_weather"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/weather_icon_size"
+                    android:layout_height="@dimen/weather_icon_size"
                     android:layout_marginTop="@dimen/margin_medium"
-                    android:adjustViewBounds="true"
-                    android:minWidth="@dimen/icon_size"
-                    android:scaleType="centerInside"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toLeftOf="@+id/main_tempr"
                     app:layout_constraintTop_toBottomOf="@id/city_name"
-                    tools:src="@drawable/places_ic_clear"/>
+                    tools:src="@drawable/ic_rain_big"/>
 
                 <TextView
                     android:id="@+id/main_tempr"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/main_tempr_text"
-                    android:layout_marginTop="@dimen/margin_medium"
                     app:layout_constraintBottom_toBottomOf="@id/image_weather"
                     app:layout_constraintLeft_toRightOf="@id/image_weather"
                     app:layout_constraintRight_toRightOf="parent"

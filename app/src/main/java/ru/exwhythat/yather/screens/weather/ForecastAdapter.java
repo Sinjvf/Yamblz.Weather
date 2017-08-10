@@ -5,12 +5,15 @@ import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
+import android.support.annotation.DrawableRes;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -22,6 +25,9 @@ import butterknife.ButterKnife;
 import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.data.local.entities.ForecastWeather;
 import ru.exwhythat.yather.utils.DateUtils;
+import ru.exwhythat.yather.utils.StringUtils;
+
+import static ru.exwhythat.yather.data.remote.model.DailyForecastResponse.WeatherState;
 
 /**
  * Created by exwhythat on 8/8/17.
@@ -50,14 +56,21 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     @Override
     public void onBindViewHolder(ForecastViewHolder holder, int position) {
         final ForecastWeather forecast = this.forecast.get(position);
+
         String dateString = DateUtils.dateToString(forecast.getBaseWeather().getDate());
         holder.forecastDate.setText(capitalizeFirstLetter(dateString));
-        holder.forecastInfoMain.setText(forecast.getBaseWeather().getMain());
-        holder.forecastInfoDescr.setText(forecast.getBaseWeather().getDescr());
-        holder.forecastDayTemp.setText(String.format(Locale.getDefault(), context.getString(R.string.tempr_float),
-                forecast.getDayTemp()));
-        holder.forecastNightTemp.setText(String.format(Locale.getDefault(), context.getString(R.string.tempr_float),
-                forecast.getNightTemp()));
+
+        @WeatherState String weatherState = forecast.getBaseWeather().getMain();
+        @DrawableRes int weatherIconId = getDrawableResIdForWeatherState(weatherState);
+        holder.forecastIcon.setImageDrawable(ContextCompat.getDrawable(context, weatherIconId));
+
+        String dayTemp = String.format(Locale.getDefault(), context.getString(R.string.tempr_float),
+                forecast.getDayTemp());
+        holder.forecastDayTemp.setText(StringUtils.makeSignedTempr(dayTemp));
+        String nightTemp = String.format(Locale.getDefault(), context.getString(R.string.tempr_float),
+                forecast.getNightTemp());
+        holder.forecastNightTemp.setText(StringUtils.makeSignedTempr(nightTemp));
+
         holder.itemView.setOnClickListener(view -> clickListener.onForecastClicked(forecast.getForecastId()));
     }
 
@@ -68,6 +81,23 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
             return sb.toString();
         } else {
             return "";
+        }
+    }
+
+    private @DrawableRes int getDrawableResIdForWeatherState(@WeatherState String weatherState) {
+        switch (weatherState) {
+            case WeatherState.clear:
+                return R.drawable.ic_sun;
+            case WeatherState.rain:
+                return R.drawable.ic_rain;
+            case WeatherState.clouds:
+                return R.drawable.ic_cloud;
+            case WeatherState.snow:
+                return R.drawable.ic_snow;
+            case WeatherState.storm:
+                return R.drawable.ic_storm;
+            default:
+                return R.drawable.ic_help_outline;
         }
     }
 
@@ -86,10 +116,8 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     class ForecastViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.forecastDate)
         TextView forecastDate;
-        @BindView(R.id.forecastInfoMain)
-        TextView forecastInfoMain;
-        @BindView(R.id.forecastInfoDescr)
-        TextView forecastInfoDescr;
+        @BindView(R.id.forecastIcon)
+        ImageView forecastIcon;
         @BindView(R.id.forecastDayTemp)
         TextView forecastDayTemp;
         @BindView(R.id.forecastNightTemp)

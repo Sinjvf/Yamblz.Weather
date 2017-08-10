@@ -63,6 +63,7 @@ public class MainActivity extends BaseActivity
         if (savedInstanceState == null) {
             fm.beginTransaction()
                     .add(R.id.fragment_container, WeatherFragment.getInstance(), WeatherFragment.TAG)
+                    .setCustomAnimations(0, 0, R.anim.fast_fade_in, R.anim.fast_fade_out)
                     .commit();
         }
 

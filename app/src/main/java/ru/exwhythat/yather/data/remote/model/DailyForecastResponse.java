@@ -1,8 +1,12 @@
 package ru.exwhythat.yather.data.remote.model;
 
+import android.support.annotation.StringDef;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +30,16 @@ public class DailyForecastResponse extends BaseResponse {
     private List<DailyForecast> list = null;
     @SerializedName("city") @Expose
     private City city;
+
+    @StringDef({WeatherState.clear, WeatherState.rain, WeatherState.clouds, WeatherState.snow, WeatherState.storm})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface WeatherState {
+        String clear = "Clear";
+        String rain = "Rain";
+        String clouds = "Clouds";
+        String snow = "Snow";
+        String storm = "Storm";
+    }
     
     public static class Mapper {
         public static List<ForecastWeather> toForecast(DailyForecastResponse response) {
