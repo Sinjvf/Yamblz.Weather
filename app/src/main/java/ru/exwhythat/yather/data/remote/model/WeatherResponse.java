@@ -175,4 +175,24 @@ public class WeatherResponse extends BaseResponse {
     public void setCod(int cod) {
         this.cod = cod;
     }
+
+    @Override
+    public String toString() {
+        return "WeatherResponse{" +
+                "dateCalculation=" + dateCalculation +
+                ", main=" + main +
+                ", weather=" + weather +
+                ", clouds=" + clouds +
+                ", rain=" + rain +
+                ", snow=" + snow +
+                ", wind=" + wind +
+                ", sys=" + sys +
+                ", coord=" + coord +
+                ", base='" + base + '\'' +
+                ", visibility=" + visibility +
+                ", cityId=" + cityId +
+                ", cityName='" + cityName + '\'' +
+                ", cod=" + cod +
+                '}';
+    }
 }

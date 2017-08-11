@@ -19,7 +19,7 @@ import ru.exwhythat.yather.data.remote.model.WeatherResponse;
  * Created by exwhythat on 02.08.17.
  */
 
-public class RemoteWeatherRepository implements WeatherRepository {
+public class RemoteWeatherRepository {
 
     private WeatherApi weatherApi;
 
@@ -28,16 +28,14 @@ public class RemoteWeatherRepository implements WeatherRepository {
         this.weatherApi = weatherApi;
     }
 
-    @Override
-    public Flowable<CurrentWeather> getCurrentWeatherForCity(int cityId) {
+    public Single<CurrentWeather> getCurrentWeatherForCity(int cityId) {
         return weatherApi.getWeatherByCityId(cityId)
-                .map(WeatherResponse.Mapper::toCurrentWeather).toFlowable();
+                .map(WeatherResponse.Mapper::toCurrentWeather);
     }
 
-    @Override
-    public Flowable<List<ForecastWeather>> getForecastForCity(int cityId) {
+    public Single<List<ForecastWeather>> getForecastForCity(int cityId) {
         return weatherApi.getForecastByCityId(cityId, WeatherApiConstants.DEFAULT_FORECAST_DAYS_COUNT)
-                .map(DailyForecastResponse.Mapper::toForecast).toFlowable();
+                .map(DailyForecastResponse.Mapper::toForecast);
     }
 
     public Single<Integer> getCityIdByLatLng(LatLng latLng) {

@@ -22,17 +22,11 @@ public interface CityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(City city);
 
-    @Query("SELECT * FROM city")
-    Flowable<List<City>> getAll();
-
     @Query("SELECT * FROM city WHERE cityId = :cityId")
     City getById(int cityId);
 
     @Query("SELECT * FROM city LEFT JOIN currentweather ON currentweather.apiCityId = city.cityId")
     Flowable<List<CityWithWeather>> getCitiesWithWeather();
-
-    @Delete
-    int deleteCity(City city);
 
     @Query("DELETE FROM city")
     int clearTable();

@@ -100,4 +100,15 @@ public class ForecastWeather {
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "ForecastWeather{" +
+                "forecastId=" + forecastId +
+                ", baseWeather=" + baseWeather +
+                ", apiCityId=" + apiCityId +
+                ", dayTemp=" + dayTemp +
+                ", nightTemp=" + nightTemp +
+                '}';
+    }
 }

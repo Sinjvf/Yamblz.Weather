@@ -6,9 +6,9 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
-import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 import ru.exwhythat.yather.data.local.entities.CurrentWeather;
 
 /**
@@ -21,15 +21,9 @@ public interface CurrentWeatherDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(CurrentWeather currentWeather);
 
-    @Query("SELECT * from currentweather")
-    Flowable<List<CurrentWeather>> getAll();
+    @Query("SELECT * from currentweather WHERE apiCityId = :cityId")
+    Flowable<CurrentWeather> getFlowForCity(int cityId);
 
     @Query("SELECT * from currentweather WHERE apiCityId = :cityId")
-    Flowable<CurrentWeather> getForCity(int cityId);
-
-    @Query("DELETE FROM currentweather WHERE apiCityId = :cityId")
-    int deleteWeatherForCity(int cityId);
-
-    @Delete
-    int delete(CurrentWeather currentWeather);
+    Single<CurrentWeather> getSingleForCity(int cityId);
 }

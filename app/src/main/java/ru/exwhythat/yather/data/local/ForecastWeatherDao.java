@@ -8,6 +8,7 @@ import android.arch.persistence.room.Query;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 import ru.exwhythat.yather.data.local.entities.ForecastWeather;
 
 /**
@@ -23,11 +24,11 @@ public interface ForecastWeatherDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertAll(List<ForecastWeather> forecastWeatherList);
 
-    @Query("SELECT * FROM forecastweather")
-    Flowable<List<ForecastWeather>> getAll();
+    @Query("SELECT * FROM forecastweather WHERE apiCityId = :cityId ORDER BY date")
+    Flowable<List<ForecastWeather>> getFlowForCity(int cityId);
 
     @Query("SELECT * FROM forecastweather WHERE apiCityId = :cityId ORDER BY date")
-    Flowable<List<ForecastWeather>> getForCity(int cityId);
+    Single<List<ForecastWeather>> getSingleForCity(int cityId);
 
     @Query("DELETE FROM forecastweather WHERE apiCityId = :cityId")
     int deleteForCity(int cityId);
