@@ -35,7 +35,7 @@ public class DbModule {
                         super.onCreate(db);
                         // FIXME: insert default city on database creation
                         ContentValues cv = new ContentValues();
-                        cv.put("apiCityId", Prefs.DEFAULT_CITY_INFO.getCityId());
+                        cv.put("cityId", Prefs.DEFAULT_CITY_INFO.getCityId());
                         cv.put("name", Prefs.DEFAULT_CITY_INFO.getCityName());
                         db.insert("city", SQLiteDatabase.CONFLICT_REPLACE, cv);
                     }

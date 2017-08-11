@@ -5,11 +5,14 @@ import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
+import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -19,6 +22,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.data.local.entities.City;
+import ru.exwhythat.yather.data.local.entities.CityWithWeather;
+import ru.exwhythat.yather.data.local.entities.CurrentWeather;
+import ru.exwhythat.yather.utils.StringUtils;
+
+import static ru.exwhythat.yather.data.remote.model.DailyForecastResponse.*;
 
 /**
  * Created by exwhythat on 8/8/17.
@@ -27,7 +35,7 @@ import ru.exwhythat.yather.data.local.entities.City;
 public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHolder> implements LifecycleObserver {
 
     private Context context;
-    private List<City> plainCities = new ArrayList<>();
+    private List<CityWithWeather> citiesWithWeather = new ArrayList<>();
     private OnCitySelectionListener selectionListener;
 
     private CitiesDiffUtilCallback diffUtilCallback;
@@ -40,32 +48,63 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHo
 
     @Override
     public CityViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.city_list_item_small, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.city_list_item, parent, false);
         return new CityViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(CityViewHolder holder, int position) {
-        final City city = plainCities.get(position);
+        final CityWithWeather cityWithWeather = citiesWithWeather.get(position);
+        City city = cityWithWeather.getCity();
+        CurrentWeather weather = cityWithWeather.getWeather();
         holder.cityName.setText(city.getName());
-        holder.itemView.setOnClickListener(view -> selectionListener.onCitySelected(city.getApiCityId()));
+        if (weather != null) {
+            // We can afford to check nullability of just one view from landscape orientation
+            if (holder.cityTempr != null) {
+                holder.cityTempr.setText(StringUtils.getFormattedTemperature(context, weather.getTemp()));
+
+                @WeatherState String weatherState = weather.getBaseWeather().getMain();
+                holder.weatherIcon.setImageDrawable(ContextCompat.getDrawable(context,
+                        WeatherFragment.getDrawableResIdForWeatherState(weatherState)));
+
+                holder.humidityText.setText(StringUtils.getFormattedHumidity(context, weather.getHumidity()));
+                holder.windText.setText(StringUtils.getFormattedWind(context, weather.getWindSpeed()));
+            }
+        }
+        holder.itemView.setOnClickListener(view -> selectionListener.onCitySelected(city.getCityId()));
     }
 
     @Override
     public int getItemCount() {
-        return plainCities.size();
+        return citiesWithWeather.size();
     }
 
-    public void updateCities(List<City> newCities) {
-        diffUtilCallback = new CitiesDiffUtilCallback(plainCities, newCities);
+    public void updateCities(List<CityWithWeather> newCities) {
+        diffUtilCallback = new CitiesDiffUtilCallback(citiesWithWeather, newCities);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtilCallback);
-        plainCities = newCities;
+        citiesWithWeather = newCities;
         diffResult.dispatchUpdatesTo(CitiesAdapter.this);
     }
 
     class CityViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.city_list_item_name)
         TextView cityName;
+
+        @Nullable
+        @BindView(R.id.city_list_item_tempr)
+        TextView cityTempr;
+
+        @Nullable
+        @BindView(R.id.city_list_item_weather_icon)
+        ImageView weatherIcon;
+
+        @Nullable
+        @BindView(R.id.city_list_item_humidity_text)
+        TextView humidityText;
+
+        @Nullable
+        @BindView(R.id.city_list_item_wind_text)
+        TextView windText;
 
         public CityViewHolder(View itemView) {
             super(itemView);

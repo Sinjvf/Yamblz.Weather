@@ -73,4 +73,14 @@ public class BaseWeather {
         result = 31 * result + date.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "BaseWeather{" +
+                "main='" + main + '\'' +
+                ", descr='" + descr + '\'' +
+                ", iconId='" + iconId + '\'' +
+                ", date=" + date +
+                '}';
+    }
 }

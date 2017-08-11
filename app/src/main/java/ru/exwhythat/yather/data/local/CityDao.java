@@ -10,6 +10,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import ru.exwhythat.yather.data.local.entities.City;
+import ru.exwhythat.yather.data.local.entities.CityWithWeather;
 
 /**
  * Created by exwhythat on 8/3/17.
@@ -24,8 +25,11 @@ public interface CityDao {
     @Query("SELECT * FROM city")
     Flowable<List<City>> getAll();
 
-    @Query("SELECT * FROM city WHERE apiCityId = :cityId")
+    @Query("SELECT * FROM city WHERE cityId = :cityId")
     City getById(int cityId);
+
+    @Query("SELECT * FROM city LEFT JOIN currentweather ON currentweather.apiCityId = city.cityId")
+    Flowable<List<CityWithWeather>> getCitiesWithWeather();
 
     @Delete
     int deleteCity(City city);

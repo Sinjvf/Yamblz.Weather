@@ -10,20 +10,20 @@ import android.arch.persistence.room.PrimaryKey;
 @Entity
 public class City {
 
-    @PrimaryKey private int apiCityId;
+    @PrimaryKey private int cityId;
     private String name;
 
-    public City(int apiCityId, String name) {
-        this.apiCityId = apiCityId;
+    public City(int cityId, String name) {
+        this.cityId = cityId;
         this.name = name;
     }
 
-    public int getApiCityId() {
-        return apiCityId;
+    public int getCityId() {
+        return cityId;
     }
 
-    public void setApiCityId(int apiCityId) {
-        this.apiCityId = apiCityId;
+    public void setCityId(int cityId) {
+        this.cityId = cityId;
     }
 
     public String getName() {
@@ -41,15 +41,23 @@ public class City {
 
         City city = (City) o;
 
-        if (apiCityId != city.apiCityId) return false;
+        if (cityId != city.cityId) return false;
         return name.equals(city.name);
     }
 
     @Override
     public int hashCode() {
         int result;
-        result = apiCityId;
+        result = cityId;
         result = 31 * result + name.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "City{" +
+                "cityId=" + cityId +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

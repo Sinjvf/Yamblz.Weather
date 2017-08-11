@@ -9,6 +9,7 @@ import ru.exwhythat.yather.data.local.CityDao;
 import ru.exwhythat.yather.data.local.CurrentWeatherDao;
 import ru.exwhythat.yather.data.local.ForecastWeatherDao;
 import ru.exwhythat.yather.data.local.entities.City;
+import ru.exwhythat.yather.data.local.entities.CityWithWeather;
 import ru.exwhythat.yather.data.local.entities.CurrentWeather;
 import ru.exwhythat.yather.data.local.entities.ForecastWeather;
 
@@ -61,5 +62,9 @@ public class LocalWeatherRepository implements WeatherRepository {
 
     public City getCityById(int cityId) {
         return cityDao.getById(cityId);
+    }
+
+    public Flowable<List<CityWithWeather>> getCitiesWithWeather() {
+        return cityDao.getCitiesWithWeather();
     }
 }

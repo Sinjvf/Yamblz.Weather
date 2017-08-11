@@ -64,14 +64,10 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         @DrawableRes int weatherIconId = getDrawableResIdForWeatherState(weatherState);
         holder.forecastIcon.setImageDrawable(ContextCompat.getDrawable(context, weatherIconId));
 
-        String dayTemp = String.format(Locale.getDefault(), context.getString(R.string.tempr_float),
-                forecast.getDayTemp());
-        holder.forecastDayTemp.setText(StringUtils.makeSignedTempr(dayTemp));
-        String nightTemp = String.format(Locale.getDefault(), context.getString(R.string.tempr_float),
-                forecast.getNightTemp());
-        holder.forecastNightTemp.setText(StringUtils.makeSignedTempr(nightTemp));
+        holder.forecastDayTemp.setText(StringUtils.getFormattedTemperature(context, forecast.getDayTemp()));
+        holder.forecastNightTemp.setText(StringUtils.getFormattedTemperature(context, forecast.getNightTemp()));
 
-        holder.itemView.setOnClickListener(view -> clickListener.onForecastClicked(forecast.getForecastId()));
+        holder.itemView.setOnClickListener(view -> clickListener.onForecastClicked(forecast.getApiCityId()));
     }
 
     private String capitalizeFirstLetter(String word) {

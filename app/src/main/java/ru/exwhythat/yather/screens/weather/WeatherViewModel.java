@@ -17,6 +17,7 @@ import io.reactivex.schedulers.Schedulers;
 import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.base_util.BaseFragmentViewModel;
 import ru.exwhythat.yather.data.local.entities.City;
+import ru.exwhythat.yather.data.local.entities.CityWithWeather;
 import ru.exwhythat.yather.data.local.entities.CurrentWeather;
 import ru.exwhythat.yather.data.local.entities.ForecastWeather;
 import ru.exwhythat.yather.data.repository.WeatherRepo;
@@ -37,7 +38,7 @@ public class WeatherViewModel extends BaseFragmentViewModel {
     private Disposable weatherSubscription = Disposables.disposed();
     private Disposable forecastSubscription = Disposables.disposed();
 
-    protected MutableLiveData<List<City>> cities;
+    protected MutableLiveData<List<CityWithWeather>> citiesWithWeather;
     protected MutableLiveData<CurrentWeather> weather;
     protected MutableLiveData<List<ForecastWeather>> forecast;
     protected MutableLiveData<String> lastUpdateTime;
@@ -48,12 +49,20 @@ public class WeatherViewModel extends BaseFragmentViewModel {
         this.weatherRepo = weatherRepo;
     }
 
-    public LiveData<CurrentWeather> getWeatherForSelectedCity() {
+    public LiveData<CurrentWeather> getWeather() {
         if (weather == null) {
             weather = new MutableLiveData<>();
-            getWeatherFromDbOrNetwork();
+            getWeatherFromDb();
         }
         return weather;
+    }
+
+    public LiveData<List<ForecastWeather>> getForecast() {
+        if (forecast == null) {
+            forecast = new MutableLiveData<>();
+            getForecastFromDb();
+        }
+        return forecast;
     }
 
     public LiveData<String> getLastUpdate() {
@@ -64,20 +73,12 @@ public class WeatherViewModel extends BaseFragmentViewModel {
         return lastUpdateTime;
     }
 
-    public LiveData<List<City>> getCities() {
-        if (cities == null) {
-            cities = new MutableLiveData<>();
-            getAllCities();
+    public LiveData<List<CityWithWeather>> getCitiesWithWeather() {
+        if (citiesWithWeather == null) {
+            citiesWithWeather = new MutableLiveData<>();
+            getCitiesWithWeatherFromDb();
         }
-        return cities;
-    }
-
-    public LiveData<List<ForecastWeather>> getForecast() {
-        if (forecast == null) {
-            forecast = new MutableLiveData<>();
-            forceUpdateForecast();
-        }
-        return forecast;
+        return citiesWithWeather;
     }
 
     public void onCitySelected(int cityId) {
@@ -89,9 +90,9 @@ public class WeatherViewModel extends BaseFragmentViewModel {
     }
 
     private void updateCity(City city) {
-        Prefs.setSelectedCity(context, new CityInfo(city.getName(), city.getApiCityId()));
-        forceUpdateCurrentWeather();
-        forceUpdateForecast();
+        Prefs.setSelectedCity(context, new CityInfo(city.getName(), city.getCityId()));
+        getWeatherFromDb();
+        getForecastFromDb();
     }
 
     @Override
@@ -99,44 +100,57 @@ public class WeatherViewModel extends BaseFragmentViewModel {
         return R.string.menu_weather;
     }
 
-    public void getWeatherFromDbOrNetwork() {
+    public void getWeatherFromDb() {
         weatherSubscription.dispose();
-        weatherSubscription = weatherRepo.getWeatherForSelectedCity()
+        weatherSubscription = weatherRepo.getWeatherForSelectedCityFromDb()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onNextWeather, this::onError);
     }
 
-    private void getAllCities() {
-        weatherRepo.getCities()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(allCities -> cities.setValue(allCities));
-    }
-
-    public void forceUpdateCurrentWeather() {
+    public void getForecastFromDb() {
         weatherSubscription.dispose();
-        weatherSubscription = weatherRepo.getFreshWeatherForSelectedCity()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onNextWeather, this::onError);
-    }
-
-    public void forceUpdateForecast() {
-        forecastSubscription.dispose();
-        forecastSubscription = weatherRepo.getFreshForecastForSelectedCity()
-                .subscribeOn(Schedulers.newThread())
+        weatherSubscription = weatherRepo.getForecastForSelectedCityFromDb()
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onNextForecast, this::onError);
     }
 
-    private void onNextForecast(List<ForecastWeather> forecast) {
-        updateForecast(forecast);
+    private void getCitiesWithWeatherFromDb() {
+        weatherRepo.getCitiesWithWeather()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(citiesWeather -> citiesWithWeather.setValue(citiesWeather));
+    }
+
+    public void forceUpdateWeatherAndForecast() {
+        forceUpdateWeather();
+        forceUpdateForecast();
+    }
+
+    private void forceUpdateWeather() {
+        weatherSubscription.dispose();
+        weatherSubscription = weatherRepo.getFreshWeatherForSelectedCity()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onNextWeather, this::onError);
+    }
+
+    private void forceUpdateForecast() {
+        forecastSubscription.dispose();
+        forecastSubscription = weatherRepo.getFreshForecastForSelectedCity()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onNextForecast, this::onError);
     }
 
     private void onNextWeather(CurrentWeather weather) {
         updateWeather(weather);
         updateInterval();
+    }
+
+    private void onNextForecast(List<ForecastWeather> forecast) {
+        updateForecast(forecast);
     }
 
     private void onError(Throwable throwable) {
@@ -164,5 +178,6 @@ public class WeatherViewModel extends BaseFragmentViewModel {
     protected void onCleared() {
         super.onCleared();
         weatherSubscription.dispose();
+        forecastSubscription.dispose();
     }
 }

@@ -11,7 +11,7 @@ import android.arch.persistence.room.PrimaryKey;
 
 @Entity (foreignKeys =
             @ForeignKey(entity = City.class,
-            parentColumns = {"apiCityId"},
+            parentColumns = {"cityId"},
             childColumns = {"apiCityId"},
             onDelete = ForeignKey.CASCADE))
 public class CurrentWeather {
@@ -114,5 +114,17 @@ public class CurrentWeather {
         temp1 = Double.doubleToLongBits(temp);
         result = 31 * result + (int) (temp1 ^ (temp1 >>> 32));
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "CurrentWeather{" +
+                "apiCityId=" + apiCityId +
+                ", baseWeather=" + baseWeather +
+                ", humidity=" + humidity +
+                ", windSpeed=" + windSpeed +
+                ", pressure=" + pressure +
+                ", temp=" + temp +
+                '}';
     }
 }

@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import ru.exwhythat.yather.data.local.entities.City;
+import ru.exwhythat.yather.data.local.entities.CityWithWeather;
 import ru.exwhythat.yather.data.local.entities.CurrentWeather;
 import ru.exwhythat.yather.data.local.entities.ForecastWeather;
 import ru.exwhythat.yather.utils.Prefs;
@@ -38,29 +39,29 @@ public class WeatherRepo {
     }
 
     public Flowable<CurrentWeather> getWeatherForSelectedCity() {
-        int selectedCityId = Prefs.getSelectedCity(appContext).getCityId();
-        return getWeatherForCity(selectedCityId);
+        return getWeatherForCity(getSelectedCityIdFromPrefs());
+    }
+
+    public Flowable<CurrentWeather> getWeatherForSelectedCityFromDb() {
+        return localRepo.getCurrentWeatherForCity(getSelectedCityIdFromPrefs());
     }
 
     public Flowable<CurrentWeather> getFreshWeatherForSelectedCity() {
-        int selectedCityId = Prefs.getSelectedCity(appContext).getCityId();
-        return remoteRepo.getCurrentWeatherForCity(selectedCityId)
+        return remoteRepo.getCurrentWeatherForCity(getSelectedCityIdFromPrefs())
                 .doOnNext(currentWeather -> localRepo.updateCurrentWeather(currentWeather));
-    }
-    public Flowable<CurrentWeather> getFreshWeatherForCity(int cityId) {
-        return remoteRepo.getCurrentWeatherForCity(cityId)
-                .doOnNext(currentWeather -> localRepo.updateCurrentWeather(currentWeather));
-    }
-
-    public Flowable<List<ForecastWeather>> getFreshForecastForCity(int cityId) {
-        return remoteRepo.getForecastForCity(cityId)
-                .doOnNext(forecast -> localRepo.updateForecast(forecast));
     }
 
     public Flowable<List<ForecastWeather>> getFreshForecastForSelectedCity() {
-        int selectedCityId = Prefs.getSelectedCity(appContext).getCityId();
-        return remoteRepo.getForecastForCity(selectedCityId)
+        return remoteRepo.getForecastForCity(getSelectedCityIdFromPrefs())
                 .doOnNext(forecast -> localRepo.updateForecast(forecast));
+    }
+
+    public Flowable<List<ForecastWeather>> getForecastForSelectedCityFromDb() {
+        return remoteRepo.getForecastForCity(getSelectedCityIdFromPrefs());
+    }
+
+    private int getSelectedCityIdFromPrefs() {
+        return Prefs.getSelectedCity(appContext).getCityId();
     }
 
     public Flowable<List<City>> getCities() {
@@ -69,5 +70,13 @@ public class WeatherRepo {
 
     public City getCityById(int cityId) {
         return localRepo.getCityById(cityId);
+    }
+
+    public City getSelectedCity() {
+        return localRepo.getCityById(getSelectedCityIdFromPrefs());
+    }
+
+    public Flowable<List<CityWithWeather>> getCitiesWithWeather() {
+        return localRepo.getCitiesWithWeather();
     }
 }

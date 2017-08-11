@@ -83,11 +83,11 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
         super.onActivityCreated(savedInstanceState);
         isTwoPane = ((MainActivity)getActivity()).getIsTwoPane();
 
-        localModel.getWeatherForSelectedCity().observe(this, this::setWeather);
+        localModel.getWeather().observe(this, this::setWeather);
         localModel.getLastUpdate().observe(this, this::setLastUpdate);
 
         initRecyclers();
-        localModel.getCities().observe(this, cities -> citiesAdapter.updateCities(cities));
+        localModel.getCitiesWithWeather().observe(this, cities -> citiesAdapter.updateCities(cities));
         localModel.getForecast().observe(this, forecast -> forecastAdapter.updateForecast(forecast));
     }
 
@@ -152,13 +152,12 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
         @WeatherState String weatherState = weather.getBaseWeather().getMain();
         imageWeather.setImageDrawable(ContextCompat.getDrawable(getContext(), getDrawableResIdForWeatherState(weatherState)));
 
-        String tempr = getString(R.string.tempr_float, weather.getTemp());
-        mainTempr.setText(StringUtils.makeSignedTempr(tempr));
-        windView.setText(getString(R.string.wind, (int)weather.getWindSpeed()));
-        humidityView.setText(getString(R.string.percent, (int)weather.getHumidity()));
+        mainTempr.setText(StringUtils.getFormattedTemperature(getContext(), weather.getTemp()));
+        windView.setText(StringUtils.getFormattedWind(getContext(), weather.getWindSpeed()));
+        humidityView.setText(StringUtils.getFormattedHumidity(getContext(), weather.getHumidity()));
     }
 
-    private @DrawableRes int getDrawableResIdForWeatherState(@WeatherState String weatherState) {
+    public static @DrawableRes int getDrawableResIdForWeatherState(@WeatherState String weatherState) {
         switch (weatherState) {
             case WeatherState.clear:
                 return R.drawable.ic_sun_big;
@@ -181,7 +180,7 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
 
     @Override
     public void onRefresh() {
-        localModel.forceUpdateCurrentWeather();
+        localModel.forceUpdateWeatherAndForecast();
     }
 
     private void setIsLoading(boolean isLoading) {
