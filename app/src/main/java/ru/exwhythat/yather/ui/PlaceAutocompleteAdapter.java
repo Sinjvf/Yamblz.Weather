@@ -54,7 +54,7 @@ public class PlaceAutocompleteAdapter
                                     @Nullable LatLngBounds bounds,
                                     @Nullable AutocompleteFilter filter,
                                     @Nullable AutocompleteCallbackListener callbackListener) {
-        super(context, android.R.layout.simple_expandable_list_item_2, android.R.id.text1);
+        super(context, R.layout.autocomplete_item, R.id.autocomplete_text_main);
         this.googleApiClient = googleApiClient;
         this.bounds = bounds;
         this.placeFilter = filter;
@@ -80,8 +80,8 @@ public class PlaceAutocompleteAdapter
         View row = super.getView(position, convertView, parent);
 
         AutocompletePrediction item = getItem(position);
-        TextView textView1 = row.findViewById(android.R.id.text1);
-        TextView textView2 = row.findViewById(android.R.id.text2);
+        TextView textView1 = row.findViewById(R.id.autocomplete_text_main);
+        TextView textView2 = row.findViewById(R.id.autocomplete_text_sub);
         textView1.setText(item.getPrimaryText(STYLE_BOLD));
         textView2.setText(item.getSecondaryText(STYLE_BOLD));
 
