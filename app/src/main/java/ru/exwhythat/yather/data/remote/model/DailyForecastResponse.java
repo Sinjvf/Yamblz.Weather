@@ -39,6 +39,7 @@ public class DailyForecastResponse extends BaseResponse {
         String clouds = "Clouds";
         String snow = "Snow";
         String storm = "Storm";
+        String fog = "Fog";
     }
     
     public static class Mapper {

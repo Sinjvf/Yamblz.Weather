@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,6 +25,7 @@ import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.data.local.entities.ForecastWeather;
 import ru.exwhythat.yather.utils.DateUtils;
 import ru.exwhythat.yather.utils.StringUtils;
+import timber.log.Timber;
 
 import static ru.exwhythat.yather.data.remote.model.DailyForecastResponse.WeatherState;
 
@@ -49,7 +49,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 
     @Override
     public ForecastViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.forecast_list_item_small, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.forecast_list_item, parent, false);
         return new ForecastViewHolder(view);
     }
 
@@ -92,7 +92,10 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
                 return R.drawable.ic_snow;
             case WeatherState.storm:
                 return R.drawable.ic_storm;
+            case WeatherState.fog:
+                return R.drawable.ic_fog;
             default:
+                Timber.e("Unknown weather state: " + weatherState);
                 return R.drawable.ic_help_outline;
         }
     }

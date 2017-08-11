@@ -210,7 +210,10 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
                 return R.drawable.ic_snow_big;
             case WeatherState.storm:
                 return R.drawable.ic_storm_big;
+            case WeatherState.fog:
+                return R.drawable.ic_fog;
             default:
+                Timber.e("Unknown weather state: " + weatherState);
                 return R.drawable.ic_help_outline;
         }
     }
