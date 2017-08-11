@@ -18,12 +18,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.activity.MainActivity;
+import ru.exwhythat.yather.base_util.livedata.Resource;
+import ru.exwhythat.yather.base_util.livedata.Status;
+import ru.exwhythat.yather.data.local.entities.CityWithWeather;
 import ru.exwhythat.yather.data.local.entities.CurrentWeather;
+import ru.exwhythat.yather.data.local.entities.ForecastWeather;
 import ru.exwhythat.yather.di.Injectable;
 import ru.exwhythat.yather.utils.Prefs;
 import ru.exwhythat.yather.base_util.BaseFragment;
@@ -87,8 +93,8 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
         localModel.getLastUpdate().observe(this, this::setLastUpdate);
 
         initRecyclers();
-        localModel.getCitiesWithWeather().observe(this, cities -> citiesAdapter.updateCities(cities));
-        localModel.getForecast().observe(this, forecast -> forecastAdapter.updateForecast(forecast));
+        localModel.getCitiesWithWeather().observe(this, this::setCities);
+        localModel.getForecast().observe(this, this::setForecast);
     }
 
     private void initRecyclers() {
@@ -135,14 +141,49 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
         swipeRefreshLayout.setOnRefreshListener(this);
     }
 
-    private void setWeather(CurrentWeather weather){
-        if (weather == null) {
+    private void setWeather(Resource<CurrentWeather> weatherRes) {
+        if (weatherRes.status == Status.SUCCESS) {
+            setWeatherDataToViews(weatherRes.data);
+            setIsLoading(false);
+        } else if (weatherRes.status == Status.LOADING) {
             setIsLoading(true);
             return;
+        } else if (weatherRes.status == Status.ERROR) {
+            Toast.makeText(getContext(), weatherRes.message, Toast.LENGTH_SHORT).show();
+            setIsLoading(false);
         }
-        setWeatherDataToViews(weather);
-        setIsLoading(false);
-        Timber.d("setWeather: " + weather);
+
+        Timber.d("setWeather: " + weatherRes);
+    }
+
+    private void setForecast(Resource<List<ForecastWeather>> forecastRes) {
+        if (forecastRes.status == Status.SUCCESS) {
+            forecastAdapter.updateForecast(forecastRes.data);
+            setIsLoading(false);
+        } else if (forecastRes.status == Status.LOADING) {
+            setIsLoading(true);
+            return;
+        } else if (forecastRes.status == Status.ERROR) {
+            Toast.makeText(getContext(), forecastRes.message, Toast.LENGTH_SHORT).show();
+            setIsLoading(false);
+        }
+
+        Timber.d("setForecast: " + forecastRes);
+    }
+
+    private void setCities(Resource<List<CityWithWeather>> citiesRes) {
+        if (citiesRes.status == Status.SUCCESS) {
+            citiesAdapter.updateCities(citiesRes.data);
+            setIsLoading(false);
+        } else if (citiesRes.status == Status.LOADING) {
+            setIsLoading(true);
+            return;
+        } else if (citiesRes.status == Status.ERROR) {
+            Toast.makeText(getContext(), citiesRes.message, Toast.LENGTH_SHORT).show();
+            setIsLoading(false);
+        }
+
+        Timber.d("setCities: " + citiesRes);
     }
 
     private void setWeatherDataToViews(CurrentWeather weather) {

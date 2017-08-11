@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.Keep;
 
+import java.net.UnknownHostException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -16,6 +17,7 @@ import io.reactivex.disposables.Disposables;
 import io.reactivex.schedulers.Schedulers;
 import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.base_util.BaseFragmentViewModel;
+import ru.exwhythat.yather.base_util.livedata.Resource;
 import ru.exwhythat.yather.data.local.entities.City;
 import ru.exwhythat.yather.data.local.entities.CityWithWeather;
 import ru.exwhythat.yather.data.local.entities.CurrentWeather;
@@ -39,10 +41,10 @@ public class WeatherViewModel extends BaseFragmentViewModel {
     private Disposable forecastSubscription = Disposables.disposed();
     private Disposable citiesSubscription = Disposables.disposed();
 
-    protected MutableLiveData<List<CityWithWeather>> citiesWithWeather;
-    protected MutableLiveData<CurrentWeather> weather;
-    protected MutableLiveData<List<ForecastWeather>> forecast;
-    protected MutableLiveData<String> lastUpdateTime;
+    protected MutableLiveData<Resource<List<CityWithWeather>>> citiesWithWeather = new MutableLiveData<>();
+    protected MutableLiveData<Resource<CurrentWeather>> weather = new MutableLiveData<>();
+    protected MutableLiveData<Resource<List<ForecastWeather>>> forecast = new MutableLiveData<>();
+    protected MutableLiveData<String> lastUpdateTime = new MutableLiveData<>();
 
     @Inject
     public WeatherViewModel(Application application, WeatherCachingRepository weatherRepo) {
@@ -50,35 +52,26 @@ public class WeatherViewModel extends BaseFragmentViewModel {
         this.weatherRepo = weatherRepo;
     }
 
-    public LiveData<CurrentWeather> getWeather() {
-        if (weather == null) {
-            weather = new MutableLiveData<>();
-            getWeatherFromDb();
-        }
+    public LiveData<Resource<CurrentWeather>> getWeather() {
+        setLiveLoading(weather);
+        loadWeatherFromRepo();
         return weather;
     }
 
-    public LiveData<List<ForecastWeather>> getForecast() {
-        if (forecast == null) {
-            forecast = new MutableLiveData<>();
-            getForecastFromDb();
-        }
+    public LiveData<Resource<List<ForecastWeather>>> getForecast() {
+        setLiveLoading(forecast);
+        loadForecastFromRepo();
         return forecast;
     }
 
-    public LiveData<List<CityWithWeather>> getCitiesWithWeather() {
-        if (citiesWithWeather == null) {
-            citiesWithWeather = new MutableLiveData<>();
-            getCitiesWithWeatherFromDb();
-        }
+    public LiveData<Resource<List<CityWithWeather>>> getCitiesWithWeather() {
+        setLiveLoading(citiesWithWeather);
+        loadCitiesWithWeatherFromRepo();
         return citiesWithWeather;
     }
 
     public LiveData<String> getLastUpdate() {
-        if (lastUpdateTime == null) {
-            lastUpdateTime = new MutableLiveData<>();
-            lastUpdateTime.setValue(Utils.lastUpdateString(context));
-        }
+        lastUpdateTime.setValue(Utils.lastUpdateString(context));
         return lastUpdateTime;
     }
 
@@ -92,8 +85,8 @@ public class WeatherViewModel extends BaseFragmentViewModel {
 
     private void updateCity(City city) {
         Prefs.setSelectedCity(context, new CityInfo(city.getName(), city.getCityId()));
-        getWeatherFromDb();
-        getForecastFromDb();
+        loadWeatherFromRepo();
+        loadForecastFromRepo();
     }
 
     @Override
@@ -101,25 +94,28 @@ public class WeatherViewModel extends BaseFragmentViewModel {
         return R.string.menu_weather;
     }
 
-    public void getWeatherFromDb() {
+    public void loadWeatherFromRepo() {
         weatherSubscription = weatherRepo.getWeather()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(newWeather -> safeUpdateLiveData(weather, newWeather), this::onError);
+                .subscribe(newWeather -> setLiveSuccess(weather, newWeather),
+                        err -> setLiveError(weather, err));
     }
 
-    public void getForecastFromDb() {
+    public void loadForecastFromRepo() {
         forecastSubscription = weatherRepo.getForecast()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(newForecast -> safeUpdateLiveData(forecast, newForecast), this::onError);
+                .subscribe(newForecast -> setLiveSuccess(forecast, newForecast),
+                        err -> setLiveError(forecast, err));
     }
 
-    private void getCitiesWithWeatherFromDb() {
+    private void loadCitiesWithWeatherFromRepo() {
         citiesSubscription = weatherRepo.getCitiesWithWeather()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(cities -> safeUpdateLiveData(citiesWithWeather, cities), this::onError);
+                .subscribe(cities -> setLiveSuccess(citiesWithWeather, cities),
+                        err -> setLiveError(citiesWithWeather, err));
     }
 
     public void forceUpdateWeatherAndForecast() {
@@ -132,7 +128,8 @@ public class WeatherViewModel extends BaseFragmentViewModel {
         weatherSubscription = weatherRepo.getFreshWeather()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::updateWeatherAndLastUpdateTime, this::onError);
+                .subscribe(this::updateWeatherAndLastUpdateTime,
+                        err -> setLiveError(weather, err));
     }
 
     private void forceUpdateForecast() {
@@ -140,27 +137,40 @@ public class WeatherViewModel extends BaseFragmentViewModel {
         forecastSubscription = weatherRepo.getFreshForecast()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(newForecast -> safeUpdateLiveData(forecast, newForecast), this::onError);
+                .subscribe(newForecast -> setLiveSuccess(forecast, newForecast),
+                        err -> setLiveError(forecast, err));
     }
 
     private void updateWeatherAndLastUpdateTime(CurrentWeather newWeather) {
-        safeUpdateLiveData(weather, newWeather);
+        setLiveSuccess(weather, newWeather);
         updateLastUpdateTime();
     }
 
     private void updateLastUpdateTime() {
         Prefs.setPrefLastTimeUpdate(context);
-        safeUpdateLiveData(lastUpdateTime, Utils.lastUpdateString(context));
+        lastUpdateTime.setValue(Utils.lastUpdateString(context));
     }
 
     private void onError(Throwable throwable) {
-        // TODO: how to show an error?
         Timber.e(throwable);
     }
 
-    private <T> void safeUpdateLiveData(MutableLiveData<T> mutableLiveData, T value) {
-        if (mutableLiveData == null) mutableLiveData = new MutableLiveData<>();
-        mutableLiveData.setValue(value);
+    private <T> void setLiveSuccess(MutableLiveData<Resource<T>> mutableLiveData, T value) {
+        mutableLiveData.setValue(Resource.success(value));
+    }
+
+    private <T> void setLiveError(MutableLiveData<Resource<T>> mutableLiveData, Throwable e) {
+        String msg;
+        if (e instanceof UnknownHostException) {
+            msg = context.getString(R.string.error_network);
+        } else {
+            msg = context.getString(R.string.error_oops);
+        }
+        mutableLiveData.setValue(Resource.error(msg));
+    }
+
+    private <T> void setLiveLoading(MutableLiveData<Resource<T>> mutableLiveData) {
+        mutableLiveData.setValue(Resource.loading());
     }
 
     @Override
