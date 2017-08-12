@@ -27,11 +27,11 @@ import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.activity.MainActivity;
 import ru.exwhythat.yather.base_util.livedata.Resource;
 import ru.exwhythat.yather.base_util.livedata.Status;
+import ru.exwhythat.yather.data.local.entities.City;
 import ru.exwhythat.yather.data.local.entities.CityWithWeather;
 import ru.exwhythat.yather.data.local.entities.CurrentWeather;
 import ru.exwhythat.yather.data.local.entities.ForecastWeather;
 import ru.exwhythat.yather.di.Injectable;
-import ru.exwhythat.yather.utils.Prefs;
 import ru.exwhythat.yather.base_util.BaseFragment;
 import ru.exwhythat.yather.utils.StringUtils;
 import timber.log.Timber;
@@ -74,8 +74,6 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
 
     private WeatherViewModel localModel;
 
-    private int cityId;
-
     private boolean isTwoPane;
 
     public static WeatherFragment getInstance(){
@@ -89,11 +87,12 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
         super.onActivityCreated(savedInstanceState);
         isTwoPane = ((MainActivity)getActivity()).getIsTwoPane();
 
+        localModel.getSelectedCity().observe(this, this::setCity);
         localModel.getWeather().observe(this, this::setWeather);
         localModel.getLastUpdate().observe(this, this::setLastUpdate);
 
         initRecyclers();
-        localModel.getCitiesWithWeather().observe(this, this::setCities);
+        localModel.getCitiesWithWeather().observe(this, this::setCitiesWithWeather);
         localModel.getForecast().observe(this, this::setForecast);
     }
 
@@ -125,11 +124,6 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
     }
 
     @Override
-    protected void getArgs() {
-        cityId = Prefs.getSelectedCity(getContext()).getCityId();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         return inflater.inflate(R.layout.fr_weather, container, false);
@@ -139,6 +133,13 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         swipeRefreshLayout.setOnRefreshListener(this);
+    }
+
+    private void setCity(Resource<City> cityRes) {
+        if (cityRes.status == Status.SUCCESS) {
+            cityNameView.setText(cityRes.data.getName());
+        }
+        Timber.d("setCity: " + cityRes);
     }
 
     private void setWeather(Resource<CurrentWeather> weatherRes) {
@@ -152,7 +153,6 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
             Toast.makeText(getContext(), weatherRes.message, Toast.LENGTH_SHORT).show();
             setIsLoading(false);
         }
-
         Timber.d("setWeather: " + weatherRes);
     }
 
@@ -167,11 +167,10 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
             Toast.makeText(getContext(), forecastRes.message, Toast.LENGTH_SHORT).show();
             setIsLoading(false);
         }
-
         Timber.d("setForecast: " + forecastRes);
     }
 
-    private void setCities(Resource<List<CityWithWeather>> citiesRes) {
+    private void setCitiesWithWeather(Resource<List<CityWithWeather>> citiesRes) {
         if (citiesRes.status == Status.SUCCESS) {
             citiesAdapter.updateCities(citiesRes.data);
             setIsLoading(false);
@@ -182,14 +181,10 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
             Toast.makeText(getContext(), citiesRes.message, Toast.LENGTH_SHORT).show();
             setIsLoading(false);
         }
-
-        Timber.d("setCities: " + citiesRes);
+        Timber.d("setCitiesWithWeather: " + citiesRes);
     }
 
     private void setWeatherDataToViews(CurrentWeather weather) {
-        String cityName = Prefs.getSelectedCity(getContext()).getCityName();
-        cityNameView.setText(cityName);
-
         @WeatherState String weatherState = weather.getBaseWeather().getMain();
         imageWeather.setImageDrawable(ContextCompat.getDrawable(getContext(), getDrawableResIdForWeatherState(weatherState)));
 

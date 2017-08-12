@@ -1,7 +1,5 @@
 package ru.exwhythat.yather.data.repository;
 
-import android.content.Context;
-
 import java.util.List;
 
 import javax.inject.Inject;
@@ -12,7 +10,6 @@ import ru.exwhythat.yather.data.local.entities.City;
 import ru.exwhythat.yather.data.local.entities.CityWithWeather;
 import ru.exwhythat.yather.data.local.entities.CurrentWeather;
 import ru.exwhythat.yather.data.local.entities.ForecastWeather;
-import ru.exwhythat.yather.utils.Prefs;
 
 /**
  * Created by exwhythat on 8/6/17.
@@ -20,13 +17,11 @@ import ru.exwhythat.yather.utils.Prefs;
 
 public class WeatherCachingRepository {
 
-    private Context appContext;
     private LocalWeatherRepository localRepo;
     private RemoteWeatherRepository remoteRepo;
 
     @Inject
-    public WeatherCachingRepository(Context appContext, LocalWeatherRepository localRepo, RemoteWeatherRepository remoteRepo) {
-        this.appContext = appContext;
+    public WeatherCachingRepository(LocalWeatherRepository localRepo, RemoteWeatherRepository remoteRepo) {
         this.localRepo = localRepo;
         this.remoteRepo = remoteRepo;
     }
@@ -37,40 +32,40 @@ public class WeatherCachingRepository {
      * 3) Merge Single with endless Flowable to watch for database changes
      */
     public Flowable<CurrentWeather> getWeather() {
-        int cityId = getSelectedCityIdFromPrefs();
-        return localRepo.getSingleWeatherForCity(cityId)
+        return localRepo.getSingleWeatherForSelectedCity()
                 .onErrorResumeNext(getFreshWeather())
                 .toFlowable()
-                .mergeWith(localRepo.getFlowingWeatherForCity(cityId));
+                .mergeWith(localRepo.getFlowingWeatherForSelectedCity());
     }
 
     public Single<CurrentWeather> getFreshWeather() {
-        return remoteRepo.getCurrentWeatherForCity(getSelectedCityIdFromPrefs())
+        return localRepo.getSelectedCityIdSingle()
+                .flatMap(cityId -> remoteRepo.getCurrentWeatherForCity(cityId))
                 .doOnSuccess(currentWeather -> localRepo.updateCurrentWeather(currentWeather));
     }
 
     public Flowable<List<ForecastWeather>> getForecast() {
-        int cityId = getSelectedCityIdFromPrefs();
-        return localRepo.getSingleForecastForCity(cityId)
+        return localRepo.getSingleForecastForSelectedCity()
                 .onErrorResumeNext(getFreshForecast())
                 .toFlowable()
-                .mergeWith(localRepo.getFlowingForecastForCity(cityId));
+                .mergeWith(localRepo.getFlowingForecastForSelectedCity());
     }
 
     public Single<List<ForecastWeather>> getFreshForecast() {
-        return remoteRepo.getForecastForCity(getSelectedCityIdFromPrefs())
+        return localRepo.getSelectedCityIdSingle()
+                .flatMap(cityId -> remoteRepo.getForecastForCity(cityId))
                 .doOnSuccess(forecast -> localRepo.updateForecast(forecast));
-    }
-
-    private int getSelectedCityIdFromPrefs() {
-        return Prefs.getSelectedCity(appContext).getCityId();
-    }
-
-    public City getCityById(int cityId) {
-        return localRepo.getCityById(cityId);
     }
 
     public Flowable<List<CityWithWeather>> getCitiesWithWeather() {
         return localRepo.getFlowingCitiesWithWeather();
+    }
+
+    public long setSelectedCity(int cityId) {
+        return localRepo.selectCity(cityId);
+    }
+
+    public Single<City> getSelectedCitySingle() {
+        return localRepo.getSelectedCitySingle();
     }
 }

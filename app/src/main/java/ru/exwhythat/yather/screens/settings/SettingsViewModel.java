@@ -20,7 +20,6 @@ import ru.exwhythat.yather.data.repository.LocalWeatherRepository;
 import ru.exwhythat.yather.ui.SelectCityDialogFragment;
 import ru.exwhythat.yather.ui.SelectIntervalDialogFragment;
 import ru.exwhythat.yather.utils.Prefs;
-import timber.log.Timber;
 
 /**
  * Created by Sinjvf on 09.07.2017.
@@ -32,7 +31,7 @@ public class SettingsViewModel extends BaseFragmentViewModel {
     private LocalWeatherRepository localRepo;
 
     private MutableLiveData<Long> interval = new MutableLiveData<>();
-    private MutableLiveData<Resource<CityInfo>> cityInfo = new MutableLiveData<>();
+    private MutableLiveData<Resource<City>> cityInfo = new MutableLiveData<>();
 
     @Inject
     public SettingsViewModel(Application application, LocalWeatherRepository localRepo) {
@@ -48,10 +47,18 @@ public class SettingsViewModel extends BaseFragmentViewModel {
     }
 
     @NonNull
-    public LiveData<Resource<CityInfo>> getCityInfo() {
-        CityInfo savedCityInfo = Prefs.getSelectedCity(context);
-        setLiveSuccess(cityInfo, savedCityInfo);
+    public LiveData<Resource<City>> getCityInfo() {
+        setLiveLoading(cityInfo);
+        loadSelectedCity();
         return cityInfo;
+    }
+
+    private void loadSelectedCity() {
+        localRepo.getSelectedCitySingle()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(city -> setLiveSuccess(cityInfo, city),
+                        err -> setLiveError(cityInfo, err));
     }
 
     @Override
@@ -67,8 +74,8 @@ public class SettingsViewModel extends BaseFragmentViewModel {
         new SelectCityDialogFragment().show(fragmentManager, null);
     }
 
-    public void updateSelectedCity(Single<CityInfo> singleCityInfo) {
-        singleCityInfo
+    public void updateSelectedCity(Single<City> singleCity) {
+        singleCity
                 .doOnSuccess(this::writeCityToStorage)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -77,10 +84,9 @@ public class SettingsViewModel extends BaseFragmentViewModel {
     }
 
     @WorkerThread
-    private void writeCityToStorage(CityInfo cityInfo) {
-        Prefs.setSelectedCity(context, cityInfo);
-        City city = CityInfo.Mapper.toCity(cityInfo);
+    private void writeCityToStorage(City city) {
         localRepo.addNewCity(city);
+        localRepo.selectCity(city.getCityId());
     }
 
     public void updateInterval(Long newInterval) {

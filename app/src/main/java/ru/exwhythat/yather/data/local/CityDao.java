@@ -9,6 +9,7 @@ import android.arch.persistence.room.Query;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 import ru.exwhythat.yather.data.local.entities.City;
 import ru.exwhythat.yather.data.local.entities.CityWithWeather;
 
@@ -22,12 +23,21 @@ public interface CityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(City city);
 
-    @Query("SELECT * FROM city WHERE cityId = :cityId")
-    City getById(int cityId);
-
     @Query("SELECT * FROM city LEFT JOIN currentweather ON currentweather.apiCityId = city.cityId")
     Flowable<List<CityWithWeather>> getCitiesWithWeather();
 
     @Query("DELETE FROM city")
     int clearTable();
+
+    @Query("UPDATE city SET isselected = 1 WHERE cityid = :cityId")
+    long setSelected(int cityId);
+
+    @Query("UPDATE city SET isselected = 0")
+    long unselectAll();
+
+    @Query("SELECT cityId FROM city WHERE isselected = 1 LIMIT 1")
+    Single<Integer> getSelectedCityIdSingle();
+
+    @Query("SELECT * FROM city WHERE isselected = 1 LIMIT 1")
+    Single<City> getSelectedCitySingle();
 }

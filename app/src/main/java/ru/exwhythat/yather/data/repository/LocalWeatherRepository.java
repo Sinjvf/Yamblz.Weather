@@ -32,30 +32,20 @@ public class LocalWeatherRepository {
         this.forecastWeatherDao = forecastWeatherDao;
     }
 
-    public Flowable<CurrentWeather> getFlowingWeatherForCity(int cityId) {
-        // For some reason Room triggers updates for every city in database, not the only one which I'm asked for.
-        // So I have to filter it manually
-        return currentWeatherDao.getFlowForCity(cityId)
-                .filter(weather -> weather.getApiCityId() == cityId);
+    public Flowable<CurrentWeather> getFlowingWeatherForSelectedCity() {
+        return currentWeatherDao.getFlowForSelectedCity();
     }
 
-    public Single<CurrentWeather> getSingleWeatherForCity(int cityId) {
-        return currentWeatherDao.getSingleForCity(cityId);
+    public Single<CurrentWeather> getSingleWeatherForSelectedCity() {
+        return currentWeatherDao.getSingleForSelectedCity();
     }
 
-    public Flowable<List<ForecastWeather>> getFlowingForecastForCity(int cityId) {
-        return forecastWeatherDao.getFlowForCity(cityId)
-                .filter(forecast -> {
-                    if (forecast.size() > 0) {
-                        return forecast.get(0).getApiCityId() == cityId;
-                    } else {
-                        return true;
-                    }
-                });
+    public Flowable<List<ForecastWeather>> getFlowingForecastForSelectedCity() {
+        return forecastWeatherDao.getFlowForSelectedCity();
     }
 
-    public Single<List<ForecastWeather>> getSingleForecastForCity(int cityId) {
-        return forecastWeatherDao.getSingleForCity(cityId)
+    public Single<List<ForecastWeather>> getSingleForecastForSelectedCity() {
+        return forecastWeatherDao.getSingleForSelectedCity()
                 .flatMap(forecast -> {
                     // Room does not return error on empty list as a result of Single, surprise!
                     if (forecast.size() == 0) {
@@ -81,11 +71,20 @@ public class LocalWeatherRepository {
         cityDao.insert(city);
     }
 
-    public City getCityById(int cityId) {
-        return cityDao.getById(cityId);
+    public long selectCity(int cityId) {
+        cityDao.unselectAll();
+        return cityDao.setSelected(cityId);
     }
 
     public Flowable<List<CityWithWeather>> getFlowingCitiesWithWeather() {
         return cityDao.getCitiesWithWeather();
+    }
+
+    public Single<Integer> getSelectedCityIdSingle() {
+        return cityDao.getSelectedCityIdSingle();
+    }
+
+    public Single<City> getSelectedCitySingle() {
+        return cityDao.getSelectedCitySingle();
     }
 }

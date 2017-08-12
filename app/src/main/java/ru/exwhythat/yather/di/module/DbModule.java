@@ -12,6 +12,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.data.local.CityDao;
 import ru.exwhythat.yather.data.local.CurrentWeatherDao;
 import ru.exwhythat.yather.data.local.ForecastWeatherDao;
@@ -35,8 +36,9 @@ public class DbModule {
                         super.onCreate(db);
                         // FIXME: insert default city on database creation
                         ContentValues cv = new ContentValues();
-                        cv.put("cityId", Prefs.DEFAULT_CITY_INFO.getCityId());
-                        cv.put("name", Prefs.DEFAULT_CITY_INFO.getCityName());
+                        cv.put("cityId", application.getResources().getInteger(R.integer.moscow_id));
+                        cv.put("name", application.getString(R.string.moscow_name));
+                        cv.put("isSelected", 1);
                         db.insert("city", SQLiteDatabase.CONFLICT_REPLACE, cv);
                     }
                 })

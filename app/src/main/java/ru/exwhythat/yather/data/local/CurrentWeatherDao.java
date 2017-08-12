@@ -21,9 +21,9 @@ public interface CurrentWeatherDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(CurrentWeather currentWeather);
 
-    @Query("SELECT * from currentweather WHERE apiCityId = :cityId")
-    Flowable<CurrentWeather> getFlowForCity(int cityId);
+    @Query("SELECT * from currentweather INNER JOIN city ON currentweather.apiCityId = city.cityId WHERE city.isselected = 1")
+    Flowable<CurrentWeather> getFlowForSelectedCity();
 
-    @Query("SELECT * from currentweather WHERE apiCityId = :cityId")
-    Single<CurrentWeather> getSingleForCity(int cityId);
+    @Query("SELECT * from currentweather INNER JOIN city ON currentweather.apiCityId = city.cityId WHERE city.isselected = 1")
+    Single<CurrentWeather> getSingleForSelectedCity();
 }

@@ -12,10 +12,12 @@ public class City {
 
     @PrimaryKey private int cityId;
     private String name;
+    private boolean isSelected = false;
 
-    public City(int cityId, String name) {
+    public City(int cityId, String name, boolean isSelected) {
         this.cityId = cityId;
         this.name = name;
+        this.isSelected = isSelected;
     }
 
     public int getCityId() {
@@ -34,6 +36,15 @@ public class City {
         this.name = name;
     }
 
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -42,14 +53,15 @@ public class City {
         City city = (City) o;
 
         if (cityId != city.cityId) return false;
+        if (isSelected != city.isSelected) return false;
         return name.equals(city.name);
     }
 
     @Override
     public int hashCode() {
-        int result;
-        result = cityId;
+        int result = cityId;
         result = 31 * result + name.hashCode();
+        result = 31 * result + (isSelected ? 1 : 0);
         return result;
     }
 
@@ -58,6 +70,7 @@ public class City {
         return "City{" +
                 "cityId=" + cityId +
                 ", name='" + name + '\'' +
+                ", isSelected=" + isSelected +
                 '}';
     }
 }

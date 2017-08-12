@@ -19,6 +19,7 @@ import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.base_util.BaseFragment;
 import ru.exwhythat.yather.base_util.livedata.Resource;
 import ru.exwhythat.yather.base_util.livedata.Status;
+import ru.exwhythat.yather.data.local.entities.City;
 import ru.exwhythat.yather.di.Injectable;
 import ru.exwhythat.yather.utils.Utils;
 import timber.log.Timber;
@@ -82,15 +83,15 @@ public class SettingsFragment extends BaseFragment implements Injectable {
         intervalView.setText(String.format(getString(R.string.n_min), minutes));
     }
 
-    public void setCityInfo(Resource<CityInfo> cityInfo){
-        if (cityInfo.status == Status.SUCCESS) {
-            cityNameView.setText(cityInfo.data.getCityName());
+    public void setCityInfo(Resource<City> city){
+        if (city.status == Status.SUCCESS) {
+            cityNameView.setText(city.data.getName());
             hideCityLoading();
-        } else if (cityInfo.status == Status.LOADING) {
+        } else if (city.status == Status.LOADING) {
             showCityLoading();
-        } else if (cityInfo.status == Status.ERROR) {
+        } else if (city.status == Status.ERROR) {
             Toast.makeText(getContext(), getString(R.string.error_unknown), Toast.LENGTH_SHORT).show();
-            Timber.e(cityInfo.message);
+            Timber.e(city.message);
             hideCityLoading();
         }
     }

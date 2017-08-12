@@ -40,9 +40,9 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.YatherApp;
+import ru.exwhythat.yather.data.local.entities.City;
 import ru.exwhythat.yather.data.repository.RemoteWeatherRepository;
 import ru.exwhythat.yather.di.Injectable;
-import ru.exwhythat.yather.screens.settings.CityInfo;
 import ru.exwhythat.yather.screens.settings.SettingsViewModel;
 import timber.log.Timber;
 
@@ -119,13 +119,13 @@ public class SelectCityDialogFragment extends DialogFragment implements Injectab
                 .map(AutocompletePrediction::getPlaceId)
                 .switchMap(placeId -> getPlaceById(placeId).toObservable())
                 .map(place -> remoteRepo.getCityIdByLatLng(place.getLatLng())
-                        .map(cityId -> new CityInfo(place.getName().toString(), cityId))
+                        .map(cityId -> new City(cityId, place.getName().toString(), false))
                         .subscribeOn(Schedulers.io())
                 )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(cityInfoSingle -> {
-                    settingsModel.updateSelectedCity(cityInfoSingle);
+                .subscribe(city -> {
+                    settingsModel.updateSelectedCity(city);
                     dismiss();
                 }, error -> {
                     Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();

@@ -32,4 +32,13 @@ public class Resource<T> {
     public static <T> Resource<T> loading() {
         return new Resource<>(LOADING, null, null);
     }
+
+    @Override
+    public String toString() {
+        return "Resource{" +
+                "status=" + status +
+                ", data=" + data +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

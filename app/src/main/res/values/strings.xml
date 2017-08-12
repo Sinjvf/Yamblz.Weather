@@ -8,7 +8,6 @@
 
     <string name="api_key" translatable="false">4910f098be51f2bea56f920eff28f314</string>
     <string name="moscow_name">Moscow</string>
-    <string name="moscow_id" translatable="false">524901</string>
 
     <string name="menu_tools">Settings</string>
     <string name="menu_about">About</string>

@@ -24,11 +24,11 @@ public interface ForecastWeatherDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertAll(List<ForecastWeather> forecastWeatherList);
 
-    @Query("SELECT * FROM forecastweather WHERE apiCityId = :cityId ORDER BY date")
-    Flowable<List<ForecastWeather>> getFlowForCity(int cityId);
+    @Query("SELECT * FROM forecastweather INNER JOIN city ON forecastweather.apiCityId = city.cityId WHERE city.isselected = 1 ORDER BY date")
+    Flowable<List<ForecastWeather>> getFlowForSelectedCity();
 
-    @Query("SELECT * FROM forecastweather WHERE apiCityId = :cityId ORDER BY date")
-    Single<List<ForecastWeather>> getSingleForCity(int cityId);
+    @Query("SELECT * FROM forecastweather INNER JOIN city ON forecastweather.apiCityId = city.cityId WHERE city.isselected = 1 ORDER BY date")
+    Single<List<ForecastWeather>> getSingleForSelectedCity();
 
     @Query("DELETE FROM forecastweather WHERE apiCityId = :cityId")
     int deleteForCity(int cityId);
