@@ -5,21 +5,13 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.app.FragmentManager;
 
-import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
-import io.reactivex.SingleObserver;
-import io.reactivex.disposables.Disposable;
-import ru.exwhythat.yather.BuildConfig;
 import ru.exwhythat.yather.R;
-import ru.exwhythat.yather.ui.DialogsFragment;
-import ru.exwhythat.yather.utils.Utils;
-import timber.log.Timber;
+import ru.exwhythat.yather.base_util.livedata.Resource;
 
 /**
  * Created by Sinjvf on 09.07.2017.
@@ -28,40 +20,20 @@ import timber.log.Timber;
 
 public abstract class BaseFragmentViewModel extends AndroidViewModel {
 
-    protected final String TAG = "tag:" + getClass().getSimpleName();
-    protected MutableLiveData<Integer> titleId;
     protected final Context context;
     protected FragmentManager fragmentManager;
 
-    protected MutableLiveData<Integer> progress;
-    protected final Handler handler = new Handler();
+    private MutableLiveData<Integer> titleId = new MutableLiveData<>();
 
     public BaseFragmentViewModel(Application application) {
         super(application);
         context = application.getApplicationContext();
-        Timber.tag(TAG);
     }
 
     public LiveData<Integer> getTitle() {
-        if (titleId == null) {
-            titleId = new MutableLiveData<>();
-            setToolbarText();
-        }
+        titleId.setValue(getTitleStringId());
         return titleId;
     }
-
-    public MutableLiveData<Integer> getProgress() {
-        if (progress == null){
-            progress = new MutableLiveData<>();
-            progress.setValue(Utils.PROGRESS_SUCCESS);
-        }
-        return progress;
-    }
-
-    protected void setToolbarText() {
-        titleId.setValue(getTitleStringId());
-    }
-
 
     protected abstract @StringRes int getTitleStringId();
 
@@ -72,41 +44,23 @@ public abstract class BaseFragmentViewModel extends AndroidViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
-        handler.removeCallbacksAndMessages(null);
     }
 
-    protected <T> SingleObserver<T> getObserver(BaseSuccessActionListener<T> successListener){
-        return new SingleObserver<T>() {
-            @Override
-            public void onSubscribe(@NonNull Disposable d) {}
-
-            @Override
-            public void onSuccess(@NonNull T response) {
-                updateProgress(Utils.PROGRESS_SUCCESS);
-                successListener.onSussecc(response);
-            }
-
-            @Override
-            public void onError(@NonNull Throwable t) {
-                updateProgress(Utils.PROGRESS_FAIL);
-                String message;
-                Timber.e(t.getMessage());
-                //don't show strange errors in release
-                if (t instanceof UnknownHostException || t instanceof SocketTimeoutException) {
-                    message = context.getString(R.string.error_network);
-                }else
-                if(BuildConfig.DEBUG)
-                    message = t.getMessage();
-                else
-                    message = context.getString(R.string.error_oops);
-                DialogsFragment dialog = DialogsFragment.getInstance(context.getString(R.string.error), message, false);
-                dialog.show(fragmentManager, null);
-            }
-        };
+    protected  <T> void setLiveSuccess(MutableLiveData<Resource<T>> mutableLiveData, T value) {
+        mutableLiveData.setValue(Resource.success(value));
     }
 
-    private void updateProgress(int status) {
-        if (progress == null) progress = new MutableLiveData<>();
-        progress.setValue(status);
+    protected  <T> void setLiveError(MutableLiveData<Resource<T>> mutableLiveData, Throwable e) {
+        String msg;
+        if (e instanceof UnknownHostException) {
+            msg = context.getString(R.string.error_network);
+        } else {
+            msg = context.getString(R.string.error_oops);
+        }
+        mutableLiveData.setValue(Resource.error(msg));
+    }
+
+    protected <T> void setLiveLoading(MutableLiveData<Resource<T>> mutableLiveData) {
+        mutableLiveData.setValue(Resource.loading());
     }
 }

@@ -69,7 +69,7 @@ public class SelectCityDialogFragment extends DialogFragment implements Injectab
     @Inject
     RemoteWeatherRepository remoteRepo;
 
-    Unbinder unbinder;
+    private Unbinder unbinder;
 
     private Handler mainHandler = new Handler(Looper.getMainLooper());
     private CompositeDisposable disposables = new CompositeDisposable();
@@ -147,14 +147,14 @@ public class SelectCityDialogFragment extends DialogFragment implements Injectab
         return Single.create(emit -> {
             PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi.getPlaceById(googleApiClient, placeId);
             placeResult.setResultCallback(places -> {
-                if (!places.getStatus().isSuccess()) {
-                    String errorMsg = String.format(getString(R.string.error_with_explanation), places.getStatus().toString());
-                    emit.onError(new IllegalStateException(errorMsg));
-                } else {
+                if (places.getStatus().isSuccess()) {
                     final Place place = places.get(0);
                     Timber.i("Place details received: " + "Name=" + place.getName() +
                             ", coords=[" + place.getLatLng().latitude + ", " + place.getLatLng().longitude + "]");
                     emit.onSuccess(place);
+                } else {
+                    String errorMsg = String.format(getString(R.string.error_with_explanation), places.getStatus().toString());
+                    emit.onError(new IllegalStateException(errorMsg));
                 }
             });
         });

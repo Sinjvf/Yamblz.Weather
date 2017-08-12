@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -16,9 +17,11 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.base_util.BaseFragment;
-import ru.exwhythat.yather.data.repository.RemoteWeatherRepository;
+import ru.exwhythat.yather.base_util.livedata.Resource;
+import ru.exwhythat.yather.base_util.livedata.Status;
 import ru.exwhythat.yather.di.Injectable;
 import ru.exwhythat.yather.utils.Utils;
+import timber.log.Timber;
 
 /**
  * Created by Sinjvf on 09.07.2017.
@@ -41,9 +44,6 @@ public class SettingsFragment extends BaseFragment implements Injectable {
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
-
-    @Inject
-    RemoteWeatherRepository remoteRepo;
 
     SettingsViewModel localModel;
 
@@ -82,28 +82,28 @@ public class SettingsFragment extends BaseFragment implements Injectable {
         intervalView.setText(String.format(getString(R.string.n_min), minutes));
     }
 
-    public void setCityInfo(CityInfo cityInfo){
-        cityNameView.setText(cityInfo.getCityName());
-    }
-
-    @Override
-    protected void setProgressStatus(int status) {
-        switch (status) {
-            case Utils.PROGRESS_SHOW:
-                cityTitleView.setVisibility(View.GONE);
-                cityNameView.setVisibility(View.GONE);
-                progressCitySelection.setVisibility(View.VISIBLE);
-                break;
-            case Utils.PROGRESS_FAIL:
-            case Utils.PROGRESS_SUCCESS:
-                cityTitleView.setVisibility(View.VISIBLE);
-                cityNameView.setVisibility(View.VISIBLE);
-                progressCitySelection.setVisibility(View.GONE);
-                break;
+    public void setCityInfo(Resource<CityInfo> cityInfo){
+        if (cityInfo.status == Status.SUCCESS) {
+            cityNameView.setText(cityInfo.data.getCityName());
+            hideCityLoading();
+        } else if (cityInfo.status == Status.LOADING) {
+            showCityLoading();
+        } else if (cityInfo.status == Status.ERROR) {
+            Toast.makeText(getContext(), getString(R.string.error_unknown), Toast.LENGTH_SHORT).show();
+            Timber.e(cityInfo.message);
+            hideCityLoading();
         }
     }
 
-    public RemoteWeatherRepository getRemoteRepo() {
-        return remoteRepo;
+    private void hideCityLoading() {
+        cityTitleView.setVisibility(View.VISIBLE);
+        cityNameView.setVisibility(View.VISIBLE);
+        progressCitySelection.setVisibility(View.GONE);
+    }
+
+    private void showCityLoading() {
+        cityTitleView.setVisibility(View.GONE);
+        cityNameView.setVisibility(View.GONE);
+        progressCitySelection.setVisibility(View.VISIBLE);
     }
 }

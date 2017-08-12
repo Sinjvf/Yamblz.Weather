@@ -93,20 +93,14 @@ public class PlaceAutocompleteAdapter
         return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence input) {
-                FilterResults results = new FilterResults();
-
                 ArrayList<AutocompletePrediction> filterData = new ArrayList<>();
                 if (input != null) {
                     filterData = getAutocomplete(input);
                 }
 
+                FilterResults results = new FilterResults();
                 results.values = filterData;
-                if (filterData != null) {
-                    results.count = filterData.size();
-                } else {
-                    results.count = 0;
-                }
-
+                results.count = filterData.size();
                 return results;
             }
 
@@ -132,9 +126,10 @@ public class PlaceAutocompleteAdapter
         };
     }
 
+    @NonNull
     private ArrayList<AutocompletePrediction> getAutocomplete(CharSequence input) {
         if (callbackListener == null) {
-            return null;
+            return new ArrayList<>();
         }
         hideError();
         showLoading();
@@ -154,7 +149,7 @@ public class PlaceAutocompleteAdapter
                 sendError(R.string.error_connection);
                 Timber.e("Error getting autocomplete prediction API call: " + status.toString());
                 autocompletePredictions.release();
-                return null;
+                return new ArrayList<>();
             }
 
             int predictionsCount = autocompletePredictions.getCount();
@@ -169,7 +164,7 @@ public class PlaceAutocompleteAdapter
         } else {
             sendError(R.string.error);
             Timber.e("Google API client is not connected for autocomplete query.");
-            return null;
+            return new ArrayList<>();
         }
     }
 

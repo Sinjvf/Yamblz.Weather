@@ -1,6 +1,8 @@
 package ru.exwhythat.yather.screens.settings;
 
 
+import android.support.annotation.NonNull;
+
 import ru.exwhythat.yather.data.local.entities.City;
 
 /**
@@ -12,7 +14,7 @@ public class CityInfo {
     private int cityId;
     private String cityName;
 
-    public CityInfo(String cityName, int cityId) {
+    public CityInfo(@NonNull String cityName, int cityId) {
         this.cityName = cityName;
         this.cityId = cityId;
     }
@@ -27,6 +29,7 @@ public class CityInfo {
         return cityId;
     }
 
+    @NonNull
     public String getCityName() {
         return cityName;
     }

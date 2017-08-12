@@ -155,24 +155,6 @@ public class WeatherViewModel extends BaseFragmentViewModel {
         Timber.e(throwable);
     }
 
-    private <T> void setLiveSuccess(MutableLiveData<Resource<T>> mutableLiveData, T value) {
-        mutableLiveData.setValue(Resource.success(value));
-    }
-
-    private <T> void setLiveError(MutableLiveData<Resource<T>> mutableLiveData, Throwable e) {
-        String msg;
-        if (e instanceof UnknownHostException) {
-            msg = context.getString(R.string.error_network);
-        } else {
-            msg = context.getString(R.string.error_oops);
-        }
-        mutableLiveData.setValue(Resource.error(msg));
-    }
-
-    private <T> void setLiveLoading(MutableLiveData<Resource<T>> mutableLiveData) {
-        mutableLiveData.setValue(Resource.loading());
-    }
-
     @Override
     protected void onCleared() {
         super.onCleared();

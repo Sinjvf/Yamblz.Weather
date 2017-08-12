@@ -5,15 +5,16 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
+import android.support.annotation.WorkerThread;
 
 import javax.inject.Inject;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import ru.exwhythat.yather.R;
 import ru.exwhythat.yather.base_util.BaseFragmentViewModel;
+import ru.exwhythat.yather.base_util.livedata.Resource;
 import ru.exwhythat.yather.data.local.entities.City;
 import ru.exwhythat.yather.data.repository.LocalWeatherRepository;
 import ru.exwhythat.yather.ui.SelectCityDialogFragment;
@@ -30,7 +31,8 @@ public class SettingsViewModel extends BaseFragmentViewModel {
 
     private LocalWeatherRepository localRepo;
 
-    private CompositeDisposable disposables = new CompositeDisposable();
+    private MutableLiveData<Long> interval = new MutableLiveData<>();
+    private MutableLiveData<Resource<CityInfo>> cityInfo = new MutableLiveData<>();
 
     @Inject
     public SettingsViewModel(Application application, LocalWeatherRepository localRepo) {
@@ -38,26 +40,17 @@ public class SettingsViewModel extends BaseFragmentViewModel {
         this.localRepo = localRepo;
     }
 
-    protected MutableLiveData<Long> interval;
-    protected MutableLiveData<CityInfo> cityInfo;
-
     @NonNull
     public LiveData<Long> getInterval() {
-        if (interval == null) {
-            long savedInterval = Prefs.getIntervalTime(context);
-            interval = new MutableLiveData<>();
-            interval.setValue(savedInterval);
-        }
+        long savedInterval = Prefs.getIntervalTime(context);
+        interval.setValue(savedInterval);
         return interval;
     }
 
     @NonNull
-    public LiveData<CityInfo> getCityInfo() {
-        if (cityInfo == null) {
-            CityInfo savedCityInfo = Prefs.getSelectedCity(context);
-            cityInfo = new MutableLiveData<>();
-            cityInfo.setValue(savedCityInfo);
-        }
+    public LiveData<Resource<CityInfo>> getCityInfo() {
+        CityInfo savedCityInfo = Prefs.getSelectedCity(context);
+        setLiveSuccess(cityInfo, savedCityInfo);
         return cityInfo;
     }
 
@@ -79,18 +72,11 @@ public class SettingsViewModel extends BaseFragmentViewModel {
                 .doOnSuccess(this::writeCityToStorage)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onCityUpdated, this::onCityError);
+                .subscribe(newCityInfo -> setLiveSuccess(cityInfo, newCityInfo),
+                        err -> setLiveError(cityInfo, err));
     }
 
-    private void onCityUpdated(CityInfo newCityInfo) {
-        if (cityInfo == null) cityInfo = new MutableLiveData<>();
-        cityInfo.setValue(newCityInfo);
-    }
-
-    private void onCityError(Throwable throwable) {
-        Timber.e(throwable);
-    }
-
+    @WorkerThread
     private void writeCityToStorage(CityInfo cityInfo) {
         Prefs.setSelectedCity(context, cityInfo);
         City city = CityInfo.Mapper.toCity(cityInfo);
@@ -99,13 +85,11 @@ public class SettingsViewModel extends BaseFragmentViewModel {
 
     public void updateInterval(Long newInterval) {
         Prefs.setIntervalTime(context, newInterval);
-        if (interval == null) interval = new MutableLiveData<>();
         interval.setValue(newInterval);
     }
 
     @Override
     protected void onCleared() {
-
         super.onCleared();
     }
 }

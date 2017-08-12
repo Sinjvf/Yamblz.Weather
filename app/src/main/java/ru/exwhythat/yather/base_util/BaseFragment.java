@@ -25,7 +25,6 @@ public class BaseFragment extends LifecycleFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         baseModel.getTitle().observe(this, this::setTitleText);
-        baseModel.getProgress().observe(this, this::setProgressStatus);
         baseModel.setFragmentManager(getActivity().getSupportFragmentManager());
     }
 
