@@ -1,4 +1,4 @@
-package ru.exwhythat.yather.ui.db;
+package ru.exwhythat.yather.db;
 
 import android.arch.persistence.room.Room;
 import android.support.test.InstrumentationRegistry;
@@ -6,7 +6,7 @@ import android.support.test.InstrumentationRegistry;
 import org.junit.After;
 import org.junit.Before;
 
-import ru.exwhythat.yather.db.YatherDb;
+import ru.exwhythat.yather.data.local.YatherDb;
 
 /**
  * Created by exwhythat on 8/4/17.

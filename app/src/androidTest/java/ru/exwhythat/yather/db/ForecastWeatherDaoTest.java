@@ -1,4 +1,4 @@
-package ru.exwhythat.yather.ui.db;
+package ru.exwhythat.yather.db;
 
 import android.support.test.runner.AndroidJUnit4;
 
@@ -6,8 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import ru.exwhythat.yather.db.ForecastWeatherDao;
-import ru.exwhythat.yather.ui.util.TestData;
+import ru.exwhythat.yather.data.local.ForecastWeatherDao;
 
 /**
  * Created by exwhythat on 8/4/17.
