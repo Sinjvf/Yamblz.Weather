@@ -1,11 +1,11 @@
-package ru.exwhythat.yather.ui.util;
+package ru.exwhythat.yather.util;
 
 import java.util.Date;
 
-import ru.exwhythat.yather.db.entities.BaseWeather;
-import ru.exwhythat.yather.db.entities.City;
-import ru.exwhythat.yather.db.entities.CurrentWeather;
-import ru.exwhythat.yather.db.entities.ForecastWeather;
+import ru.exwhythat.yather.data.local.entities.BaseWeather;
+import ru.exwhythat.yather.data.local.entities.City;
+import ru.exwhythat.yather.data.local.entities.CurrentWeather;
+import ru.exwhythat.yather.data.local.entities.ForecastWeather;
 
 /**
  * Created by exwhythat on 8/5/17.
@@ -15,22 +15,16 @@ public class TestData {
 
     public static class TestCity {
         public static final int testCityId1 = 11111;
-        public static final double testCityLat1 = 1.11;
-        public static final double testCityLon1 = 11.11;
         public static final String testCityName1 = "City1";
-        public static final City testCity1 = new City(testCityId1, testCityLat1, testCityLon1, testCityName1);
+        public static final City testCity1 = new City(testCityId1, testCityName1, false);
 
         public static final int testCityId2 = 22222;
-        public static final double testCityLat2 = 2.22;
-        public static final double testCityLon2 = 22.22;
         public static final String testCityName2 = "City2";
-        public static final City testCity2 = new City(testCityId2, testCityLat2, testCityLon2, testCityName2);
+        public static final City testCity2 = new City(testCityId2, testCityName2, false);
 
         public static final int testCityId3 = 33333;
-        public static final double testCityLat3 = 3.33;
-        public static final double testCityLon3 = 33.33;
         public static final String testCityName3 = "City3";
-        public static final City testCity3 = new City(testCityId3, testCityLat3, testCityLon3, testCityName3);
+        public static final City testCity3 = new City(testCityId3, testCityName3, false);
     }
 
     public static class TestBaseWeather {
@@ -59,21 +53,21 @@ public class TestData {
         public static final double testWindSpeed1 = 11.11;
         public static final double testPressure1 = 11.11;
         public static final CurrentWeather testCurrentWeather1 = new CurrentWeather(TestBaseWeather.testBaseWeather1,
-                TestCity.testCityId1, testTemp1, testHumidity1, testWindSpeed1, testPressure1);
+                TestCity.testCityId1, testHumidity1, testWindSpeed1, testPressure1, testTemp1);
 
         public static final double testTemp2 = 22.22;
         public static final int testHumidity2 = 22;
         public static final double testWindSpeed2 = 22.22;
         public static final double testPressure2 = 22.22;
         public static final CurrentWeather testCurrentWeather2 = new CurrentWeather(TestBaseWeather.testBaseWeather2,
-                TestCity.testCityId2, testTemp2, testHumidity2, testWindSpeed2, testPressure2);
+                TestCity.testCityId2, testHumidity2, testWindSpeed2, testPressure2, testTemp2);
 
         public static final double testTemp3 = 33.33;
         public static final int testHumidity3 = 33;
         public static final double testWindSpeed3 = 33.33;
         public static final double testPressure3 = 33.33;
         public static final CurrentWeather testCurrentWeather3 = new CurrentWeather(TestBaseWeather.testBaseWeather3,
-                TestCity.testCityId3, testTemp3, testHumidity3, testWindSpeed3, testPressure3);
+                TestCity.testCityId3, testHumidity3, testWindSpeed3, testPressure3, testTemp3);
     }
 
     public static class TestForecastWeather {

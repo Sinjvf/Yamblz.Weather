@@ -57,7 +57,7 @@ public class SettingsFragment extends BaseFragment implements Injectable {
         localModel = ViewModelProviders.of(getActivity(), viewModelFactory).get(SettingsViewModel.class);
         baseModel = localModel;
         localModel.getInterval().observe(this, this::setInterval);
-        localModel.getCityInfo().observe(this, this::setCityInfo);
+        localModel.getCity().observe(this, this::setCityInfo);
         super.onActivityCreated(savedInstanceState);
     }
 

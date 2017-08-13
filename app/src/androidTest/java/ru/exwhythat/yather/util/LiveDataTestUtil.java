@@ -1,4 +1,4 @@
-package ru.exwhythat.yather.ui.util;
+package ru.exwhythat.yather.util;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;

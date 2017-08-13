@@ -1,10 +1,10 @@
-package ru.exwhythat.yather.ui.db;
+package ru.exwhythat.yather.db;
 
 import org.junit.After;
 import org.junit.Before;
 
-import ru.exwhythat.yather.db.CityDao;
-import ru.exwhythat.yather.ui.util.TestData;
+import ru.exwhythat.yather.data.local.CityDao;
+import ru.exwhythat.yather.util.TestData;
 
 /**
  * Created by exwhythat on 8/5/17.

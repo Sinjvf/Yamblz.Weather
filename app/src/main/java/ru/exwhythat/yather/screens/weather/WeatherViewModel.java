@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.Keep;
+import android.support.annotation.VisibleForTesting;
 
 import java.util.List;
 
@@ -135,7 +136,8 @@ public class WeatherViewModel extends BaseFragmentViewModel {
                         err -> setLiveError(forecast, err));
     }
 
-    private void loadCitiesWithWeatherFromRepo() {
+    @VisibleForTesting
+    public void loadCitiesWithWeatherFromRepo() {
         citiesSubscription.dispose();
         citiesSubscription = weatherRepo.getCitiesWithWeather()
                 .subscribeOn(Schedulers.io())

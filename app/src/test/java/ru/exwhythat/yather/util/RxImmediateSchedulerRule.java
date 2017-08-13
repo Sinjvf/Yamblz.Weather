@@ -1,4 +1,4 @@
-package ru.exwhythat.yather;
+package ru.exwhythat.yather.util;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;

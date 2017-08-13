@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.support.annotation.WorkerThread;
 
 import javax.inject.Inject;
@@ -31,7 +32,7 @@ public class SettingsViewModel extends BaseFragmentViewModel {
     private LocalWeatherRepository localRepo;
 
     private MutableLiveData<Long> interval = new MutableLiveData<>();
-    private MutableLiveData<Resource<City>> cityInfo = new MutableLiveData<>();
+    private MutableLiveData<Resource<City>> city = new MutableLiveData<>();
 
     @Inject
     public SettingsViewModel(Application application, LocalWeatherRepository localRepo) {
@@ -47,18 +48,19 @@ public class SettingsViewModel extends BaseFragmentViewModel {
     }
 
     @NonNull
-    public LiveData<Resource<City>> getCityInfo() {
-        setLiveLoading(cityInfo);
+    public LiveData<Resource<City>> getCity() {
+        setLiveLoading(city);
         loadSelectedCity();
-        return cityInfo;
+        return city;
     }
 
-    private void loadSelectedCity() {
+    @VisibleForTesting
+    public void loadSelectedCity() {
         localRepo.getSelectedCitySingle()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(city -> setLiveSuccess(cityInfo, city),
-                        err -> setLiveError(cityInfo, err));
+                .subscribe(newCity -> setLiveSuccess(city, newCity),
+                        err -> setLiveError(city, err));
     }
 
     @Override
@@ -79,14 +81,14 @@ public class SettingsViewModel extends BaseFragmentViewModel {
                 .doOnSuccess(this::writeCityToStorage)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(newCityInfo -> setLiveSuccess(cityInfo, newCityInfo),
-                        err -> setLiveError(cityInfo, err));
+                .subscribe(newCity -> setLiveSuccess(city, newCity),
+                        err -> setLiveError(city, err));
     }
 
     @WorkerThread
-    private void writeCityToStorage(City city) {
-        localRepo.addNewCity(city);
-        localRepo.selectCity(city.getCityId());
+    private void writeCityToStorage(City newCity) {
+        localRepo.addNewCity(newCity);
+        localRepo.selectCity(newCity.getCityId());
     }
 
     public void updateInterval(Long newInterval) {
