@@ -56,6 +56,18 @@ public class LocalWeatherRepository {
                 });
     }
 
+    public Flowable<List<CityWithWeather>> getFlowingCitiesWithWeather() {
+        return cityDao.getCitiesWithWeather();
+    }
+
+    public Single<Integer> getSelectedCityIdSingle() {
+        return cityDao.getSelectedCityIdSingle();
+    }
+
+    public Single<City> getSelectedCitySingle() {
+        return cityDao.getSelectedCitySingle();
+    }
+
     public void updateCurrentWeather(CurrentWeather currentWeather) {
         currentWeatherDao.insert(currentWeather);
     }
@@ -74,18 +86,6 @@ public class LocalWeatherRepository {
     public long selectCity(int cityId) {
         cityDao.unselectAll();
         return cityDao.setSelected(cityId);
-    }
-
-    public Flowable<List<CityWithWeather>> getFlowingCitiesWithWeather() {
-        return cityDao.getCitiesWithWeather();
-    }
-
-    public Single<Integer> getSelectedCityIdSingle() {
-        return cityDao.getSelectedCityIdSingle();
-    }
-
-    public Single<City> getSelectedCitySingle() {
-        return cityDao.getSelectedCitySingle();
     }
 
     public long deleteCity(int cityId) {

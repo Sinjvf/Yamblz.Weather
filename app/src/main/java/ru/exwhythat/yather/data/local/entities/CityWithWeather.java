@@ -14,6 +14,11 @@ public class CityWithWeather {
     @Embedded
     private CurrentWeather weather;
 
+    public CityWithWeather(City city, CurrentWeather weather) {
+        this.city = city;
+        this.weather = weather;
+    }
+
     public City getCity() {
         return city;
     }
