@@ -87,4 +87,8 @@ public class LocalWeatherRepository {
     public Single<City> getSelectedCitySingle() {
         return cityDao.getSelectedCitySingle();
     }
+
+    public long deleteCity(int cityId) {
+        return cityDao.deleteCity(cityId);
+    }
 }

@@ -31,4 +31,6 @@
     <string name="error_connection">Ошибка соединения</string>
     <string name="error_oops">Упс, что-то пошло не так\nПожалуйста, попробуйте позже</string>
     <string name="error_gp_service_not_available">Google Play Services недоступны: %1$s</string>
+
+    <string name="city_list_item_deleted">Удалено</string>
 </resources>

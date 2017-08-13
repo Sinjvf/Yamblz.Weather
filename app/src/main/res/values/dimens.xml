@@ -9,6 +9,9 @@
     <dimen name="text_size">16sp</dimen>
     <dimen name="small_text">11sp</dimen>
     <dimen name="main_tempr_text">24sp</dimen>
+    <dimen name="city_list_item_tempr_small">16sp</dimen>
+    <dimen name="city_list_item_text">24sp</dimen>
+
     <dimen name="text_size_list_item">18sp</dimen>
 
     <dimen name="city_selection_yandex_logo_height">50dp</dimen>

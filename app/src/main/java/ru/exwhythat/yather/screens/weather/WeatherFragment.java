@@ -10,6 +10,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +44,8 @@ import static ru.exwhythat.yather.data.remote.model.DailyForecastResponse.*;
  * Fragment for weather screen - main application screen
  */
 
-public class WeatherFragment extends BaseFragment implements Injectable, SwipeRefreshLayout.OnRefreshListener {
+public class WeatherFragment extends BaseFragment implements Injectable, SwipeRefreshLayout.OnRefreshListener,
+CitiesAdapter.OnCityInteractionListener {
 
     public static final String TAG = "WeatherFragment";
 
@@ -97,16 +99,44 @@ public class WeatherFragment extends BaseFragment implements Injectable, SwipeRe
     }
 
     private void initRecyclers() {
-        citiesAdapter = new CitiesAdapter(getContext(), this, this::onCitySelected);
+        citiesAdapter = new CitiesAdapter(getContext(), this, this);
         int citiesOrientation = isTwoPane ? LinearLayoutManager.VERTICAL : LinearLayoutManager.HORIZONTAL;
         initRecycler(citiesRecycler, citiesAdapter, citiesOrientation);
+        ItemTouchHelper citiesItemSwipeHelper = createItemTouchHelper(isTwoPane);
+        citiesItemSwipeHelper.attachToRecyclerView(citiesRecycler);
 
         forecastAdapter = new ForecastAdapter(getContext(), this, this::onForecastClicked);
         initRecycler(forecastRecycler, forecastAdapter, LinearLayoutManager.VERTICAL);
         forecastRecycler.setNestedScrollingEnabled(false);
     }
 
-    private void onCitySelected(int cityId) {
+    private ItemTouchHelper createItemTouchHelper(boolean isTwoPane) {
+        int swipeDirectionOne = isTwoPane ? ItemTouchHelper.LEFT : ItemTouchHelper.UP;
+        int swipeDirectionTwo = isTwoPane ? ItemTouchHelper.RIGHT : ItemTouchHelper.DOWN;
+        ItemTouchHelper.SimpleCallback cityItemTouchCallback =
+                new ItemTouchHelper.SimpleCallback(0, swipeDirectionOne | swipeDirectionTwo) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                Toast.makeText(getContext(), getString(R.string.city_list_item_deleted), Toast.LENGTH_SHORT).show();
+                //Remove swiped item from list and notify the RecyclerView
+                final int position = viewHolder.getAdapterPosition();
+                Integer cityId = citiesAdapter.getCityId(position);
+                if (cityId != null) {
+                    // remove from db
+                    localModel.deleteCity(cityId);
+                }
+            }
+        };
+        return new ItemTouchHelper(cityItemTouchCallback);
+    }
+
+    @Override
+    public void onCitySelected(int cityId) {
         localModel.onCitySelected(cityId);
     }
 

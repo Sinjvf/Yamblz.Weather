@@ -10,6 +10,8 @@
     <color name="titleText">#fefefe</color>
     <color name="greyText">#888888</color>
 
+    <color name="weatherCardDelimiter">#888888</color>
+
     <color name="titleIcons">#fefefe</color>
 
     <color name="mainText">#ffffffaa</color>
@@ -17,4 +19,7 @@
 
     <color name="dayTempText">#cfc62828</color>
     <color name="nightTempText">#b9536dfe</color>
+
+    <color name="cityListSelectedItemColor">@color/colorPrimaryDark</color>
+    <color name="cityListUnselectedItemColor">@color/colorPrimary</color>
 </resources>

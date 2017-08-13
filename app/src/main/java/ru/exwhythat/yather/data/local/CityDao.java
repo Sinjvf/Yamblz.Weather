@@ -40,4 +40,7 @@ public interface CityDao {
 
     @Query("SELECT * FROM city WHERE isselected = 1 LIMIT 1")
     Single<City> getSelectedCitySingle();
+
+    @Query("DELETE FROM city WHERE cityId = :cityId")
+    int deleteCity(int cityId);
 }

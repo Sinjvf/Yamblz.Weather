@@ -129,6 +129,16 @@
                     app:layout_constraintTop_toBottomOf="@id/humidity"
                     tools:text="Last updated: 23:00, 25.01.1997"/>
 
+                <View
+                    android:id="@+id/delimiterLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/weatherCardDelimiter"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/last_updated"
+                    android:layout_marginTop="16dp"/>
+
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/forecastRecycler"
                     android:layout_width="match_parent"
@@ -137,7 +147,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/last_updated"/>
+                    app:layout_constraintTop_toBottomOf="@id/delimiterLine"/>
             </android.support.constraint.ConstraintLayout>
         </android.support.v4.widget.NestedScrollView>
     </android.support.v4.widget.SwipeRefreshLayout>

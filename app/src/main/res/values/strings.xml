@@ -46,4 +46,6 @@
     <string name="error_unknown">Unknown error</string>
     <string name="error_gp_service_not_available">Google Play Services are not available: %1$s</string>
     <string name="tempr_float" translatable="false">%.0f</string>
+
+    <string name="city_list_item_deleted">Deleted</string>
 </resources>

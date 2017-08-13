@@ -95,6 +95,14 @@ public class WeatherViewModel extends BaseFragmentViewModel {
         loadForecastFromRepo();
     }
 
+    public void deleteCity(int cityId) {
+        Single.just(cityId)
+                .map(id -> weatherRepo.deleteCity(id))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
+    }
+
     @Override
     protected int getTitleStringId() {
         return R.string.menu_weather;

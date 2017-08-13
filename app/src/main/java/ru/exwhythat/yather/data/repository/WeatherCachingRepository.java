@@ -68,4 +68,8 @@ public class WeatherCachingRepository {
     public Single<City> getSelectedCitySingle() {
         return localRepo.getSelectedCitySingle();
     }
+
+    public long deleteCity(int cityId) {
+        return localRepo.deleteCity(cityId);
+    }
 }

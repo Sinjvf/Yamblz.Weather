@@ -36,11 +36,11 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHo
 
     private Context context;
     private List<CityWithWeather> citiesWithWeather = new ArrayList<>();
-    private OnCitySelectionListener selectionListener;
+    private OnCityInteractionListener selectionListener;
 
     private CitiesDiffUtilCallback diffUtilCallback;
 
-    public CitiesAdapter(Context context, LifecycleOwner lifecycleOwner, OnCitySelectionListener listener) {
+    public CitiesAdapter(Context context, LifecycleOwner lifecycleOwner, OnCityInteractionListener listener) {
         this.context = context;
         this.selectionListener = listener;
         lifecycleOwner.getLifecycle().addObserver(this);
@@ -57,12 +57,17 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHo
         final CityWithWeather cityWithWeather = citiesWithWeather.get(position);
         City city = cityWithWeather.getCity();
         CurrentWeather weather = cityWithWeather.getWeather();
+
+        int selectedItemColor = ContextCompat.getColor(context, R.color.cityListSelectedItemColor);
+        int unselectedItemColor = ContextCompat.getColor(context, R.color.cityListUnselectedItemColor);
+        holder.itemView.setBackgroundColor(city.isSelected() ? selectedItemColor : unselectedItemColor);
+
         holder.cityName.setText(city.getName());
         if (weather != null) {
-            // We can afford to check nullability of just one view from landscape orientation
             if (holder.cityTempr != null) {
                 holder.cityTempr.setText(StringUtils.getFormattedTemperature(context, weather.getTemp()));
-
+            }
+            if (holder.weatherIcon != null) {
                 @WeatherState String weatherState = weather.getBaseWeather().getMain();
                 holder.weatherIcon.setImageDrawable(ContextCompat.getDrawable(context,
                         WeatherFragment.getDrawableResIdForWeatherState(weatherState)));
@@ -112,7 +117,7 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHo
         }
     }
 
-    public interface OnCitySelectionListener {
+    public interface OnCityInteractionListener {
         void onCitySelected(int cityId);
     }
 
@@ -121,5 +126,13 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHo
         context = null;
         selectionListener = null;
         diffUtilCallback = null;
+    }
+
+    @Nullable
+    public Integer getCityId(int position) {
+        if (citiesWithWeather != null && citiesWithWeather.size() > 0) {
+            return citiesWithWeather.get(position).getCity().getCityId();
+        }
+        return null;
     }
 }
